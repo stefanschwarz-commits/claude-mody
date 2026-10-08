@@ -22,6 +22,8 @@ function folder(on: On, files: Record<string, string>) {
     return { value: undefined }
   })
   on('turn.complete', ($, e) => ({ text: e.answer }))
+  // What the other mods draw in the shared band: nothing here.
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
   return written
 }
 

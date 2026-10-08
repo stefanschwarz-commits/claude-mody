@@ -96,17 +96,22 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    // The band is shared: draw this line and keep what the other mods draw.
+    const below = await next(e)
     const s = await read($, status)
-    if (e.props.hasSurvey || s === null) return next(e)
+    if (e.props.hasSurvey || s === null) return below
 
     const { Box, Text } = $.ui.resolve(e)
     const width = Math.max(30, e.props.bodyColumns)
 
     if (!s.hasFile) {
       return (
-        <Box>
-          <Text color="claude" bold>{`▣ ${s.project}`}</Text>
-          <Text dimColor>{'  ·  brak STAN.md (/stan nowy)'}</Text>
+        <Box flexDirection="column">
+          {below}
+          <Box>
+            <Text color="claude" bold>{`▣ ${s.project}`}</Text>
+            <Text dimColor>{'  ·  brak STAN.md (/stan nowy)'}</Text>
+          </Box>
         </Box>
       )
     }
@@ -120,9 +125,12 @@ export const register: Register = on => {
     const room = width - s.project.length - 6
 
     return (
-      <Box>
-        <Text color="claude" bold>{`▣ ${s.project}`}</Text>
-        <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
+      <Box flexDirection="column">
+        {below}
+        <Box>
+          <Text color="claude" bold>{`▣ ${s.project}`}</Text>
+          <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
+        </Box>
       </Box>
     )
   })

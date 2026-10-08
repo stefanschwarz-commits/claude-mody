@@ -163,6 +163,7 @@ export const register: Register = on => {
           <Box flexDirection="column" gap={1}>
             <Text color="claude" bold>Potrzebuję od Ciebie</Text>
             {todos.map((part, i) => <Markdown key={`d${i}`} text={part.body} />)}
+            <Box flexDirection="column" gap={2}>
             {questions.map((q, i) => (
               <Box key={`q${i}`} flexDirection="column" gap={1}>
                 <Markdown text={q.text.startsWith('**') ? q.text.replace(/^\*\*/, `**${q.number}. `) : q.text} />
@@ -177,6 +178,7 @@ export const register: Register = on => {
                 ) : null}
               </Box>
             ))}
+            </Box>
           </Box>
         ) : null}
         {folded.length > 0 ? (
