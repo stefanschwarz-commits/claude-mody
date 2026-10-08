@@ -7,14 +7,14 @@ export type Question = { number: string; text: string; options: string[]; table:
 export type Reply = { headline: string; parts: Part[] }
 
 // A section is known by its icon or by the words of its title, as a heading or bold.
-const LEAD = String.raw`^(#+\s*)?(✅|☐|❓|ℹ️?|⚠️?|❗|✔️?)?\s*\**\s*`
-const MARK = new RegExp(LEAD)
+const LEAD = String.raw`^(#+\s*)?(\p{Extended_Pictographic}️?)?\s*\**\s*`
+const MARK = new RegExp(LEAD, 'u')
 const KINDS: readonly [Kind, RegExp][] = [
-  ['done', new RegExp(`${LEAD}zrobione`, 'i')],
-  ['problem', new RegExp(`${LEAD}problem`, 'i')],
-  ['todo', new RegExp(`${LEAD}do zrobienia`, 'i')],
-  ['questions', new RegExp(`${LEAD}pytani`, 'i')],
-  ['info', new RegExp(`${LEAD}dla informacji`, 'i')],
+  ['done', new RegExp(`${LEAD}zrobione`, 'iu')],
+  ['problem', new RegExp(`${LEAD}problem`, 'iu')],
+  ['todo', new RegExp(`${LEAD}do zrobienia`, 'iu')],
+  ['questions', new RegExp(`${LEAD}pytani`, 'iu')],
+  ['info', new RegExp(`${LEAD}dla informacji`, 'iu')],
 ]
 
 // Short, one or two lines, no ▶: a message written while Claude works.
@@ -90,7 +90,7 @@ export function lettersOf(q: Question): string[] {
 
 // The letter the tip recommends: "➜ Polecam **B**, bo…".
 export function recommendedOf(q: Question): string | undefined {
-  return /Polecam\s+\**([A-Z])\b/i.exec(q.tip)?.[1]?.toUpperCase()
+  return /Polecam\s+\**(?:\d+)?([A-Z])\b/i.exec(q.tip)?.[1]?.toUpperCase()
 }
 
 // The option's first cell says what its button says ("1B"), with one cue only:

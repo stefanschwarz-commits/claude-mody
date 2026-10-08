@@ -205,3 +205,18 @@ test('panel Moje sprawy: zadania z całej rozmowy, odhaczanie i pytania z przyci
   expect(await pane.find({ type: 'Text', text: 'Do zrobienia (0)' })).toBeDefined()
   expect(await pane.find({ type: 'Text', text: 'Odhaczone (1)' })).toBeDefined()
 })
+
+test('nagłówki z kolorowymi kropkami (wersja 6 instrukcji) są rozpoznawane', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Kropki.**', '', '---', '', '🟢 **Zrobione**', '- Strona działa.', '', '---', '', '🔴 **Problem**', '- Hasło wygasło.', '', '---', '', '🟠 **Do zrobienia przez Ciebie**', '1. Zmień hasło (5 min) – po to'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: /^Zrobione: Strona działa/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /^Problem: Hasło wygasło/ })).toBeDefined()
+  expect(await ui.find({ type: 'Button', label: '☐' })).toBeDefined()
+})
+
+test('gwiazdka także przy „Polecam 2B” z numerem', () => {
+  const [q] = splitQuestions(['**2. Kiedy?**', '| Opcja | Co |', '|---|---|', '| **A)** | Teraz |', '| **B)** | Wieczorem |', '➜ Polecam 2B.'].join('\n'))
+  expect(tableOf(q)).toContain('| **2B** ★ | Wieczorem |')
+  expect(tipOf(q)).toBe('➜ Polecam 2B.')
+})
