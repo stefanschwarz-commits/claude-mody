@@ -44,10 +44,15 @@ Odpowiedzi Claude'a w Claude Code:
 - „Potrzebuję od Ciebie”: zadania i pytania razem, pytania z tabelą opcji i przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole);
 - Zrobione i Problem zwinięte do jednej linii (zielona / czerwona), przycisk „Pokaż szczegóły” rozwija;
 - pasek nad polem wpisywania: ile zadań i pytań czeka na Ciebie oraz przycisk „↑ Początek odpowiedzi”;
-- krótkie komunikaty z trakcie pracy zwinięte do jednej szarej linii.
+- krótkie komunikaty z trakcie pracy i kroki pracy (czytanie plików, polecenia) zwinięte do jednej szarej linii; błędy zostają widoczne;
+- zadania z kratką ☐ do odhaczenia; pasek liczy tylko te, które zostały;
+- długie wyjaśnienia: pierwsze 8 linii i przycisk „Pokaż więcej”;
+- powiadomienie w rogu na koniec pracy, gdy coś na Ciebie czeka;
+- panel boczny „Moje sprawy” (`/sprawy` albo przycisk w pasku): wszystkie zadania z rozmowy do odhaczenia i pytania z przyciskami odpowiedzi.
 
 ```
 claude plugin install wyglad@claude-mody
 ```
 
 - `/wyglad off` – zwykły wygląd, `/wyglad on` – kolorowy
+- `/sprawy` – panel „Moje sprawy”
