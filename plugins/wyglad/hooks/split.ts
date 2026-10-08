@@ -1,4 +1,4 @@
-export type Kind = 'todo' | 'questions' | 'info' | 'plain'
+export type Kind = 'done' | 'problem' | 'todo' | 'questions' | 'info' | 'plain'
 
 export type Part = { kind: Kind; title: string; body: string }
 
@@ -6,10 +6,14 @@ export type Question = { number: string; text: string; options: string[]; tip: s
 
 export type Reply = { headline: string; parts: Part[] }
 
+// A section is known by its icon or by the words of its title.
+const MARK = /^(✅|☐|❓|ℹ️?|⚠️?|❗|✔️?)\s*/
 const KINDS: readonly [Kind, RegExp][] = [
-  ['todo', /^✅/],
-  ['questions', /^❓/],
-  ['info', /^ℹ️?/],
+  ['done', /^(✔️?\s*)?\**\s*zrobione/i],
+  ['problem', /^(⚠️?|❗)|^\**\s*problem/i],
+  ['todo', /^(✅|☐)|^\**\s*do zrobienia/i],
+  ['questions', /^❓|^\**\s*pytani/i],
+  ['info', /^ℹ️?|^\**\s*dla informacji/i],
 ]
 
 // Short, one or two lines, no ▶: a message written while Claude works.
@@ -40,7 +44,7 @@ export function splitReply(text: string): Reply | undefined {
     if (kind === 'plain') {
       parts.push({ kind, title: '', body })
     } else {
-      const title = head.replace(/^(✅|❓|ℹ️?)\s*/, '').replace(/\*\*/g, '').replace(/:\s*$/, '').trim()
+      const title = head.replace(MARK, '').replace(/\*\*/g, '').replace(/:\s*$/, '').trim()
       parts.push({ kind, title, body: tail.join('\n').trim() })
     }
   }
