@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { splitQuestions, tableOf } from './split'
+import { splitQuestions, tableOf, tipOf } from './split'
 
 const REPLY = [
   '▶ **Mod działa i jest gotowy do testu.**',
@@ -66,7 +66,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: /⚠ Problem: Serwer poczty/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /✓ Zrobione: Formularz/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /Polecam A/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Polecam 1A/ })).toBeDefined()
     expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
     await ui.press({ key: 'b0-1-A' })
     await ui.unmount()
@@ -140,7 +140,9 @@ test('pasek nad polem: co jest potrzebne i przycisk do początku odpowiedzi', as
 test('opcja polecana ma w tabeli jeden znak: ★, objaśniony w nagłówku', () => {
   const [q] = splitQuestions(['**1. Który?**', '| Opcja | Co |', '|---|---|', '| **A)** | Ramki |', '| **B)** | Bez |', '➜ Polecam **B**, bo prościej.'].join('\n'))
   const table = tableOf(q)
-  expect(table).toContain('| **B)** ★ |')
+  expect(table).toContain('| **1B** ★ | Bez |')
+  expect(table).toContain('| **1A** | Ramki |')
+  expect(tipOf(q)).toBe('➜ Polecam 1B, bo prościej.')
   expect(table).toContain('| Opcja (★ polecam) |')
-  expect(table).not.toContain('**A)** ★')
+  expect(table).not.toContain('1A** ★')
 })

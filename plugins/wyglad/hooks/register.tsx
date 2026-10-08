@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Last } from '../types'
-import { firstLine, isProgress, lettersOf, splitQuestions, splitReply, tableOf } from './split'
+import { firstLine, isProgress, lettersOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
 import type { Part, Reply } from './split'
 
 const OFF = 'off'
@@ -17,7 +17,7 @@ const SECTIONS = [
   '- `⚠️ **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
   'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji zwijają się do jednej linii, więc ich pierwsze zdanie ma mówić najważniejsze.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”.',
+  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”. Mod sam numeruje opcje jak przyciski (1A, 1B, 2A…); w tekście odwołuj się do nich tak samo.',
 ].join('\n')
 
 // The same reply always gets the same key, so the band can scroll to it.
@@ -172,7 +172,7 @@ export const register: Register = on => {
                   <Text color="suggestion" bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
-                  {q.tip ? <Text bold>{q.tip.replace(/\*\*/g, '')}</Text> : null}
+                  {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
                   {lettersOf(q).length > 0 ? (
                     <Box flexDirection="row" gap={2}>
                       {lettersOf(q).map(letter => (
