@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { splitQuestions, tableOf, tipOf } from './split'
+import { optionsOf, splitQuestions, tableOf, tipOf } from './split'
 
 const REPLY = [
   '▶ **Mod działa i jest gotowy do testu.**',
@@ -67,8 +67,8 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     expect(await ui.find({ type: 'Text', text: /^Problem: Serwer poczty/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /^Zrobione: Formularz/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Polecam 1A/ })).toBeDefined()
-    expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
-    await ui.press({ key: 'b0-1-A' })
+    expect(await ui.find({ type: 'Button', key: 'b0-1B' })).toBeDefined()
+    await ui.press({ key: 'b0-1A' })
     await ui.unmount()
   }
   expect(filled).toEqual(['1A ', '1A ', '1A '])
@@ -116,8 +116,8 @@ test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) 
   ].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Text', text: 'Pytanie 1: Który wygląd?' })).toBeDefined()
-  expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
-  await ui.press({ key: 'b0-1-B' })
+  expect(await ui.find({ type: 'Button', key: 'b0-1B' })).toBeDefined()
+  await ui.press({ key: 'b0-1B' })
   expect(filled).toEqual(['1B '])
 })
 
@@ -199,7 +199,7 @@ test('panel Moje sprawy: zadania z całej rozmowy, odhaczanie i pytania z przyci
   const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
   expect(await pane.find({ type: 'Text', text: 'Do zrobienia (1)' })).toBeDefined()
   expect(await pane.find({ type: 'Text', text: 'Zmień hasło (5 min) – po to' })).toBeDefined()
-  expect(await pane.find({ type: 'Button', label: '1B' })).toBeDefined()
+  expect(await pane.find({ type: 'Button', label: 'Wybierz 1B' })).toBeDefined()
   const box = await pane.find({ type: 'Button', label: '☐' })
   await pane.press({ key: box!.key! })
   expect(await pane.find({ type: 'Text', text: 'Do zrobienia (0)' })).toBeDefined()
@@ -219,4 +219,20 @@ test('gwiazdka także przy „Polecam 2B” z numerem', () => {
   const [q] = splitQuestions(['**2. Kiedy?**', '| Opcja | Co |', '|---|---|', '| **A)** | Teraz |', '| **B)** | Wieczorem |', '➜ Polecam 2B.'].join('\n'))
   expect(tableOf(q)).toContain('| **2B** ★ | Wieczorem |')
   expect(tipOf(q)).toBe('➜ Polecam 2B.')
+})
+
+test('opcje bez tabeli: jedna linia na opcję, gwiazdka i przyciski „Wybierz 1B ★”', () => {
+  const [q] = splitQuestions(['**1. Adres?**', '| Opcja | Co się stanie | Plus | Minus |', '|---|---|---|---|', '| **A)** | Zostawiam | Nic nie zmieniam | Pełna skrzynka |', '| **B)** | Zmieniam | Porządek | Nowa skrzynka |', '➜ Polecam 1B.'].join('\n'))
+  expect(optionsOf(q)).toEqual([
+    { id: '1A', isBest: false, text: 'Zostawiam · Plus: Nic nie zmieniam · Minus: Pełna skrzynka' },
+    { id: '1B', isBest: true, text: 'Zmieniam · Plus: Porządek · Minus: Nowa skrzynka' },
+  ])
+})
+
+test('opcje zapisane listą „**1A) ★**” (instrukcja v6) też działają', () => {
+  const [q] = splitQuestions(['**1. Usunąć kopię?**', '- **1A) ★** Usuwam kopię – plus: porządek; minus: brak.', '- **1B)** Zostawiam – plus: nic; minus: bałagan.', '➜ Polecam 1A, bo nic nie tracisz.'].join('\n'))
+  expect(optionsOf(q)).toEqual([
+    { id: '1A', isBest: true, text: 'Usuwam kopię – plus: porządek; minus: brak.' },
+    { id: '1B', isBest: false, text: 'Zostawiam – plus: nic; minus: bałagan.' },
+  ])
 })

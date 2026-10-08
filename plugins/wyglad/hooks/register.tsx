@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Last, Sprawa } from '../types'
-import { firstLine, isProgress, lettersOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
+import { firstLine, isProgress, lettersOf, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 
 const OFF = 'off'
@@ -34,7 +34,7 @@ const SECTIONS = [
   '- `🔴 **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
   'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji zwijają się do jednej linii, więc ich pierwsze zdanie ma mówić najważniejsze.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”. Mod sam numeruje opcje jak przyciski (1A, 1B, 2A…); w tekście odwołuj się do nich tak samo.',
+  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką.',
 ].join('\n')
 
 // The same reply always gets the same key, so the band can scroll to it.
@@ -137,7 +137,7 @@ export const register: Register = on => {
               <Text>{one.text}</Text>
             </Box>
             <Box flexDirection="row" gap={2}>
-              {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={l} onPress={fill(l)} />)}
+              {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={`Wybierz ${l}`} onPress={fill(l)} />)}
             </Box>
           </Box>
         ))}
@@ -280,7 +280,7 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column" gap={1}>
-        <Box key={key} flexDirection="column">
+        <Box key={key} flexDirection="column" gap={1}>
           {/* The bar marks where the answer starts; bright only on the latest one. */}
           <Box backgroundColor={isLatest ? 'claude' : 'inactive'} paddingX={1}>
             <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
@@ -333,12 +333,22 @@ export const register: Register = on => {
                     <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
                   </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
-                  {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
+                  {/* One option per line, named as its button; the star marks the advice. */}
+                  {optionsOf(q).map(option => (
+                    <Box key={`o${i}-${option.id}`} flexDirection="row" gap={1}>
+                      <Text bold>{`${option.id}${option.isBest ? ' ★' : ''}`}</Text>
+                      <Markdown text={option.text} />
+                    </Box>
+                  ))}
                   {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
-                  {lettersOf(q).length > 0 ? (
+                  {optionsOf(q).length > 0 ? (
                     <Box flexDirection="row" gap={2}>
-                      {lettersOf(q).map(letter => (
-                        <Button key={`b${i}-${q.number}-${letter}`} label={`${q.number}${letter}`} onPress={fill(`${q.number}${letter}`)} />
+                      {optionsOf(q).map(option => (
+                        <Button
+                          key={`b${i}-${option.id}`}
+                          label={`Wybierz ${option.id}${option.isBest ? ' ★' : ''}`}
+                          onPress={fill(option.id)}
+                        />
                       ))}
                     </Box>
                   ) : null}

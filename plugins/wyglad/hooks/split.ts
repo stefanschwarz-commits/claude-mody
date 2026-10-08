@@ -70,7 +70,7 @@ export function splitQuestions(body: string): Question[] {
       current = { number: '1', text: '', options: [], table: [], tip: '' }
       out.push(current)
     }
-    if (/^[-*]\s+\*\*[A-Z]\)\*\*/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
+    if (/^[-*]\s+\*\*\d*[A-Z]\)\s*★?\s*\*\*/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
     else if (line.startsWith('|')) current.table.push(line)
     else if (/^➜/.test(line)) current.tip = line
     else current.text += `${current.text ? '\n\n' : ''}${line}`
@@ -114,12 +114,35 @@ export function tableOf(q: Question): string {
   if (q.table.length > 0) return q.table.map((row, i) => (i === 0 ? head(row) : mark(row, q, best))).join('\n')
   if (q.options.length === 0) return ''
   const rows = q.options.map(option => {
-    const rest = option.replace(/^\*\*[A-Z]\)\*\*\s*/, '').replaceAll('|', '/')
+    const rest = option.replace(/^\*\*\d*[A-Z]\)\s*★?\s*\*\*\s*/, '').replaceAll('|', '/')
     return mark(`| **${letterOf(option)}** | ${rest} |`, q, best)
   })
   return [head('| Opcja | Co się stanie |'), '|---|---|', ...rows].join('\n')
 }
 
+export type Option = { id: string; isBest: boolean; text: string }
+
+// The options one per line, named as their buttons are ("1B"): from Claude's
+// table ("Co się stanie · Plus: … · Minus: …") or from the A/B list.
+export function optionsOf(q: Question): Option[] {
+  const best = recommendedOf(q)
+  const cells = (row: string) => row.replace(/^\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim())
+  if (q.table.length > 0) {
+    const head = cells(q.table[0])
+    return q.table.flatMap(row => {
+      const at = ROW.exec(row)
+      if (!at) return []
+      const [, what = '', ...rest] = cells(row)
+      const more = rest.map((c, i) => (c ? `${head[i + 2] ?? ''}: ${c}`.replace(/^: /, '') : '')).filter(Boolean)
+      return [{ id: `${q.number}${at[1]}`, isBest: at[1] === best, text: [what, ...more].filter(Boolean).join(' · ') }]
+    })
+  }
+  return q.options.map(option => {
+    const letter = letterOf(option)
+    return { id: `${q.number}${letter}`, isBest: letter === best || /★/.test(option), text: option.replace(/^\*\*\d*[A-Z]\)\s*★?\s*\*\*\s*/, '') }
+  })
+}
+
 export function letterOf(option: string): string {
-  return /\*\*([A-Z])\)\*\*/.exec(option)?.[1] ?? '?'
+  return /\*\*\d*([A-Z])\)\s*★?\s*\*\*/.exec(option)?.[1] ?? '?'
 }
