@@ -60,7 +60,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
   const filled = setup(on)
   for (const surface of ['terminal', 'desktop', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
-    expect(await ui.find({ type: 'Text', text: '▶ Nowa odpowiedź' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Mod działa i jest gotowy do testu.' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Potrzebuję od Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
@@ -88,7 +88,7 @@ test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   const out = await $.command.run({ command: 'wyglad', args: 'off' } as never)
   expect(out.text).toContain('zwykły')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'terminal', component: 'AssistantMessage', props: message(REPLY) })
-  expect(await ui.find({ type: 'Text', text: '▶ Nowa odpowiedź' })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeUndefined()
 })
 
 test('wskazówka o sekcjach Zrobione i Problem trafia do Claude', async ($, on) => {
@@ -180,14 +180,20 @@ test('kroki pracy: jedna szara linia, błąd zostaje widoczny', async ($, on) =>
   expect(await group.find({ type: 'Text', text: '· 2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
 })
 
-test('długie wyjaśnienie: pierwsze linie i przycisk Pokaż więcej', async ($, on) => {
+test('długie wyjaśnienie: zwija się dopiero powyżej 30 linii i nigdy w środku tabeli', async ($, on) => {
   setup(on)
-  const long = ['▶ **Długie.**', '', ...Array.from({ length: 14 }, (_, i) => `Linia ${i + 1}.`)].join('\n')
+  const table = ['| A | B |', '|---|---|', ...Array.from({ length: 12 }, (_, i) => `| w${i} | x |`)]
+  const para = (n: number) => [`Akapit ${n}, linia 1.`, `Akapit ${n}, linia 2.`, '']
+  const long = ['▶ **Długie.**', '', ...para(1), ...table, '', ...para(2), ...para(3), ...para(4), ...para(5), ...para(6)].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(long) })
   const more = await ui.find({ type: 'Button', text: /Pokaż więcej/ })
   expect(more).toBeDefined()
+  expect(await ui.find({ type: 'Markdown', props: { text: /\| w11 \| x \|/ } })).toBeDefined()
   await ui.press({ key: more!.key! })
   expect(await ui.find({ type: 'Button', text: 'Pokaż mniej' })).toBeDefined()
+  const short = ['▶ **Krótkie.**', '', ...Array.from({ length: 14 }, (_, i) => `Linia ${i + 1}.`)].join('\n')
+  const ui2 = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(short) })
+  expect(await ui2.find({ type: 'Button', text: /Pokaż więcej/ })).toBeUndefined()
 })
 
 test('panel Moje sprawy: zadania z całej rozmowy, odhaczanie i pytania z przyciskami', async ($, on) => {

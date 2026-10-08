@@ -17,7 +17,9 @@ const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[]
 const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
-const SHORT = 8
+const SHORT = 12
+// …and folds at all only above this many lines.
+const LONG = 30
 // Zrobione, Problem and Dla informacji fold only above this many lines together.
 const FOLD_LINES = 15
 
@@ -300,25 +302,31 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column" gap={1}>
         <Box key={key} flexDirection="column" gap={1}>
-          {/* The bar marks where the answer starts; bright only on the latest one. */}
-          <Box backgroundColor={isLatest ? 'claude' : 'inactive'} paddingX={1}>
-            <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
-          </Box>
+          {/* A light bar marks where the latest answer starts; older ones get a faint line. */}
+          {isLatest ? (
+            <Box backgroundColor="inactive" paddingX={1}>
+              <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
+            </Box>
+          ) : (
+            <Text dimColor>▶ Odpowiedź</Text>
+          )}
           <Text bold>{reply.headline}</Text>
         </Box>
         {(() => {
           // A long explanation shows its first lines until opened.
           const lines = plain.map(part => part.body).join('\n\n').split('\n')
           if (lines.length === 1 && lines[0] === '') return null
-          const isLong = lines.length > SHORT + 2
+          // Cut only at a blank line outside a table, so no table is ever split.
+          const cut = lines.findIndex((line, n) => n >= SHORT && line.trim() === '' && !lines[n - 1]?.trim().startsWith('|'))
+          const isLong = lines.length > LONG && cut > 0 && cut < lines.length - 2
           return (
             <Box flexDirection="column">
-              <Markdown text={isLong && !isOpen ? `${lines.slice(0, SHORT).join('\n')}\n…` : lines.join('\n')} />
+              <Markdown text={isLong && !isOpen ? lines.slice(0, cut).join('\n') : lines.join('\n')} />
               {isLong ? (
                 <Box>
                   <Button
                     key={`open-${key}`}
-                    label={isOpen ? 'Pokaż mniej' : `Pokaż więcej (${lines.length - SHORT} linii)`}
+                    label={isOpen ? 'Pokaż mniej' : `Pokaż więcej (${lines.length - cut} linii)`}
                     onPress={() => void update($, openTexts, list => (list.includes(key) ? list.filter(x => x !== key) : [...list, key]))}
                   />
                 </Box>
