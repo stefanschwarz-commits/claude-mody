@@ -81,12 +81,30 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
   return out
 }
 
+// Points in the summary get numbers instead of bullets: fewer dots on screen.
+// Numbering restarts after a paragraph; nested points and tables stay as they are.
+function numbered(body: string): string {
+  let n = 0
+  return body
+    .split(/\r?\n/)
+    .map(line => {
+      const point = /^[-*•]\s+(.*)$/.exec(line)
+      if (point) {
+        n += 1
+        return `${n}. ${point[1]}`
+      }
+      if (line.trim() !== '' && !/^\s/.test(line)) n = 0
+      return line
+    })
+    .join('\n')
+}
+
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7' } : { blue: '#17212E', orange: '#2A1F14' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326' }
   } catch {
     return undefined
   }
@@ -381,7 +399,7 @@ export const register: Register = on => {
         ) : null}
         {folded.length > 0 ? (
           // The summary gets its own quiet frame with its title inside.
-          <Box flexDirection="column" borderStyle="round" borderColor="inactive" paddingX={1} gap={1}>
+          <Box flexDirection="column" borderStyle="round" borderColor="inactive" backgroundColor={tint?.grey} paddingX={1} gap={1}>
             <Text bold>Podsumowanie</Text>
             {!isLongFold || full
               ? folded.map((part, i) => (
@@ -390,7 +408,7 @@ export const register: Register = on => {
                       <Text color={part.kind === 'done' ? 'success' : part.kind === 'problem' ? 'error' : 'inactive'}>●</Text>
                       <Text bold>{part.kind === 'done' ? 'Zrobione' : part.kind === 'problem' ? 'Problem' : 'Dla informacji'}</Text>
                     </Box>
-                    <Markdown text={part.kind === 'done' && part.title.length > 30 ? `${part.title}\n\n${part.body}` : part.body} />
+                    <Markdown text={numbered(part.kind === 'done' && part.title.length > 30 ? `${part.title}\n\n${part.body}` : part.body)} />
                   </Box>
                 ))
               : folded.filter(part => part.kind !== 'info').map((part, i) => (

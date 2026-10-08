@@ -28,3 +28,4 @@
 | 2026-10-09 | wyglad 0.16.0: tytuł „Do zrobienia przez Ciebie” wewnątrz pomarańczowej ramki; Zrobione/Problem/Dla informacji we własnej szarej ramce „Podsumowanie” | Stefan: tytuł poza ramką — nie wiadomo, czego ramka dotyczy; podsumowanie poza ramkami nieczytelne |
 | 2026-10-09 | wyglad 0.16.1: przyciski odpowiedzi przechodzą do nowej linii, gdy brakuje miejsca (panel i karty) | W wąskim panelu trzeci przycisk był ucięty |
 | 2026-10-09 | wyglad 0.17.0: panel „Moje sprawy” jako spis (jedna linia na sprawę, ☐ i ↗ do pełnej treści w odpowiedzi, bez opcji i przycisków Wybierz); bez kropek w tytułach ramek | Stefan: panel był zatłoczony, kolor ramki wystarcza zamiast kropki |
+| 2026-10-09 | wyglad 0.18.0: w „Podsumowaniu” punkty numerowane (1., 2., …) zamiast kropek, kolorowa kropka tylko przy nagłówku sekcji; delikatne szare tło ramki | Stefan: za dużo kropek; lubi tabele i delikatne tła |

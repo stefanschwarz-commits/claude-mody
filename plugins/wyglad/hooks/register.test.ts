@@ -283,3 +283,22 @@ test('panel to spis: jedna linia na sprawę, ↗ prowadzi do pełnej treści w o
   await pane.press({ key: jump!.key! })
   expect(await pane.find({ type: 'Markdown' })).toBeUndefined()
 })
+
+test('podsumowanie: punkty z numerami zamiast kropek, delikatne szare tło', async ($, on) => {
+  setup(on)
+  on('config.list', () => ({ value: [{ key: 'theme', value: 'dark' }] }) as never)
+  const reply = ['▶ **Numery.**', '', '---', '', '🟢 **Zrobione**', '- Pierwsze.', '- Drugie.', '', '---', '', '🔴 **Problem**', '- Jedyne.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { backgroundColor?: string; text?: string }; children?: Node[] }
+  const found: string[] = []
+  const texts: string[] = []
+  const walk = (n: Node) => {
+    if (n.props?.backgroundColor) found.push(n.props.backgroundColor)
+    if (n.type === 'Markdown' && n.props?.text) texts.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(found).toContain('#222326')
+  expect(texts).toContain('1. Pierwsze.\n2. Drugie.')
+  expect(texts).toContain('1. Jedyne.')
+})
