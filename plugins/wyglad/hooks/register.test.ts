@@ -207,7 +207,8 @@ test('panel Moje sprawy: zadania z całej rozmowy, odhaczanie i pytania z przyci
   const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
   expect(await pane.find({ type: 'Text', text: 'Do zrobienia (1)' })).toBeDefined()
   expect(await pane.find({ type: 'Text', text: 'Zmień hasło (5 min) – po to' })).toBeDefined()
-  expect(await pane.find({ type: 'Button', text: 'Wybierz 1B' })).toBeDefined()
+  expect(await pane.find({ type: 'Button', text: '↗' })).toBeDefined()
+  expect(await pane.find({ type: 'Text', text: '1. Zostawić kolory?' })).toBeDefined()
   const box = await pane.find({ type: 'Button', text: '☐' })
   await pane.press({ key: box!.key! })
   expect(await pane.find({ type: 'Text', text: 'Do zrobienia (0)' })).toBeDefined()
@@ -260,26 +261,25 @@ test('panel: pytanie z treścią opcji, nie same przyciski; pasek ma jedną lini
   on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
   await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 'c' } as never)
   const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
-  expect(await pane.find({ type: 'Markdown', props: { text: /^\*\*1A\*\*/ } })).toBeDefined()
+  expect(await pane.find({ type: 'Button', text: /Wybierz/ })).toBeUndefined()
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: /^▶/ })).toBeUndefined()
 })
 
-test('panel: opcje pytania jedna pod drugą, przyciski osobno w rzędzie', async ($, on) => {
+test('panel to spis: jedna linia na sprawę, ↗ prowadzi do pełnej treści w odpowiedzi', async ($, on) => {
   setup(on)
   on('turn.complete', () => ({ text: '' }))
   on('ui.toast', () => ({ value: undefined }) as never)
+  const scrolls: unknown[] = []
+  on('ui.scroll', ($, e) => {
+    scrolls.push(e)
+    return {}
+  })
   on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
   await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 'd' } as never)
   const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
-  type Node = { type: string; children?: Node[] }
-  const root = (await pane.find({ type: 'Box' })) as unknown as Node
-  const holders: Node[] = []
-  const walk = (n: Node) => {
-    if (n.children?.some(c => c.type === 'Button' && /Wybierz/.test(JSON.stringify(c)))) holders.push(n)
-    n.children?.forEach(c => typeof c === 'object' && walk(c))
-  }
-  walk(root)
-  expect(holders.length).toBeGreaterThan(0)
-  expect(holders.every(h => h.children!.every(c => c.type === 'Button'))).toBe(true)
+  const jump = await pane.find({ type: 'Button', text: '↗' })
+  expect(jump).toBeDefined()
+  await pane.press({ key: jump!.key! })
+  expect(await pane.find({ type: 'Markdown' })).toBeUndefined()
 })

@@ -121,9 +121,10 @@ export const register: Register = on => {
     return { text: 'Otworzyłem panel „Moje sprawy”.' }
   })
 
-  // The pane: open tasks with tick boxes, the latest questions with answer buttons.
+  // The pane is a table of contents: one line per task or question, a tick box
+  // for tasks, and ↗ to jump to the full text in the answer, where it is answered.
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button, Markdown } = $.ui.resolve(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
     const list = await read($, sprawy)
     const ticked = await read($, doneTasks)
     const tasks = list.filter(one => one.kind === 'todo')
@@ -131,7 +132,8 @@ export const register: Register = on => {
     const done = tasks.filter(one => ticked.includes(one.id))
     const asks = list.filter(one => one.kind === 'question')
     const tick = (id: string) => () => void update($, doneTasks, l => (l.includes(id) ? l.filter(x => x !== id) : [...l, id]))
-    const fill = (value: string) => () => void $.prompt.fill({ text: `${value} `, mode: 'append' }).catch(() => undefined)
+    const jump = (target: string) => () => void $.ui.scroll({ to: { key: target }, block: 'start' }).catch(() => undefined)
+    const answerOf = (id: string) => id.split(':')[0]
 
     return (
       <Box flexDirection="column" gap={1}>
@@ -140,33 +142,22 @@ export const register: Register = on => {
         {open.map(one => (
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☐" onPress={tick(one.id)} />
-            <Text>{one.text}</Text>
+            <Button key={`j-${one.id}`} label="↗" onPress={jump(`${answerOf(one.id)}-todo`)} />
+            <Text wrap="truncate-end">{one.text}</Text>
           </Box>
         ))}
         {asks.length > 0 ? <Text bold>{`Pytania (${asks.length})`}</Text> : null}
         {asks.map(one => (
-          <Box key={one.id} flexDirection="column">
-            <Box flexDirection="row" gap={1}>
-              <Text color="suggestion">●</Text>
-              <Text>{one.text}</Text>
-            </Box>
-            {/* The options one under another, then the buttons in a row. */}
-            <Box flexDirection="column">
-              {(one.options ?? []).map(o => (
-                <Markdown key={`p-${one.id}-t-${o.id}`} text={`**${o.id}${o.isBest ? ' ★' : ''}**  ${o.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`} />
-              ))}
-            </Box>
-            <Box flexDirection="row" flexWrap="wrap" gap={1}>
-              {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={`Wybierz ${l}${(one.options ?? []).some(o => o.id === l && o.isBest) ? ' ★' : ''}`} onPress={fill(l)} />)}
-            </Box>
+          <Box key={one.id} flexDirection="row" gap={1}>
+            <Button key={`j-${one.id}`} label="↗" onPress={jump(`${answerOf(one.id)}-${one.id.split(':')[1]}`)} />
+            <Text wrap="truncate-end">{one.text}</Text>
           </Box>
         ))}
         {done.length > 0 ? <Text bold dimColor>{`Odhaczone (${done.length})`}</Text> : null}
         {done.map(one => (
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☑" onPress={tick(one.id)} />
-            <Text color="success">●</Text>
-            <Text dimColor strikethrough>{one.text}</Text>
+            <Text dimColor strikethrough wrap="truncate-end">{one.text}</Text>
           </Box>
         ))}
       </Box>
@@ -341,11 +332,8 @@ export const register: Register = on => {
           <Box flexDirection="column" gap={1}>
             {/* Every frame carries its own title inside, so it is clear what it holds. */}
             {todos.length > 0 ? (
-            <Box flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
-            <Box flexDirection="row" gap={1}>
-              <Text color="warning">●</Text>
-              <Text bold>Do zrobienia przez Ciebie</Text>
-            </Box>
+            <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
+            <Text bold>Do zrobienia przez Ciebie</Text>
             {todos.flatMap(part => itemsOf(part.body)).map((item, i) =>
               item.isItem ? (
                 <Box key={`d${i}`} flexDirection="row" gap={1}>
@@ -363,11 +351,8 @@ export const register: Register = on => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
               const [title, ...why] = q.text.split('\n\n')
               return (
-                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
-                  <Box flexDirection="row" gap={1}>
-                    <Text color="suggestion">●</Text>
-                    <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
-                  </Box>
+                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
+                  <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
