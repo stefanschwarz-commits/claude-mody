@@ -18,6 +18,8 @@ const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
 const SHORT = 8
+// Zrobione, Problem and Dla informacji fold only above this many lines together.
+const FOLD_LINES = 15
 
 // What a work step was, in plain words, for its one faint line.
 const STEPS: Record<string, string> = {
@@ -32,7 +34,7 @@ const SECTIONS = [
   'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Problem**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ też działają). Zrobione i Problem tylko, gdy występują:',
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
   '- `🔴 **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
-  'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji zwijają się do jednej linii, więc ich pierwsze zdanie ma mówić najważniejsze.',
+  'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji pokazują się w całości (zwijają się dopiero powyżej 15 linii).',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
   'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
 ].join('\n')
@@ -136,7 +138,6 @@ export const register: Register = on => {
         {open.map(one => (
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☐" onPress={tick(one.id)} />
-            <Text color="warning">●</Text>
             <Text>{one.text}</Text>
           </Box>
         ))}
@@ -278,6 +279,10 @@ export const register: Register = on => {
 
     const key = keyOf(reply.headline)
     const full = await read($, isFull)
+    // Zrobione, Problem and Dla informacji show in full; only a really long lot folds.
+    const isLongFold = reply.parts
+      .filter(part => part.kind === 'done' || part.kind === 'problem' || part.kind === 'info')
+      .reduce((n, part) => n + part.body.split(/\r?\n/).filter(l => l.trim() !== '').length, 0) > FOLD_LINES
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
     const isOpen = (await read($, openTexts)).includes(key)
@@ -331,7 +336,6 @@ export const register: Register = on => {
               item.isItem ? (
                 <Box key={`d${i}`} flexDirection="row" gap={1}>
                   <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
-                  <Text color={ticked.includes(`${key}:${i}`) ? 'success' : 'warning'}>●</Text>
                   {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
                 </Box>
               ) : (
@@ -378,7 +382,7 @@ export const register: Register = on => {
         ) : null}
         {folded.length > 0 ? (
           <Box flexDirection="column">
-            {full
+            {!isLongFold || full
               ? folded.map((part, i) => (
                   <Box key={`f${i}`} flexDirection="column">
                     <Box flexDirection="row" gap={1}>
@@ -394,9 +398,11 @@ export const register: Register = on => {
                     <Text wrap="truncate-end">{`${part.kind === 'problem' ? 'Problem' : 'Zrobione'}: ${gist(part)}`}</Text>
                   </Box>
                 ))}
-            <Box>
-              <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
-            </Box>
+            {isLongFold ? (
+              <Box>
+                <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
+              </Box>
+            ) : null}
           </Box>
         ) : null}
       </Box>
