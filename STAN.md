@@ -1,13 +1,15 @@
 # STAN – claude-mody
 
-**Zrobione (2026-10-09):** `wyglad` 0.2.0 – nowe kolory: zrobione zielone (bez tytułu), problem czerwony, zadania pomarańczowe, pytania niebieskie; mod sam podpowiada Claude'owi sekcje „Zrobione” i „Problem” (testy 4/4). Wszystkie trzy mody zainstalowane.
+Aktualizacja: 2026-10-09 · Folder roboczy: C:Projektyaude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
 
-**Zrobione (2026-10-08):** mod `wyglad` (wersja testowa) – kolorowy ▶, ramki na zadania i pytania, przyciski odpowiedzi, zwijanie komunikatów z trakcie pracy, `/wyglad on|off` (testy 3/3 na terminalu, desktopie i telefonie).
 
-**Zrobione też:** mod `projekt` – pasek z nazwą projektu i stanem z STAN.md, komenda `/stan` i `/stan nowy` (testy 7/7).
+| Sprawa | Status | Następny krok | Kto |
+|---|---|---|---|
+| Mod `dzwiek` (dźwięk na koniec pracy i przy pytaniu) | Działa | — | — |
+| Mod `projekt` 0.1.1 (pasek projektu nad polem, /stan) | Działa, dzieli pasek z innymi modami | — | — |
+| Mod `wyglad` 0.10.0 | Zainstalowany: znacznik „▶ Nowa odpowiedź”, „Potrzebuję od Ciebie”, kropki statusu, karty pytań bez tabeli z „Wybierz 1A / 1B ★”, odhaczanie zadań, panel „Moje sprawy” (/sprawy), zwijanie kroków pracy i długich wyjaśnień, powiadomienie | Stefan ogląda w nowej sesji i zgłasza poprawki zrzutem ekranu | Stefan |
+| Powiadomienie na koniec pracy | Na próbę | Zostawić albo usunąć po kilku dniach | Stefan |
+| Instrukcja współpracy v6 | Gotowa w folderze „Instrukcje Claude”, przekazana sesji „Instrukcje dla Claude” | Wkleić do Ustawień claude.ai po jej przeglądzie | Stefan |
+| Lista wyboru i pole tekstowe w kartach pytań | Pomysł | Dodać, gdy pojawi się pytanie z wieloma opcjami | Claude |
 
-**Zrobione wcześniej:** mod `dzwiek` – dźwięk na koniec tury i przy prośbie o zgodę / pytaniu / planie; komenda `/dzwiek on|off|test`; testy (5/5), walidacja i sprawdzenie typów OK.
-
-**W toku:** `wyglad` 0.6.1 – Stefan ogląda: znacznik początku odpowiedzi, „Potrzebuję od Ciebie”, pytania jako karty decyzji z ★, Zrobione/Problem zwinięte, pasek nad polem z „↑ Początek odpowiedzi”.
-
-**Dalej:** kolejne mody do wyboru: bezpiecznik na publikację/usuwanie/wysyłkę, powiadomienie po długiej pracy.
+Ustalenia wyglądu (stałe): kolorowe kropki ● zamiast kolorowego tekstu; mocny pomarańczowy pasek tylko jako znacznik początku ostatniej odpowiedzi; opcje nazywane jak przyciski (1A, 1B), polecana z ★; bez tabel w pytaniach.
