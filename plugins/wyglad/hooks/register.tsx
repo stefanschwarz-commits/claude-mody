@@ -77,6 +77,16 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
   return out
 }
 
+// A faint blue inside the question cards, light or dark as the theme is.
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<string | undefined> {
+  try {
+    const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
+    return theme.includes('light') ? '#EEF4FC' : '#17212E'
+  } catch {
+    return undefined
+  }
+}
+
 function needsOf(todos: number, questions: number): string {
   return [
     todos > 0 ? count(todos, 'zadanie', 'zadania', 'zadań') : '',
@@ -268,6 +278,7 @@ export const register: Register = on => {
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
     const isOpen = (await read($, openTexts)).includes(key)
+    const tint = await tintOf($)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
     const fill = (value: string) => () => {
       void $.prompt.fill({ text: `${value} `, mode: 'append' }).catch(() => undefined)
@@ -327,7 +338,7 @@ export const register: Register = on => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
               const [title, ...why] = q.text.split('\n\n')
               return (
-                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" paddingX={1} gap={1}>
+                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint} paddingX={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
                     <Text color="suggestion">●</Text>
                     <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>

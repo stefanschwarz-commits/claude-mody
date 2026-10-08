@@ -236,3 +236,10 @@ test('opcje zapisane listą „**1A) ★**” (instrukcja v6) też działają', 
     { id: '1B', isBest: false, text: 'Zostawiam – plus: nic; minus: bałagan.' },
   ])
 })
+
+test('karta pytania ma delikatne tło dopasowane do motywu', async ($, on) => {
+  setup(on)
+  on('config.list', () => ({ value: [{ key: 'theme', value: 'light' }] }) as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(REPLY) })
+  expect(await ui.find({ type: 'Box', props: { backgroundColor: '#EEF4FC' } })).toBeDefined()
+})
