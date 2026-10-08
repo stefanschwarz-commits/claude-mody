@@ -45,6 +45,21 @@ function gist(part: Part): string {
   return more > 0 ? `${line} (+${more})` : line
 }
 
+// A task list split into its items ("1. …", "- …"), each to get its own dot.
+// Other lines in a row (a sentence, a table) stay together as one block.
+function itemsOf(body: string): { isItem: boolean; text: string }[] {
+  const out: { isItem: boolean; text: string }[] = []
+  for (const line of body.split(/\r?\n/)) {
+    if (line.trim() === '') continue
+    const item = /^\s*(\d+\.|[-*])\s+(.*)$/.exec(line)
+    const prev = out[out.length - 1]
+    if (item) out.push({ isItem: true, text: item[2] })
+    else if (prev && !prev.isItem) prev.text += `\n${line}`
+    else out.push({ isItem: false, text: line })
+  }
+  return out
+}
+
 function count(n: number, one: string, few: string, many: string): string {
   const word = n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many
   return `${n} ${word}`
@@ -102,11 +117,10 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Box flexDirection="row" gap={2}>
-          {needs ? (
-            <Text color="claude" bold>{`Potrzebuję od Ciebie: ${needs}`}</Text>
-          ) : (
-            <Text color="success" bold>Nic od Ciebie nie potrzebuję</Text>
-          )}
+          <Box flexDirection="row" gap={1}>
+            <Text color={needs ? 'warning' : 'success'}>●</Text>
+            <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
+          </Box>
           <Button
             key="jump"
             label="↑ Początek odpowiedzi"
@@ -161,15 +175,28 @@ export const register: Register = on => {
         {plain.map((part, i) => <Markdown key={`t${i}`} text={part.body} />)}
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
-            <Text color="claude" bold>Potrzebuję od Ciebie</Text>
-            {todos.map((part, i) => <Markdown key={`d${i}`} text={part.body} />)}
+            <Text bold>Potrzebuję od Ciebie</Text>
+            {/* Status is a coloured dot; the words stay plain. */}
+            {todos.flatMap(part => itemsOf(part.body)).map((item, i) =>
+              item.isItem ? (
+                <Box key={`d${i}`} flexDirection="row" gap={1}>
+                  <Text color="warning">●</Text>
+                  <Markdown text={item.text} />
+                </Box>
+              ) : (
+                <Markdown key={`d${i}`} text={item.text} />
+              ),
+            )}
             <Box flexDirection="column" gap={2}>
             {questions.map((q, i) => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
               const [title, ...why] = q.text.split('\n\n')
               return (
                 <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" paddingX={1} gap={1}>
-                  <Text color="suggestion" bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  <Box flexDirection="row" gap={1}>
+                    <Text color="suggestion">●</Text>
+                    <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
                   {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
@@ -191,16 +218,18 @@ export const register: Register = on => {
             {full
               ? folded.map((part, i) => (
                   <Box key={`f${i}`} flexDirection="column">
-                    <Text color={part.kind === 'done' ? 'success' : part.kind === 'problem' ? 'error' : undefined} dimColor={part.kind === 'info'} bold>
-                      {part.kind === 'done' ? '✓ Zrobione' : part.kind === 'problem' ? '⚠ Problem' : 'Dla informacji'}
-                    </Text>
+                    <Box flexDirection="row" gap={1}>
+                      <Text color={part.kind === 'done' ? 'success' : part.kind === 'problem' ? 'error' : 'inactive'}>●</Text>
+                      <Text bold>{part.kind === 'done' ? 'Zrobione' : part.kind === 'problem' ? 'Problem' : 'Dla informacji'}</Text>
+                    </Box>
                     <Markdown text={part.kind === 'done' && part.title.length > 30 ? `${part.title}\n\n${part.body}` : part.body} />
                   </Box>
                 ))
               : folded.filter(part => part.kind !== 'info').map((part, i) => (
-                  <Text key={`g${i}`} color={part.kind === 'problem' ? 'error' : 'success'} wrap="truncate-end">
-                    {`${part.kind === 'problem' ? '⚠ Problem' : '✓ Zrobione'}: ${gist(part)}`}
-                  </Text>
+                  <Box key={`g${i}`} flexDirection="row" gap={1}>
+                    <Text color={part.kind === 'problem' ? 'error' : 'success'}>●</Text>
+                    <Text wrap="truncate-end">{`${part.kind === 'problem' ? 'Problem' : 'Zrobione'}: ${gist(part)}`}</Text>
+                  </Box>
                 ))}
             <Box>
               <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
