@@ -1,0 +1,8 @@
+{
+  "name": "dzwiek",
+  "version": "0.1.0",
+  "description": "Krótki dźwięk, gdy Claude skończy pracę, i inny, gdy czeka na Twoją zgodę lub odpowiedź. /dzwiek włącza i wyłącza.",
+  "author": {
+    "name": "Stefan Schwarz"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "claude-mody",
+  "owner": {
+    "name": "Stefan Schwarz"
+  },
+  "plugins": [
+    {
+      "name": "dzwiek",
+      "source": "./plugins/dzwiek",
+      "description": "Dźwięk, gdy Claude skończy pracę albo czeka na Twoją zgodę lub odpowiedź."
+    }
+  ]
+}
