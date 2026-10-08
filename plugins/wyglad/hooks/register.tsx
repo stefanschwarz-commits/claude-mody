@@ -150,10 +150,13 @@ export const register: Register = on => {
               <Text color="suggestion">●</Text>
               <Text>{one.text}</Text>
             </Box>
-            <Box flexDirection="row" gap={2}>
+            {/* The options one under another, then the buttons in a row. */}
+            <Box flexDirection="column">
               {(one.options ?? []).map(o => (
                 <Markdown key={`p-${one.id}-t-${o.id}`} text={`**${o.id}${o.isBest ? ' ★' : ''}**  ${o.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`} />
               ))}
+            </Box>
+            <Box flexDirection="row" gap={2}>
               {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={`Wybierz ${l}${(one.options ?? []).some(o => o.id === l && o.isBest) ? ' ★' : ''}`} onPress={fill(l)} />)}
             </Box>
           </Box>

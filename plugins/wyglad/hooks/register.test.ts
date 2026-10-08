@@ -263,3 +263,22 @@ test('panel: pytanie z treścią opcji, nie same przyciski; pasek ma jedną lini
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: /^▶/ })).toBeUndefined()
 })
+
+test('panel: opcje pytania jedna pod drugą, przyciski osobno w rzędzie', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 'd' } as never)
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  type Node = { type: string; children?: Node[] }
+  const root = (await pane.find({ type: 'Box' })) as unknown as Node
+  const holders: Node[] = []
+  const walk = (n: Node) => {
+    if (n.children?.some(c => c.type === 'Button' && /Wybierz/.test(JSON.stringify(c)))) holders.push(n)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk(root)
+  expect(holders.length).toBeGreaterThan(0)
+  expect(holders.every(h => h.children!.every(c => c.type === 'Button'))).toBe(true)
+})
