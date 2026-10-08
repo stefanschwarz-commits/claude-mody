@@ -39,11 +39,15 @@ claude plugin install projekt@claude-mody
 
 ## wyglad (wersja testowa)
 
-Odpowiedzi Claude'a w Claude Code: linia ▶ na kolorowym tle, „Zrobione” w zielonej ramce (bez tytułu), „Problem” w czerwonej, „Do zrobienia przez Ciebie” w pomarańczowej, „Pytania do Ciebie” w niebieskiej – jedna cienka ramka na sekcję, bez ikonek i tabel, każde pytanie w osobnym bloku z przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole), „Dla informacji” szarą kursywą, a krótkie komunikaty z trakcie pracy zwinięte do jednej szarej linii.
+Odpowiedzi Claude'a w Claude Code:
+- kolorowy pasek „▶ Nowa odpowiedź” zaznacza początek ostatniej odpowiedzi (starsze mają szary), pod nim wniosek;
+- „Potrzebuję od Ciebie”: zadania i pytania razem, pytania z tabelą opcji i przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole);
+- Zrobione i Problem zwinięte do jednej linii (zielona / czerwona), przycisk „Pokaż szczegóły” rozwija;
+- pasek nad polem wpisywania: ile zadań i pytań czeka na Ciebie oraz przycisk „↑ Początek odpowiedzi”;
+- krótkie komunikaty z trakcie pracy zwinięte do jednej szarej linii.
 
 ```
 claude plugin install wyglad@claude-mody
 ```
 
 - `/wyglad off` – zwykły wygląd, `/wyglad on` – kolorowy
-- pełna, niezmieniona wiadomość: ctrl+o

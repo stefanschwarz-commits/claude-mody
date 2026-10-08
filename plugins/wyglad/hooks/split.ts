@@ -6,14 +6,15 @@ export type Question = { number: string; text: string; options: string[]; table:
 
 export type Reply = { headline: string; parts: Part[] }
 
-// A section is known by its icon or by the words of its title.
-const MARK = /^(✅|☐|❓|ℹ️?|⚠️?|❗|✔️?)\s*/
+// A section is known by its icon or by the words of its title, as a heading or bold.
+const LEAD = String.raw`^(#+\s*)?(✅|☐|❓|ℹ️?|⚠️?|❗|✔️?)?\s*\**\s*`
+const MARK = new RegExp(LEAD)
 const KINDS: readonly [Kind, RegExp][] = [
-  ['done', /^(✔️?\s*)?\**\s*zrobione/i],
-  ['problem', /^(⚠️?|❗)|^\**\s*problem/i],
-  ['todo', /^(✅|☐)|^\**\s*do zrobienia/i],
-  ['questions', /^❓|^\**\s*pytani/i],
-  ['info', /^ℹ️?|^\**\s*dla informacji/i],
+  ['done', new RegExp(`${LEAD}zrobione`, 'i')],
+  ['problem', new RegExp(`${LEAD}problem`, 'i')],
+  ['todo', new RegExp(`${LEAD}do zrobienia`, 'i')],
+  ['questions', new RegExp(`${LEAD}pytani`, 'i')],
+  ['info', new RegExp(`${LEAD}dla informacji`, 'i')],
 ]
 
 // Short, one or two lines, no ▶: a message written while Claude works.
@@ -59,7 +60,7 @@ export function splitQuestions(body: string): Question[] {
   for (const raw of body.split(/\r?\n/)) {
     const line = raw.trim()
     if (line === '') continue
-    const start = /^\*\*(\d+)\.\s*(.*?)\*\*\s*$/.exec(line)
+    const start = /^(?:#+\s*)?\**\s*(\d+)\.\s*\**\s*(.*?)\**\s*$/.exec(line)
     if (start) {
       current = { number: start[1], text: `**${start[2]}**`, options: [], table: [], tip: '' }
       out.push(current)

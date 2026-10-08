@@ -58,16 +58,15 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
   const filled = setup(on)
   for (const surface of ['terminal', 'desktop', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
-    expect(await ui.find({ type: 'Text', text: '▶ Mod działa i jest gotowy do testu.' })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /Do zrobienia przez Ciebie/ })).toBeDefined()
-    expect(await ui.find({ type: 'Box', props: { borderColor: 'success' } })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /Zrobione/ })).toBeUndefined()
-    expect(await ui.find({ type: 'Text', text: 'Problem' })).toBeDefined()
-    expect(await ui.find({ type: 'Box', props: { borderColor: 'error' } })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /Pytania do Ciebie/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: '▶ Nowa odpowiedź' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Mod działa i jest gotowy do testu.' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Potrzebuję od Ciebie' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /⚠ Problem: Serwer poczty/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /✓ Zrobione: Formularz/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Polecam A/ })).toBeDefined()
-    expect(await ui.find({ type: 'Button', key: 'b4-1-B' })).toBeDefined()
-    await ui.press({ key: 'b4-1-A' })
+    expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
+    await ui.press({ key: 'b0-1-A' })
     await ui.unmount()
   }
   expect(filled).toEqual(['1A ', '1A ', '1A '])
@@ -86,7 +85,7 @@ test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   const out = await $.command.run({ command: 'wyglad', args: 'off' } as never)
   expect(out.text).toContain('zwykły')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'terminal', component: 'AssistantMessage', props: message(REPLY) })
-  expect(await ui.find({ type: 'Text', text: /▶ Mod działa/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: '▶ Nowa odpowiedź' })).toBeUndefined()
 })
 
 test('wskazówka o sekcjach Zrobione i Problem trafia do Claude', async ($, on) => {
@@ -117,4 +116,20 @@ test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) 
   expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
   await ui.press({ key: 'b0-1-B' })
   expect(filled).toEqual(['1B '])
+})
+
+test('pasek nad polem: co jest potrzebne i przycisk do początku odpowiedzi', async ($, on) => {
+  setup(on)
+  const scrolled: unknown[] = []
+  on('ui.scroll', ($, e) => {
+    scrolled.push(e)
+    return {}
+  })
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 't1' } as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+  expect(await ui.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie i 1 pytanie' })).toBeDefined()
+  expect(await ui.find({ type: 'Button', key: 'jump' })).toBeDefined()
+  await ui.press({ key: 'jump' })
 })

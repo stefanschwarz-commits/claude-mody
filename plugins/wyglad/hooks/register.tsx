@@ -1,17 +1,54 @@
+import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
+import type { Last } from '../types'
 import { firstLine, isProgress, lettersOf, splitQuestions, splitReply, tableOf } from './split'
+import type { Part, Reply } from './split'
 
 const OFF = 'off'
 
+const last = atom({ plugin: 'wyglad', key: 'last' } as const, null)
+const isFull = atom({ plugin: 'wyglad', key: 'isFull' } as const, false)
+
 const SECTIONS = [
-  'Odpowiedź końcowa z ▶ jest rysowana w kolorowych ramkach według sekcji rozdzielonych `---`.',
+  'Odpowiedź końcowa z ▶ jest rysowana według sekcji rozdzielonych `---`.',
   'Oprócz stałych sekcji (✅ Do zrobienia przez Ciebie, ❓ Pytania do Ciebie, ℹ️ Dla informacji) używaj dwóch kolejnych, tylko gdy występują:',
-  '- `**Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem; rysowana w zielonej ramce;',
-  '- `⚠️ **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle; rysowana w czerwonej ramce.',
-  'W ramkach nie używaj tabel: w „Do zrobienia przez Ciebie” pisz listę numerowaną „1. Co zrobić (ile czasu) – po co”.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”. Bez dodatkowych list w treści pytania.',
+  '- `**Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
+  '- `⚠️ **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
+  'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji zwijają się do jednej linii, więc ich pierwsze zdanie ma mówić najważniejsze.',
+  'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
+  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”.',
 ].join('\n')
+
+// The same reply always gets the same key, so the band can scroll to it.
+function keyOf(headline: string): string {
+  let hash = 0
+  for (const char of headline) hash = (hash * 31 + char.charCodeAt(0)) | 0
+  return `start-${(hash >>> 0).toString(36)}`
+}
+
+function summaryOf(reply: Reply): Last {
+  const todos = reply.parts
+    .filter(part => part.kind === 'todo')
+    .flatMap(part => part.body.split(/\r?\n/).filter(line => /^\s*(\d+\.|[-*]|\|\s*\d)/.test(line)))
+  const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
+
+  return { headline: reply.headline, key: keyOf(reply.headline), todos: todos.length, questions: questions.length }
+}
+
+// One short line for a folded section: its first sentence.
+function gist(part: Part): string {
+  const text = part.kind === 'done' && part.title.length > 30 ? part.title : part.body
+  const line = text.split(/\r?\n/).map(l => l.replace(/^\s*([-*]|\d+\.)\s*/, '').replace(/[*_`]/g, '').trim()).find(l => l !== '') ?? ''
+  const more = text.split(/\r?\n/).filter(l => /^\s*([-*]|\d+\.)/.test(l)).length - 1
+
+  return more > 0 ? `${line} (+${more})` : line
+}
+
+function count(n: number, one: string, few: string, many: string): string {
+  const word = n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many
+  return `${n} ${word}`
+}
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
@@ -32,12 +69,54 @@ export const register: Register = on => {
     return { text: isOff ? 'Wygląd odpowiedzi: zwykły. Włączysz: /wyglad on' : 'Wygląd odpowiedzi: kolorowy. Wyłączysz: /wyglad off' }
   })
 
-  // Tell Claude about the two sections only this mod draws.
+  // Tell Claude about the sections this mod draws.
   on('prompt.compose', async ($, e, next) => {
     const out = await next(e)
     if ((await $.store.get(OFF)) === true) return out
 
     return { sections: [...out.sections, { id: 'wyglad:sekcje', text: SECTIONS, scope: 'session' }] }
+  })
+
+  // Remember the last answer for the band above the prompt.
+  on('turn.complete', async ($, e, next) => {
+    const done = await next(e)
+    if (e.reason === 'answer' && e.agentId === undefined) {
+      const reply = splitReply(e.answer)
+      await update($, last, () => (reply ? summaryOf(reply) : null))
+    }
+
+    return done
+  })
+
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const below = await next(e)
+    const answer = await read($, last)
+    if (e.props.hasSurvey || e.props.isWorking || answer === null || (await $.store.get(OFF)) === true) return below
+
+    const { Box, Text, Button } = $.ui.resolve(e)
+    const needs = [
+      answer.todos > 0 ? count(answer.todos, 'zadanie', 'zadania', 'zadań') : '',
+      answer.questions > 0 ? count(answer.questions, 'pytanie', 'pytania', 'pytań') : '',
+    ].filter(Boolean).join(' i ')
+
+    return (
+      <Box flexDirection="column">
+        <Box flexDirection="row" gap={2}>
+          {needs ? (
+            <Text color="claude" bold>{`Potrzebuję od Ciebie: ${needs}`}</Text>
+          ) : (
+            <Text color="success" bold>Nic od Ciebie nie potrzebuję</Text>
+          )}
+          <Button
+            key="jump"
+            label="↑ Początek odpowiedzi"
+            onPress={() => void $.ui.scroll({ to: { key: answer.key }, block: 'start' }).catch(() => undefined)}
+          />
+        </Box>
+        <Text dimColor wrap="truncate-end">{`▶ ${answer.headline}`}</Text>
+        {below}
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
@@ -58,63 +137,69 @@ export const register: Register = on => {
     const reply = splitReply(text)
     if (!reply) return next(e)
 
-    const answer = (value: string) => () => {
+    const key = keyOf(reply.headline)
+    const full = await read($, isFull)
+    const isLatest = (await read($, last))?.key === key
+    const fill = (value: string) => () => {
       void $.prompt.fill({ text: `${value} `, mode: 'append' }).catch(() => undefined)
     }
 
+    const todos = reply.parts.filter(part => part.kind === 'todo')
+    const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
+    const plain = reply.parts.filter(part => part.kind === 'plain')
+    const folded = reply.parts.filter(part => part.kind === 'done' || part.kind === 'problem' || part.kind === 'info')
+
     return (
       <Box flexDirection="column" gap={1}>
-        <Box backgroundColor="claude" paddingX={1}>
-          <Text color="inverseText" bold>{`▶ ${reply.headline}`}</Text>
+        <Box key={key} flexDirection="column">
+          {/* The bar marks where the answer starts; bright only on the latest one. */}
+          <Box backgroundColor={isLatest ? 'claude' : 'inactive'} paddingX={1}>
+            <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
+          </Box>
+          <Text bold>{reply.headline}</Text>
         </Box>
-        {reply.parts.map((part, i) => {
-          // Done: the green frame says it, so no title and no icon.
-          // One thin frame per section, a plain coloured title, nothing nested.
-          const frame = (color: string, title: string, body: unknown) => (
-            <Box key={`p${i}`} flexDirection="column" borderStyle="round" borderColor={color} paddingX={1} gap={1}>
-              {title ? <Text color={color} bold>{title}</Text> : null}
-              {body}
-            </Box>
-          )
-          if (part.kind === 'done') {
-            const text = part.title.length > 30 ? `${part.title}
-
-${part.body}` : part.body
-            return frame('success', '', <Markdown text={text} />)
-          }
-          if (part.kind === 'problem') return frame('error', part.title, <Markdown text={part.body} />)
-          if (part.kind === 'todo') return frame('warning', part.title, <Markdown text={part.body} />)
-          if (part.kind === 'questions') {
-            return frame('suggestion', part.title, splitQuestions(part.body).map(q => (
-              <Box key={`q${i}-${q.number}`} flexDirection="column" gap={1}>
-                <Markdown text={q.text} />
+        {plain.map((part, i) => <Markdown key={`t${i}`} text={part.body} />)}
+        {todos.length + questions.length > 0 ? (
+          <Box flexDirection="column" gap={1}>
+            <Text color="claude" bold>Potrzebuję od Ciebie</Text>
+            {todos.map((part, i) => <Markdown key={`d${i}`} text={part.body} />)}
+            {questions.map((q, i) => (
+              <Box key={`q${i}`} flexDirection="column" gap={1}>
+                <Markdown text={q.text.startsWith('**') ? q.text.replace(/^\*\*/, `**${q.number}. `) : q.text} />
                 {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
-                {q.tip ? <Text color="suggestion" bold>{q.tip}</Text> : null}
+                {q.tip ? <Text color="suggestion" bold>{q.tip.replace(/\*\*/g, '')}</Text> : null}
                 {lettersOf(q).length > 0 ? (
                   <Box flexDirection="row" gap={2}>
                     {lettersOf(q).map(letter => (
-                      <Button
-                        key={`b${i}-${q.number}-${letter}`}
-                        label={`${q.number}${letter}`}
-                        onPress={answer(`${q.number}${letter}`)}
-                      />
+                      <Button key={`b${i}-${q.number}-${letter}`} label={`${q.number}${letter}`} onPress={fill(`${q.number}${letter}`)} />
                     ))}
                   </Box>
                 ) : null}
               </Box>
-            )))
-          }
-          if (part.kind === 'info') {
-            return (
-              <Box key={`p${i}`} flexDirection="column" paddingX={1}>
-                <Text dimColor italic>{part.title}</Text>
-                <Markdown text={part.body} dimColor />
-              </Box>
-            )
-          }
-
-          return <Markdown key={`p${i}`} text={part.body} />
-        })}
+            ))}
+          </Box>
+        ) : null}
+        {folded.length > 0 ? (
+          <Box flexDirection="column">
+            {full
+              ? folded.map((part, i) => (
+                  <Box key={`f${i}`} flexDirection="column">
+                    <Text color={part.kind === 'done' ? 'success' : part.kind === 'problem' ? 'error' : undefined} dimColor={part.kind === 'info'} bold>
+                      {part.kind === 'done' ? '✓ Zrobione' : part.kind === 'problem' ? '⚠ Problem' : 'Dla informacji'}
+                    </Text>
+                    <Markdown text={part.kind === 'done' && part.title.length > 30 ? `${part.title}\n\n${part.body}` : part.body} />
+                  </Box>
+                ))
+              : folded.filter(part => part.kind !== 'info').map((part, i) => (
+                  <Text key={`g${i}`} color={part.kind === 'problem' ? 'error' : 'success'} wrap="truncate-end">
+                    {`${part.kind === 'problem' ? '⚠ Problem' : '✓ Zrobione'}: ${gist(part)}`}
+                  </Text>
+                ))}
+            <Box>
+              <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
+            </Box>
+          </Box>
+        ) : null}
       </Box>
     )
   })
