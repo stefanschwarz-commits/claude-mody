@@ -115,7 +115,7 @@ export const register: Register = on => {
     const parts = [
       `w toku ${s.doing.length}${first}`,
       `dalej ${s.next.length}`,
-      s.ageDays === null ? '' : `stan z ${age(s.ageDays)}`,
+      s.ageDays === null ? '' : `aktualizacja: ${age(s.ageDays)}`,
     ].filter(Boolean)
     const room = width - s.project.length - 6
 
