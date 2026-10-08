@@ -1,6 +1,6 @@
 # STAN – claude-mody
 
-Aktualizacja: 2026-10-09 · Folder roboczy: C:Projektyaude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
+Aktualizacja: 2026-10-09 · Folder roboczy: C:\Projekty\claude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
 
 
 | Sprawa | Status | Następny krok | Kto |
