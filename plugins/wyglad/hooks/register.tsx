@@ -34,7 +34,7 @@ const SECTIONS = [
   '- `🔴 **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
   'Zadania i pytania są rysowane razem na górze pod nagłówkiem „Potrzebuję od Ciebie”; Zrobione, Problem i Dla informacji zwijają się do jednej linii, więc ich pierwsze zdanie ma mówić najważniejsze.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką.',
+  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
 ].join('\n')
 
 // The same reply always gets the same key, so the band can scroll to it.
@@ -77,11 +77,12 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
   return out
 }
 
-// A faint blue inside the question cards, light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<string | undefined> {
+// Faint blue inside the question cards and faint orange behind the tasks,
+// light or dark as the theme is.
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? '#EEF4FC' : '#17212E'
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7' } : { blue: '#17212E', orange: '#2A1F14' }
   } catch {
     return undefined
   }
@@ -321,7 +322,9 @@ export const register: Register = on => {
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
             <Text bold>Potrzebuję od Ciebie</Text>
-            {/* Status is a coloured dot; the words stay plain. */}
+            {/* Status is a coloured dot; the words stay plain; a faint orange behind the tasks. */}
+            {todos.length > 0 ? (
+            <Box flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
             {todos.flatMap(part => itemsOf(part.body)).map((item, i) =>
               item.isItem ? (
                 <Box key={`d${i}`} flexDirection="row" gap={1}>
@@ -333,12 +336,14 @@ export const register: Register = on => {
                 <Markdown key={`d${i}`} text={item.text} />
               ),
             )}
+            </Box>
+            ) : null}
             <Box flexDirection="column" gap={2}>
             {questions.map((q, i) => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
               const [title, ...why] = q.text.split('\n\n')
               return (
-                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint} paddingX={1} gap={1}>
+                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
                     <Text color="suggestion">●</Text>
                     <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
@@ -346,10 +351,10 @@ export const register: Register = on => {
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
-                    <Box key={`o${i}-${option.id}`} flexDirection="row" gap={1}>
-                      <Text bold>{`${option.id}${option.isBest ? ' ★' : ''}`}</Text>
-                      <Markdown text={option.text} />
-                    </Box>
+                    <Markdown
+                      key={`o${i}-${option.id}`}
+                      text={`**${option.id}${option.isBest ? ' ★' : ''}**  ${option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`}
+                    />
                   ))}
                   {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
                   {optionsOf(q).length > 0 ? (

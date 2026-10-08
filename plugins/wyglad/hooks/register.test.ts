@@ -242,4 +242,5 @@ test('karta pytania ma delikatne tło dopasowane do motywu', async ($, on) => {
   on('config.list', () => ({ value: [{ key: 'theme', value: 'light' }] }) as never)
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(REPLY) })
   expect(await ui.find({ type: 'Box', props: { backgroundColor: '#EEF4FC' } })).toBeDefined()
+  expect(await ui.find({ type: 'Box', props: { backgroundColor: '#FDF3E7' } })).toBeDefined()
 })
