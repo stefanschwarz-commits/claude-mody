@@ -1,6 +1,8 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { splitQuestions, tableOf } from './split'
+
 const REPLY = [
   '▶ **Mod działa i jest gotowy do testu.**',
   '',
@@ -113,6 +115,7 @@ test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) 
     '➜ Polecam A. Odpisz A albo B.',
   ].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: 'Pytanie 1: Który wygląd?' })).toBeDefined()
   expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
   await ui.press({ key: 'b0-1-B' })
   expect(filled).toEqual(['1B '])
@@ -132,4 +135,11 @@ test('pasek nad polem: co jest potrzebne i przycisk do początku odpowiedzi', as
   expect(await ui.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie i 1 pytanie' })).toBeDefined()
   expect(await ui.find({ type: 'Button', key: 'jump' })).toBeDefined()
   await ui.press({ key: 'jump' })
+})
+
+test('opcja polecana ma w tabeli jeden znak: ★ polecam', () => {
+  const [q] = splitQuestions(['**1. Który?**', '| Opcja | Co |', '|---|---|', '| **A)** | Ramki |', '| **B)** | Bez |', '➜ Polecam **B**, bo prościej.'].join('\n'))
+  const table = tableOf(q)
+  expect(table).toContain('| **B)** ★ polecam |')
+  expect(table).not.toContain('**A)** ★')
 })

@@ -164,20 +164,25 @@ export const register: Register = on => {
             <Text color="claude" bold>Potrzebuję od Ciebie</Text>
             {todos.map((part, i) => <Markdown key={`d${i}`} text={part.body} />)}
             <Box flexDirection="column" gap={2}>
-            {questions.map((q, i) => (
-              <Box key={`q${i}`} flexDirection="column" gap={1}>
-                <Markdown text={q.text.startsWith('**') ? q.text.replace(/^\*\*/, `**${q.number}. `) : q.text} />
-                {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
-                {q.tip ? <Text color="suggestion" bold>{q.tip.replace(/\*\*/g, '')}</Text> : null}
-                {lettersOf(q).length > 0 ? (
-                  <Box flexDirection="row" gap={2}>
-                    {lettersOf(q).map(letter => (
-                      <Button key={`b${i}-${q.number}-${letter}`} label={`${q.number}${letter}`} onPress={fill(`${q.number}${letter}`)} />
-                    ))}
-                  </Box>
-                ) : null}
-              </Box>
-            ))}
+            {questions.map((q, i) => {
+              // A decision card: the question, its options, the advice and the buttons in one frame.
+              const [title, ...why] = q.text.split('\n\n')
+              return (
+                <Box key={`q${i}`} flexDirection="column" borderStyle="round" borderColor="suggestion" paddingX={1} gap={1}>
+                  <Text color="suggestion" bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
+                  {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
+                  {q.tip ? <Text bold>{q.tip.replace(/\*\*/g, '')}</Text> : null}
+                  {lettersOf(q).length > 0 ? (
+                    <Box flexDirection="row" gap={2}>
+                      {lettersOf(q).map(letter => (
+                        <Button key={`b${i}-${q.number}-${letter}`} label={`${q.number}${letter}`} onPress={fill(`${q.number}${letter}`)} />
+                      ))}
+                    </Box>
+                  ) : null}
+                </Box>
+              )
+            })}
             </Box>
           </Box>
         ) : null}
