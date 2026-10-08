@@ -25,3 +25,4 @@
 | 2026-10-09 | wyglad 0.14.0: przy zadaniach sama kratka (bez kropki); Zrobione, Problem i Dla informacji widoczne w całości, zwijane dopiero powyżej 15 linii | Stefan: kratki z kropkami to chaos; „szczegóły” są często dla niego istotne |
 | 2026-10-09 | wyglad 0.15.0: znacznik ostatniej odpowiedzi jasny i neutralny zamiast pomarańczowego, starsze odpowiedzi z szarą linią; długie wyjaśnienia zwijane dopiero powyżej 30 linii, nigdy w środku tabeli | Stefan: jasna linia nie bije po oczach, za dużo kolorów; tabela ucięta w połowie |
 | 2026-10-09 | wyglad 0.15.1: w panelu „Moje sprawy” opcje pytań jedna pod drugą, przyciski osobno | Opcje stały w wąskich kolumnach obok przycisków i tekst się rozsypywał |
+| 2026-10-09 | wyglad 0.16.0: tytuł „Do zrobienia przez Ciebie” wewnątrz pomarańczowej ramki; Zrobione/Problem/Dla informacji we własnej szarej ramce „Podsumowanie” | Stefan: tytuł poza ramką — nie wiadomo, czego ramka dotyczy; podsumowanie poza ramkami nieczytelne |
