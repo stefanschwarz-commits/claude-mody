@@ -119,7 +119,7 @@ export const register: Register = on => {
 
   // The pane: open tasks with tick boxes, the latest questions with answer buttons.
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button } = $.ui.resolve(e)
+    const { Box, Text, Button, Markdown } = $.ui.resolve(e)
     const list = await read($, sprawy)
     const ticked = await read($, doneTasks)
     const tasks = list.filter(one => one.kind === 'todo')
@@ -148,7 +148,10 @@ export const register: Register = on => {
               <Text>{one.text}</Text>
             </Box>
             <Box flexDirection="row" gap={2}>
-              {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={`Wybierz ${l}`} onPress={fill(l)} />)}
+              {(one.options ?? []).map(o => (
+                <Markdown key={`p-${one.id}-t-${o.id}`} text={`**${o.id}${o.isBest ? ' ★' : ''}**  ${o.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`} />
+              ))}
+              {one.letters.map(l => <Button key={`p-${one.id}-${l}`} label={`Wybierz ${l}${(one.options ?? []).some(o => o.id === l && o.isBest) ? ' ★' : ''}`} onPress={fill(l)} />)}
             </Box>
           </Box>
         ))}
@@ -196,7 +199,7 @@ export const register: Register = on => {
         const asks: Sprawa[] = reply.parts
           .filter(part => part.kind === 'questions')
           .flatMap(part => splitQuestions(part.body))
-          .map(q => ({ id: `${summary.key}:q${q.number}`, kind: 'question' as const, text: `${q.number}. ${q.text.split(`\n\n`)[0].replace(/\*\*/g, '')}`, letters: lettersOf(q).map(l => `${q.number}${l}`) }))
+          .map(q => ({ id: `${summary.key}:q${q.number}`, kind: 'question' as const, text: `${q.number}. ${q.text.split(`\n\n`)[0].replace(/\*\*/g, '')}`, letters: lettersOf(q).map(l => `${q.number}${l}`), options: optionsOf(q) }))
         await update($, sprawy, list => [
           ...list.filter(one => one.kind === 'todo' && !tasks.some(t => t.id === one.id)),
           ...tasks,
@@ -233,7 +236,6 @@ export const register: Register = on => {
           />
           <Button key="pane" label="Moje sprawy" onPress={() => void $.ui.open({ id: PANE, title: 'Moje sprawy' }).catch(() => undefined)} />
         </Box>
-        <Text dimColor wrap="truncate-end">{`▶ ${answer.headline}`}</Text>
         {below}
       </Box>
     )

@@ -48,12 +48,12 @@ test('/stan pokazuje tabelę spraw', async ($, on) => {
   expect(out.text).toContain('| bezpiecznik | Dalej |')
 })
 
-test('bez STAN.md: podpowiedź, a /stan nowy zakłada plik', async ($, on) => {
+test('bez STAN.md: pasek milczy, /stan podpowiada, a /stan nowy zakłada plik', async ($, on) => {
   const written = folder(on, {})
   const out = await $.command.run({ command: 'stan', args: '' } as never)
   expect(out.text).toContain('/stan nowy')
   const ui = await $.ui.mount({ plugin: 'projekt', surface: 'terminal', component: 'AbovePrompt', props: BAND })
-  expect(await ui.find({ type: 'Text', text: /brak STAN.md/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /brak STAN.md/ })).toBeUndefined()
   const made = await $.command.run({ command: 'stan', args: 'nowy' } as never)
   expect(made.text).toContain('Założyłem')
   expect(written['STAN.md']).toContain('**W toku:**')

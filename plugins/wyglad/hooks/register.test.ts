@@ -244,3 +244,15 @@ test('karta pytania ma delikatne tło dopasowane do motywu', async ($, on) => {
   expect(await ui.find({ type: 'Box', props: { backgroundColor: '#EEF4FC' } })).toBeDefined()
   expect(await ui.find({ type: 'Box', props: { backgroundColor: '#FDF3E7' } })).toBeDefined()
 })
+
+test('panel: pytanie z treścią opcji, nie same przyciski; pasek ma jedną linię', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 'c' } as never)
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  expect(await pane.find({ type: 'Markdown', props: { text: /^\*\*1A\*\*/ } })).toBeDefined()
+  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+  expect(await band.find({ type: 'Text', text: /^▶/ })).toBeUndefined()
+})

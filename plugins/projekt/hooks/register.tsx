@@ -104,17 +104,8 @@ export const register: Register = on => {
     const { Box, Text } = $.ui.resolve(e)
     const width = Math.max(30, e.props.bodyColumns)
 
-    if (!s.hasFile) {
-      return (
-        <Box flexDirection="column">
-          {below}
-          <Box>
-            <Text color="claude" bold>{`▣ ${s.project}`}</Text>
-            <Text dimColor>{'  ·  brak STAN.md (/stan nowy)'}</Text>
-          </Box>
-        </Box>
-      )
-    }
+    // No STAN.md here: the line would say nothing useful, so the band stays for the others.
+    if (!s.hasFile) return below
 
     const first = s.doing[0] ? `: ${s.doing[0]}` : ''
     const parts = [
