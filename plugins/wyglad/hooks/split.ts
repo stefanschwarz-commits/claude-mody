@@ -93,24 +93,25 @@ export function recommendedOf(q: Question): string | undefined {
   return /Polecam\s+\**([A-Z])\b/i.exec(q.tip)?.[1]?.toUpperCase()
 }
 
-// One cue only: "★ polecam" in the recommended row's first cell.
+// One cue only: a star in the recommended row's first cell, explained in the header.
 function mark(row: string, letter: string | undefined): string {
   const at = ROW.exec(row)
   if (!at || at[1] !== letter) return row
   const end = row.indexOf('|', 1)
-  return `${row.slice(0, end).trimEnd()} ★ polecam ${row.slice(end)}`
+  return `${row.slice(0, end).trimEnd()} ★ ${row.slice(end)}`
 }
 
 // The options as a table: Claude's own table, or one made from the A/B list.
 export function tableOf(q: Question): string {
   const best = recommendedOf(q)
-  if (q.table.length > 0) return q.table.map(row => mark(row, best)).join('\n')
+  const head = (row: string) => (best ? row.replace(/^\|\s*Opcja\s*\|/, '| Opcja (★ polecam) |') : row)
+  if (q.table.length > 0) return q.table.map((row, i) => (i === 0 ? head(row) : mark(row, best))).join('\n')
   if (q.options.length === 0) return ''
   const rows = q.options.map(option => {
     const rest = option.replace(/^\*\*[A-Z]\)\*\*\s*/, '').replaceAll('|', '/')
     return mark(`| **${letterOf(option)}** | ${rest} |`, best)
   })
-  return ['| Opcja | Co się stanie |', '|---|---|', ...rows].join('\n')
+  return [head('| Opcja | Co się stanie |'), '|---|---|', ...rows].join('\n')
 }
 
 export function letterOf(option: string): string {

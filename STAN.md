@@ -8,6 +8,6 @@
 
 **Zrobione wcześniej:** mod `dzwiek` – dźwięk na koniec tury i przy prośbie o zgodę / pytaniu / planie; komenda `/dzwiek on|off|test`; testy (5/5), walidacja i sprawdzenie typów OK.
 
-**W toku:** obejrzenie nowych kolorów `wyglad` przez Stefana.
+**W toku:** `wyglad` 0.6.1 – Stefan ogląda: znacznik początku odpowiedzi, „Potrzebuję od Ciebie”, pytania jako karty decyzji z ★, Zrobione/Problem zwinięte, pasek nad polem z „↑ Początek odpowiedzi”.
 
 **Dalej:** kolejne mody do wyboru: bezpiecznik na publikację/usuwanie/wysyłkę, powiadomienie po długiej pracy.

@@ -137,9 +137,10 @@ test('pasek nad polem: co jest potrzebne i przycisk do początku odpowiedzi', as
   await ui.press({ key: 'jump' })
 })
 
-test('opcja polecana ma w tabeli jeden znak: ★ polecam', () => {
+test('opcja polecana ma w tabeli jeden znak: ★, objaśniony w nagłówku', () => {
   const [q] = splitQuestions(['**1. Który?**', '| Opcja | Co |', '|---|---|', '| **A)** | Ramki |', '| **B)** | Bez |', '➜ Polecam **B**, bo prościej.'].join('\n'))
   const table = tableOf(q)
-  expect(table).toContain('| **B)** ★ polecam |')
+  expect(table).toContain('| **B)** ★ |')
+  expect(table).toContain('| Opcja (★ polecam) |')
   expect(table).not.toContain('**A)** ★')
 })
