@@ -2,7 +2,7 @@ export type Kind = 'done' | 'problem' | 'todo' | 'questions' | 'info' | 'plain'
 
 export type Part = { kind: Kind; title: string; body: string }
 
-export type Question = { number: string; text: string; options: string[]; tip: string }
+export type Question = { number: string; text: string; options: string[]; table: string[]; tip: string }
 
 export type Reply = { headline: string; parts: Part[] }
 
@@ -61,20 +61,41 @@ export function splitQuestions(body: string): Question[] {
     if (line === '') continue
     const start = /^\*\*(\d+)\.\s*(.*?)\*\*\s*$/.exec(line)
     if (start) {
-      current = { number: start[1], text: `**${start[2]}**`, options: [], tip: '' }
+      current = { number: start[1], text: `**${start[2]}**`, options: [], table: [], tip: '' }
       out.push(current)
       continue
     }
     if (!current) {
-      current = { number: '1', text: '', options: [], tip: '' }
+      current = { number: '1', text: '', options: [], table: [], tip: '' }
       out.push(current)
     }
     if (/^[-*]\s+\*\*[A-Z]\)\*\*/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
+    else if (line.startsWith('|')) current.table.push(line)
     else if (/^➜/.test(line)) current.tip = line
     else current.text += `${current.text ? '\n\n' : ''}${line}`
   }
 
   return out
+}
+
+// "| **A)** | …" or "| A | …": one table row per option.
+const ROW = /^\|\s*\**\s*([A-Z])\)?\s*\**\s*\|/
+
+// The letters a question offers, from its list or its table.
+export function lettersOf(q: Question): string[] {
+  const fromTable = q.table.map(row => ROW.exec(row)?.[1]).filter((l): l is string => l !== undefined)
+  return [...q.options.map(letterOf), ...fromTable].filter((l, i, all) => l !== '?' && all.indexOf(l) === i)
+}
+
+// The options as a table: Claude's own table, or one made from the A/B list.
+export function tableOf(q: Question): string {
+  if (q.table.length > 0) return q.table.join('\n')
+  if (q.options.length === 0) return ''
+  const rows = q.options.map(option => {
+    const rest = option.replace(/^\*\*[A-Z]\)\*\*\s*/, '').replaceAll('|', '/')
+    return `| **${letterOf(option)}** | ${rest} |`
+  })
+  return ['| Opcja | Co się stanie |', '|---|---|', ...rows].join('\n')
 }
 
 export function letterOf(option: string): string {

@@ -95,3 +95,26 @@ test('wskazówka o sekcjach Zrobione i Problem trafia do Claude', async ($, on) 
   const { sections } = await $.prompt.compose({ model: 'm', promptModel: 'm', outputStyle: null, traits: [], surfaces: [], tools: [] } as never)
   expect(sections.some(s => s.id === 'wyglad:sekcje' && s.text.includes('Zrobione'))).toBe(true)
 })
+
+test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) => {
+  const filled = setup(on)
+  const reply = [
+    '▶ **Test tabeli.**',
+    '',
+    '---',
+    '',
+    '❓ **Pytania do Ciebie**',
+    '',
+    '**1. Który wygląd?**',
+    'Dlaczego to ważne: czytelność.',
+    '| Opcja | Co się stanie | Plus | Minus |',
+    '|---|---|---|---|',
+    '| **A)** | Ramki | Kolor | Więcej linii |',
+    '| **B)** | Bez ramek | Spokojnie | Mniej widać |',
+    '➜ Polecam A. Odpisz A albo B.',
+  ].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Button', key: 'b0-1-B' })).toBeDefined()
+  await ui.press({ key: 'b0-1-B' })
+  expect(filled).toEqual(['1B '])
+})

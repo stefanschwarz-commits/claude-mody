@@ -1,6 +1,6 @@
 import type { Register } from 'claude-code'
 
-import { firstLine, isProgress, letterOf, splitQuestions, splitReply } from './split'
+import { firstLine, isProgress, lettersOf, splitQuestions, splitReply, tableOf } from './split'
 
 const OFF = 'off'
 
@@ -10,7 +10,7 @@ const SECTIONS = [
   '- `**Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem; rysowana w zielonej ramce;',
   '- `⚠️ **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle; rysowana w czerwonej ramce.',
   'W ramkach nie używaj tabel: w „Do zrobienia przez Ciebie” pisz listę numerowaną „1. Co zrobić (ile czasu) – po co”.',
-  'W pytaniach każda opcja A/B w osobnej linii, krótko; bez dodatkowych list w treści pytania.',
+  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem tabela | Opcja | Co się stanie | Plus | Minus | z wierszami „| **A)** | … |”, na końcu linia „➜ Polecam …”. Bez dodatkowych list w treści pytania.',
 ].join('\n')
 
 export const register: Register = on => {
@@ -88,26 +88,17 @@ ${part.body}` : part.body
             return frame('suggestion', part.title, splitQuestions(part.body).map(q => (
               <Box key={`q${i}-${q.number}`} flexDirection="column" gap={1}>
                 <Markdown text={q.text} />
-                {q.options.length > 0 ? (
-                  <Box flexDirection="column" paddingLeft={2}>
-                    {q.options.map((option, j) => (
-                      <Markdown key={`o${i}-${q.number}-${j}`} text={option} />
-                    ))}
-                  </Box>
-                ) : null}
+                {tableOf(q) ? <Markdown text={tableOf(q)} /> : null}
                 {q.tip ? <Text color="suggestion" bold>{q.tip}</Text> : null}
-                {q.options.length > 0 ? (
+                {lettersOf(q).length > 0 ? (
                   <Box flexDirection="row" gap={2}>
-                    {q.options.map(option => {
-                      const letter = letterOf(option)
-                      return (
-                        <Button
-                          key={`b${i}-${q.number}-${letter}`}
-                          label={`${q.number}${letter}`}
-                          onPress={answer(`${q.number}${letter}`)}
-                        />
-                      )
-                    })}
+                    {lettersOf(q).map(letter => (
+                      <Button
+                        key={`b${i}-${q.number}-${letter}`}
+                        label={`${q.number}${letter}`}
+                        onPress={answer(`${q.number}${letter}`)}
+                      />
+                    ))}
                   </Box>
                 ) : null}
               </Box>
