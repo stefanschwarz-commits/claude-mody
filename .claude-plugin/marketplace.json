@@ -13,6 +13,11 @@
       "name": "projekt",
       "source": "./plugins/projekt",
       "description": "Pasek nad polem wpisywania z nazwą projektu i stanem prac z STAN.md oraz komenda /stan."
+    },
+    {
+      "name": "wyglad",
+      "source": "./plugins/wyglad",
+      "description": "Wniosek ▶ na kolorowym tle, zadania i pytania w ramkach, zwinięte komunikaty z trakcie pracy."
     }
   ],
   "description": "Mody do Claude Code Stefana Schwarza"

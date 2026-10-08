@@ -36,3 +36,14 @@ claude plugin install projekt@claude-mody
 - `/stan` – stan projektu w tabeli
 - `/stan nowy` – zakłada pusty STAN.md w bieżącym folderze
 - pasek zwijasz znakiem `[-]` po jego prawej stronie
+
+## wyglad (wersja testowa)
+
+Odpowiedzi Claude'a w Claude Code: linia ▶ na kolorowym tle, „Do zrobienia przez Ciebie” w zielonej ramce, „Pytania do Ciebie” w żółtej podwójnej ramce, każde pytanie w osobnym bloku z przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole), „Dla informacji” szarą kursywą, a krótkie komunikaty z trakcie pracy zwinięte do jednej szarej linii.
+
+```
+claude plugin install wyglad@claude-mody
+```
+
+- `/wyglad off` – zwykły wygląd, `/wyglad on` – kolorowy
+- pełna, niezmieniona wiadomość: ctrl+o
