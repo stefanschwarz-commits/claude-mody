@@ -8,6 +8,12 @@
       "name": "dzwiek",
       "source": "./plugins/dzwiek",
       "description": "Dźwięk, gdy Claude skończy pracę albo czeka na Twoją zgodę lub odpowiedź."
+    },
+    {
+      "name": "projekt",
+      "source": "./plugins/projekt",
+      "description": "Pasek nad polem wpisywania z nazwą projektu i stanem prac z STAN.md oraz komenda /stan."
     }
-  ]
+  ],
+  "description": "Mody do Claude Code Stefana Schwarza"
 }

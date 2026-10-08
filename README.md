@@ -24,3 +24,15 @@ Albo w sesji `claude` w terminalu:
 - `/dzwiek test` – zagraj oba dźwięki
 - `/dzwiek off` – wycisz, `/dzwiek on` – włącz
 - całkowite wyłączenie: `claude plugin disable dzwiek@claude-mody`
+
+## projekt
+
+Pasek nad polem wpisywania: nazwa folderu projektu, ile spraw jest „w toku” (z pierwszą z nich), ile „dalej” i z kiedy jest plik STAN.md. Odświeża się po każdej odpowiedzi Claude'a. Rozumie STAN.md z nagłówkami, pogrubionymi etykietami („**W toku:** …”) albo tabelą z kolumną Status.
+
+```
+claude plugin install projekt@claude-mody
+```
+
+- `/stan` – stan projektu w tabeli
+- `/stan nowy` – zakłada pusty STAN.md w bieżącym folderze
+- pasek zwijasz znakiem `[-]` po jego prawej stronie
