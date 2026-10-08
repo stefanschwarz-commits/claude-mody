@@ -9,6 +9,8 @@ const SECTIONS = [
   'Oprócz stałych sekcji (✅ Do zrobienia przez Ciebie, ❓ Pytania do Ciebie, ℹ️ Dla informacji) używaj dwóch kolejnych, tylko gdy występują:',
   '- `**Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem; rysowana w zielonej ramce;',
   '- `⚠️ **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle; rysowana w czerwonej ramce.',
+  'W ramkach nie używaj tabel: w „Do zrobienia przez Ciebie” pisz listę numerowaną „1. Co zrobić (ile czasu) – po co”.',
+  'W pytaniach każda opcja A/B w osobnej linii, krótko; bez dodatkowych list w treści pytania.',
 ].join('\n')
 
 export const register: Register = on => {
@@ -67,66 +69,54 @@ export const register: Register = on => {
         </Box>
         {reply.parts.map((part, i) => {
           // Done: the green frame says it, so no title and no icon.
+          // One thin frame per section, a plain coloured title, nothing nested.
+          const frame = (color: string, title: string, body: unknown) => (
+            <Box key={`p${i}`} flexDirection="column" borderStyle="round" borderColor={color} paddingX={1} gap={1}>
+              {title ? <Text color={color} bold>{title}</Text> : null}
+              {body}
+            </Box>
+          )
           if (part.kind === 'done') {
             const text = part.title.length > 30 ? `${part.title}
 
 ${part.body}` : part.body
-            return (
-              <Box key={`p${i}`} flexDirection="column" borderStyle="round" borderColor="success" paddingX={1}>
-                <Markdown text={text} />
-              </Box>
-            )
+            return frame('success', '', <Markdown text={text} />)
           }
-          if (part.kind === 'problem') {
-            return (
-              <Box key={`p${i}`} flexDirection="column" borderStyle="bold" borderColor="error" paddingX={1}>
-                <Text color="error" bold underline>{`⚠ ${part.title}`}</Text>
-                <Markdown text={part.body} />
-              </Box>
-            )
-          }
-          if (part.kind === 'todo') {
-            return (
-              <Box key={`p${i}`} flexDirection="column" borderStyle="round" borderColor="warning" paddingX={1}>
-                <Text color="warning" bold underline>{`☐ ${part.title}`}</Text>
-                <Markdown text={part.body} />
-              </Box>
-            )
-          }
+          if (part.kind === 'problem') return frame('error', part.title, <Markdown text={part.body} />)
+          if (part.kind === 'todo') return frame('warning', part.title, <Markdown text={part.body} />)
           if (part.kind === 'questions') {
-            return (
-              <Box key={`p${i}`} flexDirection="column" borderStyle="double" borderColor="suggestion" paddingX={1} gap={1}>
-                <Text color="suggestion" bold underline>{`❓ ${part.title}`}</Text>
-                {splitQuestions(part.body).map(q => (
-                  <Box key={`q${i}-${q.number}`} flexDirection="column" borderStyle="single" borderColor="suggestion" paddingX={1}>
-                    <Markdown text={q.text} />
+            return frame('suggestion', part.title, splitQuestions(part.body).map(q => (
+              <Box key={`q${i}-${q.number}`} flexDirection="column" gap={1}>
+                <Markdown text={q.text} />
+                {q.options.length > 0 ? (
+                  <Box flexDirection="column" paddingLeft={2}>
                     {q.options.map((option, j) => (
                       <Markdown key={`o${i}-${q.number}-${j}`} text={option} />
                     ))}
-                    {q.tip ? <Text bold>{q.tip}</Text> : null}
-                    {q.options.length > 0 ? (
-                      <Box flexDirection="row" gap={2}>
-                        {q.options.map(option => {
-                          const letter = letterOf(option)
-                          return (
-                            <Button
-                              key={`b${i}-${q.number}-${letter}`}
-                              label={`${q.number}${letter}`}
-                              onPress={answer(`${q.number}${letter}`)}
-                            />
-                          )
-                        })}
-                      </Box>
-                    ) : null}
                   </Box>
-                ))}
+                ) : null}
+                {q.tip ? <Text color="suggestion" bold>{q.tip}</Text> : null}
+                {q.options.length > 0 ? (
+                  <Box flexDirection="row" gap={2}>
+                    {q.options.map(option => {
+                      const letter = letterOf(option)
+                      return (
+                        <Button
+                          key={`b${i}-${q.number}-${letter}`}
+                          label={`${q.number}${letter}`}
+                          onPress={answer(`${q.number}${letter}`)}
+                        />
+                      )
+                    })}
+                  </Box>
+                ) : null}
               </Box>
-            )
+            )))
           }
           if (part.kind === 'info') {
             return (
               <Box key={`p${i}`} flexDirection="column" paddingX={1}>
-                <Text dimColor italic>{`ℹ️ ${part.title}`}</Text>
+                <Text dimColor italic>{part.title}</Text>
                 <Markdown text={part.body} dimColor />
               </Box>
             )

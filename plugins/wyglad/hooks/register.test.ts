@@ -62,7 +62,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     expect(await ui.find({ type: 'Text', text: /Do zrobienia przez Ciebie/ })).toBeDefined()
     expect(await ui.find({ type: 'Box', props: { borderColor: 'success' } })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Zrobione/ })).toBeUndefined()
-    expect(await ui.find({ type: 'Text', text: '⚠ Problem' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Problem' })).toBeDefined()
     expect(await ui.find({ type: 'Box', props: { borderColor: 'error' } })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Pytania do Ciebie/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Polecam A/ })).toBeDefined()

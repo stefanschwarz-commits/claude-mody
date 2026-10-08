@@ -1,6 +1,6 @@
 {
   "name": "wyglad",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Czytelniejsze odpowiedzi: wniosek ▶ na kolorowym tle, zrobione na zielono, problemy na czerwono, zadania i pytania w ramkach, zwinięte komunikaty z trakcie pracy. /wyglad on|off.",
   "author": { "name": "Stefan Schwarz" }
 }
