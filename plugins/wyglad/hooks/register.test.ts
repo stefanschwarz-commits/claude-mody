@@ -345,8 +345,11 @@ test('podsumowanie: podpunkty zostają wcięte pod numerowanym punktem', async (
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(texts).toContain('    - brak osoby;')
-  expect(texts).toContain('    - stan „Do ustalenia”;')
+  // Sub-points are drawn inside their point with the indent stripped, so no line
+  // starts with four spaces (Markdown would draw that as a code box).
+  expect(texts).toContain('- brak osoby;')
+  expect(texts).toContain('- stan „Do ustalenia”;')
+  expect(texts.some(t => /^ {4}/.test(t))).toBe(false)
 })
 
 test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem” nadal działa', async ($, on) => {

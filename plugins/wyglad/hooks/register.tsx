@@ -134,20 +134,33 @@ const SECTION = {
 // A summary split into drawable pieces: a numbered point is { n, lead, rest },
 // where the lead (first sentence, or Claude's own bold start) reads bold and the
 // rest faint; anything else (a table, a sub-point, a sentence) is kept as text.
-type Piece = { n: string; lead: string; rest: string } | { text: string }
+// Indented lines under a point (a sub-point, a link) are its `subs`, drawn inside the
+// point with their indent stripped: left as-is, four leading spaces would read as code.
+type Piece = { n: string; lead: string; rest: string; subs: string[] } | { text: string }
 
 function pieces(body: string): Piece[] {
-  return body
-    .split(/\r?\n/)
-    .filter(line => line.trim() !== '')
-    .map((line): Piece => {
-      const point = /^(\d+)\.\s+(.*)$/.exec(line)
-      if (!point) return { text: line }
-      const bold = /^\*\*(.+?)\*\*\s*(.*)$/.exec(point[2])
-      if (bold) return { n: point[1], lead: bold[1], rest: bold[2] }
-      const cut = /^(.*?[.:!?])\s+(\S.*)$/.exec(point[2])
-      return cut ? { n: point[1], lead: cut[1], rest: cut[2] } : { n: point[1], lead: point[2], rest: '' }
-    })
+  const out: Piece[] = []
+  for (const line of body.split(/\r?\n/)) {
+    if (line.trim() === '') continue
+    const last = out[out.length - 1]
+    if (/^\s+\S/.test(line) && last && 'n' in last) {
+      last.subs.push(line.trim())
+      continue
+    }
+    const point = /^(\d+)\.\s+(.*)$/.exec(line)
+    if (!point) {
+      out.push({ text: line })
+      continue
+    }
+    const bold = /^\*\*(.+?)\*\*\s*(.*)$/.exec(point[2])
+    if (bold) {
+      out.push({ n: point[1], lead: bold[1], rest: bold[2], subs: [] })
+      continue
+    }
+    const cut = /^(.*?[.:!?])\s+(\S.*)$/.exec(point[2])
+    out.push(cut ? { n: point[1], lead: cut[1], rest: cut[2], subs: [] } : { n: point[1], lead: point[2], rest: '', subs: [] })
+  }
+  return out
 }
 
 // Faint blue inside the question cards and faint orange behind the tasks,
@@ -485,6 +498,9 @@ ${part.body}` : part.body
                           <Box flexDirection="column">
                             <Text bold>{piece.lead}</Text>
                             {piece.rest ? <Text dimColor>{piece.rest}</Text> : null}
+                            {piece.subs.map((sub, k) => (
+                              <Markdown key={`sub${i}-${j}-${k}`} text={sub} dimColor />
+                            ))}
                           </Box>
                         </Box>
                       ) : (
