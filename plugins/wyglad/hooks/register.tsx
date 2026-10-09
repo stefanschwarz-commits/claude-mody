@@ -33,10 +33,11 @@ const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'us�
 
 const SECTIONS = [
   'Odpowiedź końcowa z ▶ jest rysowana według sekcji rozdzielonych `---`.',
-  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Problem**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ też działają). Zrobione i Problem tylko, gdy występują:',
+  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
-  '- `🔴 **Problem**` (zaraz po Zrobione): tylko rzeczy, które coś blokują albo poszły źle.',
-  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Problem i Dla informacji w ramce „Podsumowanie” na końcu; pokazują się w całości (zwijają się dopiero powyżej 15 linii).',
+  '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
+  '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
+  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek (co się stało) i najwyżej jedno zdanie dalej; szczegóły idą do wyjaśnienia wyżej, nie do podsumowania.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
   'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
   'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
@@ -106,12 +107,39 @@ function numbered(body: string): string {
     .join('\n')
 }
 
+// How each summary section is drawn: its title, frame colour and tint.
+const SECTION = {
+  done: { title: 'Zrobione', color: 'success', tint: 'green' },
+  failed: { title: 'Nie udało się', color: 'error', tint: 'red' },
+  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange' },
+  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey' },
+} as const
+
+// A summary split into drawable pieces: a numbered point is { n, lead, rest },
+// where the lead (first sentence, or Claude's own bold start) reads bold and the
+// rest faint; anything else (a table, a sub-point, a sentence) is kept as text.
+type Piece = { n: string; lead: string; rest: string } | { text: string }
+
+function pieces(body: string): Piece[] {
+  return body
+    .split(/\r?\n/)
+    .filter(line => line.trim() !== '')
+    .map((line): Piece => {
+      const point = /^(\d+)\.\s+(.*)$/.exec(line)
+      if (!point) return { text: line }
+      const bold = /^\*\*(.+?)\*\*\s*(.*)$/.exec(point[2])
+      if (bold) return { n: point[1], lead: bold[1], rest: bold[2] }
+      const cut = /^(.*?[.:!?])\s+(\S.*)$/.exec(point[2])
+      return cut ? { n: point[1], lead: cut[1], rest: cut[2] } : { n: point[1], lead: point[2], rest: '' }
+    })
+}
+
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616' }
   } catch {
     return undefined
   }
@@ -304,7 +332,7 @@ export const register: Register = on => {
     const full = await read($, isFull)
     // Zrobione, Problem and Dla informacji show in full; only a really long lot folds.
     const isLongFold = reply.parts
-      .filter(part => part.kind === 'done' || part.kind === 'problem' || part.kind === 'info')
+      .filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'info')
       .reduce((n, part) => n + part.body.split(/\r?\n/).filter(l => l.trim() !== '').length, 0) > FOLD_LINES
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
@@ -318,7 +346,7 @@ export const register: Register = on => {
     const todos = reply.parts.filter(part => part.kind === 'todo')
     const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
     const plain = reply.parts.filter(part => part.kind === 'plain')
-    const folded = reply.parts.filter(part => part.kind === 'done' || part.kind === 'problem' || part.kind === 'info')
+    const folded = reply.parts.filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'info')
 
     return (
       <Box flexDirection="column" gap={1}>
@@ -412,25 +440,36 @@ export const register: Register = on => {
           </Box>
         ) : null}
         {folded.length > 0 ? (
-          // The summary gets its own quiet frame with its title inside.
-          <Box flexDirection="column" borderStyle="round" borderColor="inactive" backgroundColor={tint?.grey} paddingX={1} gap={1}>
-            <Text bold>Podsumowanie</Text>
-            {!isLongFold || full
-              ? folded.map((part, i) => (
-                  <Box key={`f${i}`} flexDirection="column">
-                    <Box flexDirection="row" gap={1}>
-                      <Text color={part.kind === 'done' ? 'success' : part.kind === 'problem' ? 'error' : 'inactive'}>●</Text>
-                      <Text bold>{part.kind === 'done' ? 'Zrobione' : part.kind === 'problem' ? 'Problem' : 'Dla informacji'}</Text>
-                    </Box>
-                    <Markdown text={numbered(part.kind === 'done' && part.title.length > 30 ? `${part.title}\n\n${part.body}` : part.body)} />
-                  </Box>
-                ))
-              : folded.filter(part => part.kind !== 'info').map((part, i) => (
-                  <Box key={`g${i}`} flexDirection="row" gap={1}>
-                    <Text color={part.kind === 'problem' ? 'error' : 'success'}>●</Text>
-                    <Text wrap="truncate-end">{`${part.kind === 'problem' ? 'Problem' : 'Zrobione'}: ${gist(part)}`}</Text>
-                  </Box>
-                ))}
+          // The summary: one frame per section in its own colour, each with its title inside.
+          <Box flexDirection="column" gap={1}>
+            {(!isLongFold || full ? folded : folded.filter(part => part.kind !== 'info')).map((part, i) => {
+              const look = SECTION[part.kind as keyof typeof SECTION] ?? SECTION.info
+              const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
+
+${part.body}` : part.body
+              return (
+                <Box key={`f${i}`} flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1}>
+                  <Text bold>{look.title}</Text>
+                  {!isLongFold || full ? (
+                    pieces(numbered(body)).map((piece, j) =>
+                      'n' in piece ? (
+                        <Box key={`s${i}-${j}`} flexDirection="row" gap={1}>
+                          <Text>{`${piece.n}.`}</Text>
+                          <Box flexDirection="column">
+                            <Text bold>{piece.lead}</Text>
+                            {piece.rest ? <Text dimColor>{piece.rest}</Text> : null}
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Markdown key={`s${i}-${j}`} text={piece.text} />
+                      ),
+                    )
+                  ) : (
+                    <Text wrap="truncate-end">{gist(part)}</Text>
+                  )}
+                </Box>
+              )
+            })}
             {isLongFold ? (
               <Box>
                 <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />

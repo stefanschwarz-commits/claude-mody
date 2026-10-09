@@ -63,9 +63,8 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Mod działa i jest gotowy do testu.' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Do zrobienia przez Ciebie' })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: 'Podsumowanie' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
-    expect(await ui.find({ type: 'Text', text: 'Problem' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()
     expect(await ui.find({ type: 'Button', text: 'Pokaż szczegóły' })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: /Polecam 1A/ })).toBeDefined()
@@ -289,18 +288,20 @@ test('podsumowanie: punkty z numerami zamiast kropek, delikatne szare tło', asy
   on('config.list', () => ({ value: [{ key: 'theme', value: 'dark' }] }) as never)
   const reply = ['▶ **Numery.**', '', '---', '', '🟢 **Zrobione**', '- Pierwsze.', '- Drugie.', '', '---', '', '🔴 **Problem**', '- Jedyne.'].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  type Node = { type: string; props?: { backgroundColor?: string; text?: string }; children?: Node[] }
+  type Node = { type: string; props?: { backgroundColor?: string; bold?: boolean }; children?: (Node | string)[] }
   const found: string[] = []
-  const texts: string[] = []
+  const bold: string[] = []
   const walk = (n: Node) => {
     if (n.props?.backgroundColor) found.push(n.props.backgroundColor)
-    if (n.type === 'Markdown' && n.props?.text) texts.push(n.props.text)
+    if (n.type === 'Text' && n.props?.bold) bold.push(n.children?.filter(c => typeof c === 'string').join('') ?? '')
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(found).toContain('#222326')
-  expect(texts).toContain('1. Pierwsze.\n2. Drugie.')
-  expect(texts).toContain('1. Jedyne.')
+  expect(found).toContain('#172116')
+  expect(found).toContain('#2A1616')
+  expect(bold).toContain('Pierwsze.')
+  expect(bold).toContain('Drugie.')
+  expect(bold).toContain('Jedyne.')
 })
 
 test('odpowiedź pisana po swojemu: pasek nie twierdzi „Nic od Ciebie nie potrzebuję”', async ($, on) => {
@@ -344,5 +345,26 @@ test('podsumowanie: podpunkty zostają wcięte pod numerowanym punktem', async (
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(texts).toContain('1. Co jest do poprawy:\n    - brak osoby;\n    - stan „Do ustalenia”;\n2. Wdrożenia jeszcze nie ma.')
+  expect(texts).toContain('    - brak osoby;')
+  expect(texts).toContain('    - stan „Do ustalenia”;')
+})
+
+test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem” nadal działa', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Lead.**', '', '---', '', '🟢 **Zrobione**', '- Testy przechodzą. 23 z 23 na kopii.', '', '---', '', '🔴 **Problem**', '- Kopia nie wyszła.', '', '---', '', '🟠 **Niewyjaśnione**', '- Nie wiem, czemu mail nie dotarł.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { bold?: boolean; dimColor?: boolean }; children?: (Node | string)[] }
+  const bold: string[] = []
+  const faint: string[] = []
+  const walk = (n: Node) => {
+    const text = n.children?.filter(c => typeof c === 'string').join('') ?? ''
+    if (n.type === 'Text' && n.props?.bold) bold.push(text)
+    if (n.type === 'Text' && n.props?.dimColor) faint.push(text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(bold).toContain('Testy przechodzą.')
+  expect(faint).toContain('23 z 23 na kopii.')
+  expect(bold).toContain('Nie udało się')
+  expect(bold).toContain('Niewyjaśnione')
 })

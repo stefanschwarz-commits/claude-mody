@@ -1,4 +1,4 @@
-export type Kind = 'done' | 'problem' | 'todo' | 'questions' | 'info' | 'plain'
+export type Kind = 'done' | 'failed' | 'open' | 'todo' | 'questions' | 'info' | 'plain'
 
 export type Part = { kind: Kind; title: string; body: string }
 
@@ -11,7 +11,8 @@ const LEAD = String.raw`^(#+\s*)?(\p{Extended_Pictographic}️?)?\s*\**\s*`
 const MARK = new RegExp(LEAD, 'u')
 const KINDS: readonly [Kind, RegExp][] = [
   ['done', new RegExp(`${LEAD}zrobione`, 'iu')],
-  ['problem', new RegExp(`${LEAD}problem`, 'iu')],
+  ['failed', new RegExp(`${LEAD}(nie udało się|problem)`, 'iu')],
+  ['open', new RegExp(`${LEAD}niewyjaśnion`, 'iu')],
   ['todo', new RegExp(`${LEAD}do zrobienia`, 'iu')],
   ['questions', new RegExp(`${LEAD}pytani`, 'iu')],
   ['info', new RegExp(`${LEAD}dla informacji`, 'iu')],

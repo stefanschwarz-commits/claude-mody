@@ -32,3 +32,4 @@
 | 2026-10-09 | wyglad 0.18.1: pasek nie pisze „Nic od Ciebie nie potrzebuję”, gdy odpowiedź nie ma sekcji; zwijanie dopiero powyżej 40 linii i nigdy zaraz po nagłówku | Zrzut z sesji CodeTwo: 6 spraw dla Stefana, a pasek twierdził, że nic; „Zrobię sam:” z pustą listą |
 | 2026-10-09 | Tabele porównawcze: ✓ tak, ✗ nie, ~ częściowo, ? nie wiadomo; kropki tylko dla statusu sprawy (mod 0.18.2 i instrukcja v6) | Stefan: kropki „tak/nie” w tabeli to zły standard |
 | 2026-10-09 | wyglad 0.18.3: podpunkty w Podsumowaniu wcięte pod numerowanym punktem | Zrzut: podpunkty wyglądały jak osobna lista |
+| 2026-10-09 | wyglad 0.19.0: „Problem” zastąpione przez „Nie udało się” (czerwona) i „Niewyjaśnione” (pomarańczowa); cztery sekcje podsumowania w osobnych kolorowych ramkach z tytułem w środku; punkt: pogrubiony początek, reszta szarym; stare „Problem” nadal rozpoznawane | Stefan: „Problem” niejasny (1A); ściana tekstu w podsumowaniu; inspiracja stylem podglądów |
