@@ -396,6 +396,16 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
   expect(boxes.length).toBe(3)
   expect(md).toContain('```\nJestem Stefan Schwarz.\nJĘZYK\n- Odpisuj po polsku.\n- Zwracaj się na „ty”.\n```')
+  // The fenced block sits below the orange frame, not inside it.
+  type Framed = { type: string; props?: { borderColor?: string; text?: string }; children?: (Framed | string)[] }
+  const inFrame: string[] = []
+  const dig = (n: Framed, inside: boolean) => {
+    const here = inside || n.props?.borderColor === 'warning'
+    if (here && n.type === 'Markdown' && n.props?.text) inFrame.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && dig(c, here))
+  }
+  dig((await ui.find({ type: 'Box' })) as unknown as Framed, false)
+  expect(inFrame.some(t => t.startsWith('```'))).toBe(false)
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 3 zadania' })).toBeDefined()
 })

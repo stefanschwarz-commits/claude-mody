@@ -407,21 +407,32 @@ export const register: Register = on => {
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
             {/* Every frame carries its own title inside, so it is clear what it holds. */}
-            {todos.length > 0 ? (
-            <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
-            <Text bold>Do zrobienia przez Ciebie</Text>
-            {todos.flatMap(part => itemsOf(part.body)).map((item, i) =>
-              item.isItem ? (
-                <Box key={`d${i}`} flexDirection="row" gap={1}>
-                  <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
-                  {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
+            {todos.length > 0 ? (() => {
+              // The frame holds the tasks and their sentence; a fenced block (text to copy)
+              // is drawn below it as a plain code box, so the frame never swallows a paste.
+              const all = todos.flatMap(part => itemsOf(part.body))
+              const isFence = (text: string) => text.startsWith('```')
+              return (
+                <Box flexDirection="column" gap={1}>
+                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
+                    <Text bold>Do zrobienia przez Ciebie</Text>
+                    {all.map((item, i) =>
+                      item.isItem ? (
+                        <Box key={`d${i}`} flexDirection="row" gap={1}>
+                          <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
+                          {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
+                        </Box>
+                      ) : isFence(item.text) ? null : (
+                        <Markdown key={`d${i}`} text={item.text} />
+                      ),
+                    )}
+                  </Box>
+                  {all.filter(item => !item.isItem && isFence(item.text)).map((item, i) => (
+                    <Markdown key={`fence${i}`} text={item.text} />
+                  ))}
                 </Box>
-              ) : (
-                <Markdown key={`d${i}`} text={item.text} />
-              ),
-            )}
-            </Box>
-            ) : null}
+              )
+            })() : null}
             <Box flexDirection="column" gap={2}>
             {questions.map((q, i) => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
