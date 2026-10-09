@@ -97,6 +97,9 @@ function numbered(body: string): string {
         n += 1
         return `${n}. ${point[1]}`
       }
+      // A sub-point under a numbered point needs a deeper indent to stay inside it.
+      const sub = /^\s+[-*•]\s+(.*)$/.exec(line)
+      if (sub && n > 0) return `    - ${sub[1]}`
       if (line.trim() !== '' && !/^\s/.test(line)) n = 0
       return line
     })

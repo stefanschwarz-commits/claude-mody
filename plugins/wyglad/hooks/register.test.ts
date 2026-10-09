@@ -332,3 +332,17 @@ test('zwijanie nie zostawia samego nagłówka nad schowaną listą', async ($, o
   expect(await ui.find({ type: 'Button', text: /Pokaż więcej/ })).toBeDefined()
   expect(/Zrobię sam:\s*$/.test(shown.trim())).toBe(false)
 })
+
+test('podsumowanie: podpunkty zostają wcięte pod numerowanym punktem', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Podpunkty.**', '', '---', '', 'ℹ️ **Dla informacji**', '- Co jest do poprawy:', '  - brak osoby;', '  - stan „Do ustalenia”;', '- Wdrożenia jeszcze nie ma.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { text?: string }; children?: Node[] }
+  const texts: string[] = []
+  const walk = (n: Node) => {
+    if (n.type === 'Markdown' && n.props?.text) texts.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(texts).toContain('1. Co jest do poprawy:\n    - brak osoby;\n    - stan „Do ustalenia”;\n2. Wdrożenia jeszcze nie ma.')
+})
