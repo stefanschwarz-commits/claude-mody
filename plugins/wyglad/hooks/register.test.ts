@@ -368,3 +368,34 @@ test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem
   expect(bold).toContain('Nie udało się')
   expect(bold).toContain('Niewyjaśnione')
 })
+
+test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawyża licznika', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  const reply = [
+    '▶ **Wklej wersję 6.**', '', '---', '',
+    '🟠 **Do zrobienia przez Ciebie**',
+    '1. Usuń starą treść (10 s) – po to.',
+    '2. Wklej blok poniżej (1 min) – po to.',
+    '3. Napisz „wklejone” (5 s).',
+    '', 'Gotowe, gdy napiszesz „wklejone”.', '',
+    '```', 'Jestem Stefan Schwarz.', 'JĘZYK', '- Odpisuj po polsku.', '- Zwracaj się na „ty”.', '```',
+  ].join('\n')
+  await $.turn.complete({ reason: 'answer', answer: reply, durationMs: 1, isAborted: false, turnId: 'g' } as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { text?: string; label?: string }; children?: (Node | string)[] }
+  const boxes: string[] = []
+  const md: string[] = []
+  const walk = (n: Node) => {
+    if (n.type === 'Button' && n.props?.label === '☐') boxes.push('☐')
+    if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(boxes.length).toBe(3)
+  expect(md).toContain('```\nJestem Stefan Schwarz.\nJĘZYK\n- Odpisuj po polsku.\n- Zwracaj się na „ty”.\n```')
+  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+  expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 3 zadania' })).toBeDefined()
+})

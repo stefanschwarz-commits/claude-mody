@@ -51,9 +51,12 @@ function keyOf(headline: string): string {
 }
 
 function summaryOf(reply: Reply): Last {
+  // Count the items the frame draws, plus rows of an old-style task table (| 1 | … |);
+  // a fenced block is one plain piece, so a pasted instruction never inflates the number.
   const todos = reply.parts
     .filter(part => part.kind === 'todo')
-    .flatMap(part => part.body.split(/\r?\n/).filter(line => /^\s*(\d+\.|[-*]|\|\s*\d)/.test(line)))
+    .flatMap(part => itemsOf(part.body))
+    .flatMap(item => (item.isItem ? [item] : item.text.startsWith('```') ? [] : item.text.split(/\r?\n/).filter(l => /^\s*\|\s*\d/.test(l))))
   const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
 
   // Only an answer written in the sections can say "nothing for you"; a free-form one says nothing.
@@ -73,12 +76,25 @@ function gist(part: Part): string {
 
 // A task list split into its items ("1. …", "- …"), each to get its own dot.
 // Other lines in a row (a sentence, a table) stay together as one block.
+// A fenced block (``` … ```) is text to copy, never a list of tasks: it stays one
+// piece, fences included, so a pasted instruction is not turned into tick boxes.
 function itemsOf(body: string): { isItem: boolean; text: string }[] {
   const out: { isItem: boolean; text: string }[] = []
+  let inFence = false
   for (const line of body.split(/\r?\n/)) {
+    const prev = out[out.length - 1]
+    if (/^\s*```/.test(line)) {
+      if (!inFence) out.push({ isItem: false, text: line })
+      else if (prev) prev.text += `\n${line}`
+      inFence = !inFence
+      continue
+    }
+    if (inFence) {
+      if (prev) prev.text += `\n${line}`
+      continue
+    }
     if (line.trim() === '') continue
     const item = /^\s*(\d+\.|[-*])\s+(.*)$/.exec(line)
-    const prev = out[out.length - 1]
     if (item) out.push({ isItem: true, text: item[2] })
     else if (prev && !prev.isItem) prev.text += `\n${line}`
     else out.push({ isItem: false, text: line })
