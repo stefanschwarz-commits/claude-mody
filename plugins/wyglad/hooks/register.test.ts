@@ -181,11 +181,11 @@ test('kroki pracy: jedna szara linia, błąd zostaje widoczny', async ($, on) =>
   expect(await group.find({ type: 'Text', text: '· 2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
 })
 
-test('długie wyjaśnienie: zwija się dopiero powyżej 30 linii i nigdy w środku tabeli', async ($, on) => {
+test('długie wyjaśnienie: zwija się dopiero powyżej 40 linii i nigdy w środku tabeli', async ($, on) => {
   setup(on)
   const table = ['| A | B |', '|---|---|', ...Array.from({ length: 12 }, (_, i) => `| w${i} | x |`)]
   const para = (n: number) => [`Akapit ${n}, linia 1.`, `Akapit ${n}, linia 2.`, '']
-  const long = ['▶ **Długie.**', '', ...para(1), ...table, '', ...para(2), ...para(3), ...para(4), ...para(5), ...para(6)].join('\n')
+  const long = ['▶ **Długie.**', '', ...para(1), ...table, '', ...para(2), ...para(3), ...para(4), ...para(5), ...para(6), ...para(7), ...para(8), ...para(9), ...para(10)].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(long) })
   const more = await ui.find({ type: 'Button', text: /Pokaż więcej/ })
   expect(more).toBeDefined()
@@ -301,4 +301,34 @@ test('podsumowanie: punkty z numerami zamiast kropek, delikatne szare tło', asy
   expect(found).toContain('#222326')
   expect(texts).toContain('1. Pierwsze.\n2. Drugie.')
   expect(texts).toContain('1. Jedyne.')
+})
+
+test('odpowiedź pisana po swojemu: pasek nie twierdzi „Nic od Ciebie nie potrzebuję”', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  const free = ['▶ **Zostało 6 spraw.**', '', '**Na ciebie:**', '', '| # | Sprawa |', '|---|---|', '| 1 | Archiwum |'].join('\n')
+  await $.turn.complete({ reason: 'answer', answer: free, durationMs: 1, isAborted: false, turnId: 'f' } as never)
+  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+  expect(await band.find({ type: 'Text', text: /Nic od Ciebie/ })).toBeUndefined()
+  expect(await band.find({ type: 'Button', text: 'Moje sprawy' })).toBeDefined()
+})
+
+test('zwijanie nie zostawia samego nagłówka nad schowaną listą', async ($, on) => {
+  setup(on)
+  const para = (n: number) => [`Akapit ${n}, linia 1.`, `Akapit ${n}, linia 2.`, '']
+  const items = Array.from({ length: 30 }, (_, i) => `- punkt ${i + 1}`)
+  const text = ['▶ **Długo.**', '', ...para(1), ...para(2), ...para(3), ...para(4), 'Zrobię sam:', '', ...items, '', ...para(5)].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(text) })
+  type Node = { type: string; props?: { text?: string }; children?: Node[] }
+  const texts: string[] = []
+  const walk = (n: Node) => {
+    if (n.type === 'Markdown' && n.props?.text) texts.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  const shown = texts.find(t => t.includes('Akapit 1')) ?? ''
+  expect(await ui.find({ type: 'Button', text: /Pokaż więcej/ })).toBeDefined()
+  expect(/Zrobię sam:\s*$/.test(shown.trim())).toBe(false)
 })

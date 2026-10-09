@@ -19,7 +19,7 @@ const PANE = 'sprawy'
 // A long explanation shows this many lines until opened.
 const SHORT = 12
 // …and folds at all only above this many lines.
-const LONG = 30
+const LONG = 40
 // Zrobione, Problem and Dla informacji fold only above this many lines together.
 const FOLD_LINES = 15
 
@@ -54,7 +54,10 @@ function summaryOf(reply: Reply): Last {
     .flatMap(part => part.body.split(/\r?\n/).filter(line => /^\s*(\d+\.|[-*]|\|\s*\d)/.test(line)))
   const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
 
-  return { headline: reply.headline, key: keyOf(reply.headline), todos: todos.length, questions: questions.length }
+  // Only an answer written in the sections can say "nothing for you"; a free-form one says nothing.
+  const isStructured = reply.parts.some(part => part.kind !== 'plain')
+
+  return { headline: reply.headline, key: keyOf(reply.headline), todos: todos.length, questions: questions.length, isStructured }
 }
 
 // One short line for a folded section: its first sentence.
@@ -240,10 +243,12 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Box flexDirection="row" gap={2}>
-          <Box flexDirection="row" gap={1}>
-            <Text color={needs ? 'warning' : 'success'}>●</Text>
-            <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
-          </Box>
+          {needs || answer.isStructured ? (
+            <Box flexDirection="row" gap={1}>
+              <Text color={needs ? 'warning' : 'success'}>●</Text>
+              <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
+            </Box>
+          ) : null}
           <Button
             key="jump"
             label="↑ Początek odpowiedzi"
@@ -329,7 +334,12 @@ export const register: Register = on => {
           const lines = plain.map(part => part.body).join('\n\n').split('\n')
           if (lines.length === 1 && lines[0] === '') return null
           // Cut only at a blank line outside a table, so no table is ever split.
-          const cut = lines.findIndex((line, n) => n >= SHORT && line.trim() === '' && !lines[n - 1]?.trim().startsWith('|'))
+          // …and never right after a heading ("Zrobię sam:", "**Na ciebie**"), which would leave it empty.
+          const isHeading = (line = '') => /:\s*\**\s*$/.test(line.trim()) || /^(#+\s|\*\*[^*]+\*\*$)/.test(line.trim())
+          const lastText = (n: number) => [...lines.slice(0, n)].reverse().find(l => l.trim() !== '')
+          const cut = lines.findIndex(
+            (line, n) => n >= SHORT && line.trim() === '' && !lines[n - 1]?.trim().startsWith('|') && !isHeading(lastText(n)),
+          )
           const isLong = lines.length > LONG && cut > 0 && cut < lines.length - 2
           return (
             <Box flexDirection="column">
