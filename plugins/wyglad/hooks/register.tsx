@@ -32,7 +32,7 @@ const STEPS: Record<string, string> = {
 const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'usługa zewnętrzna' : tool)
 
 const SECTIONS = [
-  'Odpowiedź końcowa z ▶ jest rysowana według sekcji rozdzielonych `---`.',
+  'Każdą odpowiedź końcową zaczynaj od linii `▶ ` z jednozdaniowym nagłówkiem (co się stało); bez niej nic nie zostanie narysowane. Odpowiedź z ▶ jest rysowana według sekcji rozdzielonych `---`.',
   'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
   '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',

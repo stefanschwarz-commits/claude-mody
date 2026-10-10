@@ -36,3 +36,6 @@
 | 2026-10-09 | wyglad 0.19.1: blok do wklejenia (```) w sekcji zadań to jeden kawałek, nie lista kratek; licznik zadań zgodny z tym, co rysuje ramka; stare tabele zadań nadal liczone | Zrzut: cała instrukcja v6 wklejona w zadaniach zamieniła się w dziesiątki kratek |
 | 2026-10-09 | wyglad 0.19.2: blok ``` pod sekcją zadań rysowany pod pomarańczową ramką jako zwykłe pole kodu (z przyciskiem kopiuj), ramka obejmuje tylko listę i zdanie pod nią | Uwaga sesji „Instrukcje dla Claude” po zrzucie Stefana |
 | 2026-10-09 | wyglad 0.19.3: podpunkty i linki pod punktem podsumowania rysowane wewnątrz punktu bez wcięcia (4 spacje = pole kodu w Markdown) | Zrzut Stefana: podpunkt „Sprawdziłem…” i link wyświetlały się jako szare pola kodu z przyciskiem kopiuj |
+
+## wyglad 0.19.4 (2026-10-10)
+Podpowiedź dla Claude każe zaczynać odpowiedź końcową od linii `▶`. Dotąd zakładała, że ▶ już jest (z instrukcji globalnych), a bez ▶ mod nic nie rysuje. Stefan widział sesje bez ramek mimo restartu aplikacji.
