@@ -45,3 +45,6 @@ Sekcje rozpoznawane po samym nagłówku (🟢 **Zrobione** itd.), także bez lin
 
 ## wyglad 0.19.6 (2026-10-10)
 Numer punktu w podsumowaniu i kratka przy zadaniu stoją przy pierwszej linii punktu (alignItems flex-start), nie na środku wysokości wielowierszowego tekstu. Zrzut Stefana z ramki „Zrobione” z 7 punktami po kilka linii.
+
+## wyglad 0.19.7 (2026-10-10)
+Pusta linia między punktami w ramkach podsumowania (gap), bo siedem kilkulinijkowych punktów bez odstępów robiło ścianę. Podpowiedź: pogrubiony początek punktu to wynik („Gira: bez nowych wydań.”), nie temat („Centrum Gira sprawdzone:”); liczby i daty zostają w wyjaśnieniu, nie w podsumowaniu. Stefan: „nie wiem do końca, co było zrobione, a co nie”.

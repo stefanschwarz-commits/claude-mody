@@ -37,7 +37,7 @@ const SECTIONS = [
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
   '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
   '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
-  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek (co się stało) i najwyżej jedno zdanie dalej; szczegóły idą do wyjaśnienia wyżej, nie do podsumowania.',
+  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek to wynik, nie temat („**Gira: bez nowych wydań.**”, nie „**Centrum Gira sprawdzone:**”), i najwyżej jedno zdanie dalej; szczegóły (wersje, ceny, daty) idą do wyjaśnienia wyżej, nie do podsumowania.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
   'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
   'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
@@ -488,7 +488,7 @@ export const register: Register = on => {
 
 ${part.body}` : part.body
               return (
-                <Box key={`f${i}`} flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1}>
+                <Box key={`f${i}`} flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
                   <Text bold>{look.title}</Text>
                   {!isLongFold || full ? (
                     pieces(numbered(body)).map((piece, j) =>
