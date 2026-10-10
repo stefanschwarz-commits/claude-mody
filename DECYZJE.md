@@ -42,3 +42,6 @@ Podpowiedź dla Claude każe zaczynać odpowiedź końcową od linii `▶`. Dot�
 
 ## wyglad 0.19.5 (2026-10-10)
 Sekcje rozpoznawane po samym nagłówku (🟢 **Zrobione** itd.), także bez linii `---` między nimi. Przegląd transkryptów pokazał, że w wielu sesjach Claude pisze ▶ i nagłówki, ale pomija `---`; mod dzielił tylko po `---`, więc rysował całość jako zwykły tekst. To była główna przyczyna „raz działa, raz nie”. Zdanie zaczynające się od „Zrobione…” nie otwiera sekcji (nagłówek = krótka linia bez kropki).
+
+## wyglad 0.19.6 (2026-10-10)
+Numer punktu w podsumowaniu i kratka przy zadaniu stoją przy pierwszej linii punktu (alignItems flex-start), nie na środku wysokości wielowierszowego tekstu. Zrzut Stefana z ramki „Zrobione” z 7 punktami po kilka linii.

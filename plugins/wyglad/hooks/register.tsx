@@ -431,7 +431,7 @@ export const register: Register = on => {
                     <Text bold>Do zrobienia przez Ciebie</Text>
                     {all.map((item, i) =>
                       item.isItem ? (
-                        <Box key={`d${i}`} flexDirection="row" gap={1}>
+                        <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
                           {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
                         </Box>
@@ -493,7 +493,7 @@ ${part.body}` : part.body
                   {!isLongFold || full ? (
                     pieces(numbered(body)).map((piece, j) =>
                       'n' in piece ? (
-                        <Box key={`s${i}-${j}`} flexDirection="row" gap={1}>
+                        <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
                             <Text bold>{piece.lead}</Text>
