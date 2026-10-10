@@ -28,7 +28,18 @@ export function firstLine(text: string): string {
   return text.trim().split(/\r?\n/)[0]?.replace(/[*_`]/g, '') ?? ''
 }
 
-// A reply in Stefan's form: the ▶ line, then sections between `---` rules.
+function kindOf(line: string): Kind {
+  return KINDS.find(([, pattern]) => pattern.test(line.trim()))?.[0] ?? 'plain'
+}
+
+// "🟢 **Zrobione**", "## Do zrobienia przez Ciebie:" — the header alone, no sentence after it.
+function isHeaderOnly(line: string): boolean {
+  const text = line.trim().replace(MARK, '').replace(/\*\*/g, '').replace(/:\s*$/, '').trim()
+  return text.length <= 40 && !/[.!?]/.test(text)
+}
+
+// A reply in Stefan's form: the ▶ line, then sections under known headers,
+// with or without `---` rules between them.
 export function splitReply(text: string): Reply | undefined {
   const lines = text.split(/\r?\n/)
   const at = lines.findIndex(line => line.trimStart().startsWith('▶'))
@@ -38,11 +49,23 @@ export function splitReply(text: string): Reply | undefined {
   const rest = [...lines.slice(0, at), ...lines.slice(at + 1)].join('\n')
   const parts: Part[] = []
 
-  for (const chunk of rest.split(/^\s*---+\s*$/m)) {
+  // A section starts at a `---` rule or at a line that is only a known header,
+  // so answers without rules between sections are drawn the same way.
+  const chunks: string[] = []
+  let inFence = false
+  for (const line of rest.split(/\r?\n/)) {
+    if (/^\s*```/.test(line)) inFence = !inFence
+    const isRule = !inFence && /^\s*---+\s*$/.test(line)
+    const isHead = !inFence && kindOf(line) !== 'plain' && isHeaderOnly(line)
+    if (isRule || isHead || chunks.length === 0) chunks.push('')
+    if (!isRule) chunks[chunks.length - 1] += `${line}\n`
+  }
+
+  for (const chunk of chunks) {
     const body = chunk.trim()
     if (body === '') continue
     const [head, ...tail] = body.split(/\r?\n/)
-    const kind = KINDS.find(([, pattern]) => pattern.test(head.trim()))?.[0] ?? 'plain'
+    const kind = isHeaderOnly(head) ? kindOf(head) : 'plain'
     if (kind === 'plain') {
       parts.push({ kind, title: '', body })
     } else {

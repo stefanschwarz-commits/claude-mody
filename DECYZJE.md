@@ -39,3 +39,6 @@
 
 ## wyglad 0.19.4 (2026-10-10)
 Podpowiedź dla Claude każe zaczynać odpowiedź końcową od linii `▶`. Dotąd zakładała, że ▶ już jest (z instrukcji globalnych), a bez ▶ mod nic nie rysuje. Stefan widział sesje bez ramek mimo restartu aplikacji.
+
+## wyglad 0.19.5 (2026-10-10)
+Sekcje rozpoznawane po samym nagłówku (🟢 **Zrobione** itd.), także bez linii `---` między nimi. Przegląd transkryptów pokazał, że w wielu sesjach Claude pisze ▶ i nagłówki, ale pomija `---`; mod dzielił tylko po `---`, więc rysował całość jako zwykły tekst. To była główna przyczyna „raz działa, raz nie”. Zdanie zaczynające się od „Zrobione…” nie otwiera sekcji (nagłówek = krótka linia bez kropki).

@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { optionsOf, splitQuestions, tableOf, tipOf } from './split'
+import { optionsOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
 
 const REPLY = [
   '▶ **Mod działa i jest gotowy do testu.**',
@@ -411,4 +411,15 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   expect(inFrame.some(t => t.startsWith('```'))).toBe(false)
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 3 zadania' })).toBeDefined()
+})
+
+test('sekcje bez linii --- między nimi są rozpoznawane tak samo', () => {
+  const reply = splitReply(['▶ **Gotowe.**', '', 'Opis.', '', '🟢 **Zrobione**', '1. **Raz.** Tak.', '', '🟠 **Do zrobienia przez Ciebie**', '1. Zrób (1 min) – po co', '', '⚪ **Dla informacji**', '- drobiazg', '```', '🟢 **Zrobione** w kodzie nie dzieli', '```'].join('\n'))
+  expect(reply?.parts.map(part => part.kind)).toEqual(['plain', 'done', 'todo', 'info'])
+  expect(reply?.parts[3].body).toContain('w kodzie nie dzieli')
+})
+
+test('zdanie zaczynające się od „Zrobione” nie otwiera sekcji', () => {
+  const reply = splitReply(['▶ **Gotowe.**', '', 'Zrobione zostało wszystko, co prosiłeś, i sprawdzone na stronie.', '', '---', '', '🟢 **Zrobione**', '- raz'].join('\n'))
+  expect(reply?.parts.map(part => part.kind)).toEqual(['plain', 'done'])
 })
