@@ -57,3 +57,11 @@ claude plugin install wyglad@claude-mody
 
 - `/wyglad off` – zwykły wygląd, `/wyglad on` – kolorowy
 - `/sprawy` – panel „Moje sprawy”
+
+## komputer
+
+Tytuł każdej sesji na komputerze zaczyna się od „💻 ” (sesje w chmurze zostają bez znaczka). Mod dopisuje znaczek tylko wtedy, gdy go brakuje, i nie zmienia reszty tytułu, więc dyspozytor poczty nadal znajduje sesje po dokładnym tytule. Nowa sesja dostaje tytuł od aplikacji po pierwszej wiadomości, więc znaczek pojawia się przy drugiej.
+
+```
+claude plugin install komputer@claude-mody
+```

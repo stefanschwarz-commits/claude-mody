@@ -78,3 +78,6 @@ Nie zmienione: przyciski (☐ ☑ ↗ w panelu, „↑ Początek odpowiedzi”, 
 
 ## wyglad 0.22.1 (2026-10-11)
 Stefan po zrzucie: woli białą gwiazdkę ★ z czcionki przy polecanej opcji („1A ★”) i na przycisku „Wybierz 1A ★”. Pomarańczowa ikona gwiazdki wycofana; reszta ikon z 0.22.0 zostaje.
+
+## komputer 0.1.0 (2026-10-11)
+Zlecenie od sesji „Oznaczanie lokalnych sesji Claude” (Stefan wybrał wariant z modem): tytuł każdej sesji lokalnej ma zaczynać się od „💻 ”. Mod hookuje klasyczne zdarzenia SessionStart i UserPromptSubmit, które niosą `session_title` i przyjmują `sessionTitle` w odpowiedzi. Lokalna = folder roboczy na dysku Windows (C:\…); chmura ma „/”. Dopisuje tylko brakujący znaczek, reszty tytułu nie rusza (dyspozytor szuka sesji po dokładnym tytule). Nowa sesja nie ma tytułu przy starcie, dostaje go od aplikacji po pierwszej wiadomości, więc znaczek pojawia się przy drugiej wiadomości; czy aplikacja nie nadpisze go potem i czy działa dla sesji z zadań zaplanowanych, do sprawdzenia w praktyce.
