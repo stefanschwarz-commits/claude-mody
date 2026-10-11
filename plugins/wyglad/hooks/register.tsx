@@ -4,6 +4,25 @@ import type { Register } from 'claude-code'
 import type { Last, Sprawa } from '../types'
 import { firstLine, isProgress, lettersOf, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
+import { svgOf } from './icons'
+
+// Ink colours for the icons, light or dark as the theme is.
+type Ink = { green: string; red: string; orange: string; blue: string; grey: string; text: string }
+const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', grey: '#8a8984', text: '#e8e6e3' }
+const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', grey: '#6b6a66', text: '#222222' }
+
+// An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
+type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
+function inkOf(tint: { blue: string } | undefined): Ink {
+  return tint?.blue === '#EEF4FC' ? INK_LIGHT : INK_DARK
+}
+
+function icon(els: unknown, surface: string, name: string, color: string, glyph: string, size = 16): unknown {
+  const { Svg, Text } = els as Drawers
+  // The terminal's table answers every name, so the surface decides, not the table.
+  if (Svg && surface !== 'terminal') return <Svg source={svgOf(name, color, size)} alt={glyph} width={size} height={size} />
+  return <Text>{glyph}</Text>
+}
 
 const OFF = 'off'
 
@@ -137,10 +156,10 @@ function numbered(body: string): string {
 
 // How each summary section is drawn: its title, frame colour and tint.
 const SECTION = {
-  done: { title: 'Zrobione', color: 'success', tint: 'green' },
-  failed: { title: 'Nie udało się', color: 'error', tint: 'red' },
-  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange' },
-  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey' },
+  done: { title: 'Zrobione', color: 'success', tint: 'green', icon: 'circle-check', glyph: '●' },
+  failed: { title: 'Nie udało się', color: 'error', tint: 'red', icon: 'circle-x', glyph: '●' },
+  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange', icon: 'help-circle', glyph: '●' },
+  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey', icon: 'info-circle', glyph: '●' },
 } as const
 
 // A summary split into drawable pieces: a numbered point is { n, lead, rest },
@@ -377,7 +396,9 @@ export const register: Register = on => {
     const answer = await read($, last)
     if (e.props.hasSurvey || e.props.isWorking || answer === null || (await $.store.get(OFF)) === true) return below
 
-    const { Box, Text, Button } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text, Button } = els
+    const ink = inkOf(await tintOf($))
     const ticked = (await read($, doneTasks)).filter(id => id.startsWith(`${answer.key}:`)).length
     const needs = needsOf(Math.max(0, answer.todos - ticked), answer.questions)
 
@@ -386,7 +407,7 @@ export const register: Register = on => {
         <Box flexDirection="row" gap={2}>
           {needs || answer.isStructured ? (
             <Box flexDirection="row" gap={1}>
-              <Text color={needs ? 'warning' : 'success'}>●</Text>
+              {icon(els, e.surface, 'dot', needs ? ink.orange : ink.green, '●')}
               <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
             </Box>
           ) : null}
@@ -406,24 +427,39 @@ export const register: Register = on => {
   // running calls keep the engine's own drawing, so nothing that matters hides.
   on('ui.render', { component: 'ToolGroup' }, async ($, e, next) => {
     if (e.props.isExpanded || (await $.store.get(OFF)) === true) return next(e)
-    const { Text } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text } = els
+    const ink = inkOf(await tintOf($))
     const kinds = [...new Set(e.props.calls.map(call => stepOf(call.tool)))].slice(0, 3).join(', ')
     const running = e.props.calls.some(call => call.isRunning) ? ' …' : ''
-    return <Text dimColor italic wrap="truncate-end">{`· ${count(e.props.calls.length, 'krok', 'kroki', 'kroków')} w tle (${kinds})${running}`}</Text>
+    return (
+      <Box flexDirection="row" gap={1}>
+        {icon(els, e.surface, 'settings', ink.grey, '·', 14)}
+        <Text dimColor italic wrap="truncate-end">{`${count(e.props.calls.length, 'krok', 'kroki', 'kroków')} w tle (${kinds})${running}`}</Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
     const { tool, isRunning, isErrored, isInterrupted } = e.props
     if (isRunning || isErrored || isInterrupted || (await $.store.get(OFF)) === true) return next(e)
-    const { Text } = $.ui.resolve(e)
-    return <Text dimColor italic>{`· ${stepOf(tool)}`}</Text>
+    const els = $.ui.resolve(e)
+    const { Box, Text } = els
+    const ink = inkOf(await tintOf($))
+    return (
+      <Box flexDirection="row" gap={1}>
+        {icon(els, e.surface, 'settings', ink.grey, '·', 14)}
+        <Text dimColor italic>{stepOf(tool)}</Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     const { text, isSummary } = e.props
     if (isSummary || (await $.store.get(OFF)) === true) return next(e)
 
-    const { Box, Text, Markdown, Button } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text, Markdown, Button } = els
 
     // Messages written while Claude works: one faint, slanted line.
     if (isProgress(text)) {
@@ -447,6 +483,7 @@ export const register: Register = on => {
     const ticked = await read($, doneTasks)
     const isOpen = (await read($, openTexts)).includes(key)
     const tint = await tintOf($)
+    const ink = inkOf(tint)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
     const fill = (value: string) => () => {
       void $.prompt.fill({ text: `${value} `, mode: 'append' }).catch(() => undefined)
@@ -462,11 +499,15 @@ export const register: Register = on => {
         <Box key={key} flexDirection="column" gap={1}>
           {/* A light bar marks where the latest answer starts; older ones get a faint line. */}
           {isLatest ? (
-            <Box backgroundColor="inactive" paddingX={1}>
-              <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
+            <Box backgroundColor="inactive" paddingX={1} flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'player-play', ink.text, '▶')}
+              <Text color="inverseText" bold>Nowa odpowiedź</Text>
             </Box>
           ) : (
-            <Text dimColor>▶ Odpowiedź</Text>
+            <Box flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'player-play', ink.grey, '▶')}
+              <Text dimColor>Odpowiedź</Text>
+            </Box>
           )}
           <Text bold>{reply.headline}</Text>
         </Box>
@@ -508,7 +549,10 @@ export const register: Register = on => {
               return (
                 <Box flexDirection="column" gap={1}>
                   <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
-                    <Text bold>Do zrobienia przez Ciebie</Text>
+                    <Box flexDirection="row" gap={1}>
+                      {icon(els, e.surface, 'list-check', ink.blue, '●')}
+                      <Text bold>Do zrobienia przez Ciebie</Text>
+                    </Box>
                     {all.map((item, i) =>
                       item.isItem ? (
                         <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
@@ -539,14 +583,18 @@ export const register: Register = on => {
               const [title, ...why] = q.text.split('\n\n')
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
-                  <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, 'message-question', ink.blue, '●')}
+                    <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
-                    <Markdown
-                      key={`o${i}-${option.id}`}
-                      text={`**${option.id}${option.isBest ? ' ★' : ''}**  ${option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`}
-                    />
+                    <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      <Text bold>{option.id}</Text>
+                      {option.isBest ? icon(els, e.surface, 'star', ink.orange, '★') : null}
+                      <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
+                    </Box>
                   ))}
                   {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
                   {optionsOf(q).length > 0 ? (
@@ -554,7 +602,7 @@ export const register: Register = on => {
                       {optionsOf(q).map(option => (
                         <Button
                           key={`b${i}-${option.id}`}
-                          label={`Wybierz ${option.id}${option.isBest ? ' ★' : ''}`}
+                          label={`Wybierz ${option.id}`}
                           onPress={fill(option.id)}
                         />
                       ))}
@@ -581,7 +629,10 @@ ${part.body}` : part.body
               return (
                 <Box key={`f${i}`} flexDirection="column" gap={1}>
                 <Box flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
-                  <Text bold>{look.title}</Text>
+                  <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, look.icon, ink[look.tint], look.glyph)}
+                    <Text bold>{look.title}</Text>
+                  </Box>
                   {!isLongFold || full ? (
                     all.filter(piece => !isFence(piece)).map((piece, j) =>
                       'n' in piece ? (

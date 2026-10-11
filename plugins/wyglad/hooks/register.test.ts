@@ -60,7 +60,9 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
   const filled = setup(on)
   for (const surface of ['terminal', 'desktop', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
-    expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeDefined()
+    // The ▶ marker is an icon where the surface draws SVG, the glyph on the terminal.
+    expect(await ui.find(surface === 'terminal' ? { type: 'Text', text: '▶' } : { type: 'Svg' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /[Oo]dpowiedź$/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Mod działa i jest gotowy do testu.' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Do zrobienia przez Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
@@ -179,11 +181,11 @@ test('kroki pracy: jedna szara linia, błąd zostaje widoczny', async ($, on) =>
   setup(on)
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['silnik'] }) as never)
   const ok = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolUse', props: { tool: 'Read', input: {}, isRunning: false, isErrored: false, isInterrupted: false } as never })
-  expect(await ok.find({ type: 'Text', text: '· czytam plik' })).toBeDefined()
+  expect(await ok.find({ type: 'Text', text: 'czytam plik' })).toBeDefined()
   const bad = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolUse', props: { tool: 'Bash', input: {}, isRunning: false, isErrored: true, isInterrupted: false } as never })
   expect(await bad.find({ type: 'Text', text: 'silnik' })).toBeDefined()
   const group = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolGroup', props: { calls: [{ tool: 'Read', input: {}, isRunning: false }, { tool: 'Grep', input: {}, isRunning: false }], isActive: false, isExpanded: false } as never })
-  expect(await group.find({ type: 'Text', text: '· 2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
+  expect(await group.find({ type: 'Text', text: '2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
 })
 
 test('długie wyjaśnienie: zwija się dopiero powyżej 40 linii i nigdy w środku tabeli', async ($, on) => {
