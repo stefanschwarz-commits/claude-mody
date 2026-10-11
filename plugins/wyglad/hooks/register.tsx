@@ -591,8 +591,7 @@ export const register: Register = on => {
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
                     <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                      <Text bold>{option.id}</Text>
-                      {option.isBest ? icon(els, e.surface, 'star', ink.orange, '★') : null}
+                      <Text bold>{`${option.id}${option.isBest ? ' ★' : ''}`}</Text>
                       <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
                     </Box>
                   ))}
@@ -602,7 +601,7 @@ export const register: Register = on => {
                       {optionsOf(q).map(option => (
                         <Button
                           key={`b${i}-${option.id}`}
-                          label={`Wybierz ${option.id}`}
+                          label={`Wybierz ${option.id}${option.isBest ? ' ★' : ''}`}
                           onPress={fill(option.id)}
                         />
                       ))}

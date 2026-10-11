@@ -75,3 +75,6 @@ Stefan wybrał 1A: „Do zrobienia przez Ciebie” zostaje niebieskie, jak karty
 ## wyglad 0.22.0 (2026-10-11)
 Stefan wybrał 1B (ikony konturowe przy tytułach ramek) i 2A (wszystkie znaczki w tym samym stylu). Ikony z Tabler Icons 3.31.0 (MIT) wbudowane jako ścieżki SVG w hooks/icons.ts; kolor i rozmiar nadaje svgOf(). Gdzie: tytuły ramek (circle-check, circle-x, help-circle, list-check, message-question, info-circle), znacznik początku odpowiedzi (player-play), gwiazdka polecanej opcji (star) w linii opcji, kroki w tle (settings), kropka w pasku „Potrzebuję od Ciebie” (wypełnione kółko). Kolory ikon dobrane do motywu (jasny/ciemny). Na terminalu zostają dotychczasowe znaki, bo terminal nie rysuje SVG; o tym decyduje e.surface, nie tabela elementów (tabela terminala odpowiada na każdą nazwę pustym Box).
 Nie zmienione: przyciski (☐ ☑ ↗ w panelu, „↑ Początek odpowiedzi”, „Wybierz 1A”) mają tylko etykiety tekstowe; z „Wybierz 1A ★” zdjęta gwiazdka, bo jest już ikoną w linii opcji.
+
+## wyglad 0.22.1 (2026-10-11)
+Stefan po zrzucie: woli białą gwiazdkę ★ z czcionki przy polecanej opcji („1A ★”) i na przycisku „Wybierz 1A ★”. Pomarańczowa ikona gwiazdki wycofana; reszta ikon z 0.22.0 zostaje.
