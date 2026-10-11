@@ -33,10 +33,10 @@ const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'us�
 
 const SECTIONS = [
   'Każdą odpowiedź końcową zaczynaj od linii `▶ ` z jednozdaniowym nagłówkiem (co się stało); bez niej nic nie zostanie narysowane. Odpowiedź z ▶ jest rysowana według sekcji rozdzielonych `---`.',
-  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟣 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
+  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🔵 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
   '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
-  '- `🟣 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
+  '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
   'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek to wynik, nie temat („**Gira: bez nowych wydań.**”, nie „**Centrum Gira sprawdzone:**”), i najwyżej jedno zdanie dalej; szczegóły (wersje, ceny, daty) idą do wyjaśnienia wyżej, nie do podsumowania.',
   'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”; mod pogrubia część przed myślnikiem, więc tam ma być samo konkretne działanie, a po myślniku tylko uzasadnienie.',
   'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
@@ -137,7 +137,7 @@ function numbered(body: string): string {
 const SECTION = {
   done: { title: 'Zrobione', color: 'success', tint: 'green' },
   failed: { title: 'Nie udało się', color: 'error', tint: 'red' },
-  open: { title: 'Niewyjaśnione', color: '#A78BDA', tint: 'violet' },
+  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange' },
   info: { title: 'Dla informacji', color: 'inactive', tint: 'grey' },
 } as const
 
@@ -203,6 +203,13 @@ function needsOf(todos: number, questions: number): string {
   ].filter(Boolean).join(' i ')
 }
 
+// Tasks of the latest answer, in the order of their numbers in the frame.
+async function tasksOfLast($: Parameters<typeof read>[0]): Promise<Sprawa[]> {
+  const answer = await read($, last)
+  if (!answer) return []
+  return (await read($, sprawy)).filter(one => one.kind === 'todo' && one.id.startsWith(`${answer.key}:`))
+}
+
 function count(n: number, one: string, few: string, many: string): string {
   const word = n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many
   return `${n} ${word}`
@@ -215,8 +222,55 @@ export const register: Register = on => {
       description: 'Wygląd odpowiedzi: /wyglad on albo /wyglad off',
     })
     await $.command.register({ name: 'sprawy', description: 'Panel „Moje sprawy”: zadania do odhaczenia i pytania' })
+    // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
+    await $.tool.register({
+      name: 'odhacz',
+      description: 'Odhacza zadania z ostatniej odpowiedzi w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Do zrobienia przez Ciebie”.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          numery: { type: 'array', items: { type: 'integer', minimum: 1 }, description: 'Numery zadań z ostatniej odpowiedzi' },
+          stan: { type: 'string', enum: ['zrobione', 'odpada', 'otwarte'], description: 'zrobione i odpada skreślają zadanie; otwarte przywraca je' },
+        },
+        required: ['numery'],
+      },
+      isDeferred: false,
+    })
 
     return next(e)
+  })
+
+  on('tool.call', { tool: 'mcp__wyglad__odhacz' }, async ($, e) => {
+    const input = e as unknown as { numery?: number[]; stan?: string }
+    const tasks = await tasksOfLast($)
+    const stan = input.stan ?? 'zrobione'
+    const hit = (input.numery ?? []).map(n => ({ n, task: tasks[n - 1] }))
+    const ids = hit.flatMap(h => (h.task ? [h.task.id] : []))
+    await update($, doneTasks, list => (stan === 'otwarte' ? list.filter(id => !ids.includes(id)) : [...list.filter(id => !ids.includes(id)), ...ids]))
+    await $.ui.invalidate('ui.render')
+    const lines = hit.map(h => (h.task ? `${h.n}. ${h.task.text} – ${stan}` : `${h.n}. brak takiego zadania w ostatniej odpowiedzi`))
+    const open = tasks.length - (await read($, doneTasks)).filter(id => tasks.some(t => t.id === id)).length
+    $.ui.status(open > 0 ? `czeka: ${count(open, 'zadanie', 'zadania', 'zadań')}` : undefined)
+    return { result: [...lines, `Otwartych zadań z ostatniej odpowiedzi: ${open}.`].join('\n') }
+  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'wyglad: odhaczanie nie powiodło się' }))
+
+  // "1 zrobiłem, 3 odpada": the model reads which tasks those numbers name.
+  const SAID = /(\d+(?:\s*(?:,|i|oraz)\s*\d+)*)\s*(zrobi[łl][ae]m|zrobione|gotowe|załatwione|odpada|odpad[łl]o|pomijam|rezygnuj[eę]|nie zrobi[eę])/giu
+  on('prompt.submit', async ($, e, next) => {
+    if (e.text.length > 400) return next(e)
+    const tasks = await tasksOfLast($)
+    if (tasks.length === 0) return next(e)
+    const notes: string[] = []
+    for (const m of e.text.matchAll(SAID)) {
+      const stan = /zrobi|gotowe|załatw/i.test(m[2]) ? 'zrobione' : 'odpada'
+      for (const n of m[1].split(/\D+/).filter(Boolean).map(Number)) {
+        const task = tasks[n - 1]
+        notes.push(task ? `Zadanie ${n} („${task.text}”): ${stan}.` : `Zadanie ${n}: brak takiego numeru w ostatniej odpowiedzi.`)
+      }
+    }
+    if (notes.length === 0) return next(e)
+    const note = [`Numery w wiadomości Stefana odnoszą się do ramki „Do zrobienia przez Ciebie” z Twojej ostatniej odpowiedzi:`, ...notes, 'Odhacz je narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
+    return next({ ...e, context: [...(e.context ?? []), note] })
   })
 
   on('command.run', { command: 'sprawy' }, async $ => {
@@ -309,6 +363,8 @@ export const register: Register = on => {
       }
       const needs = summary ? needsOf(summary.todos, summary.questions) : ''
       if (needs && (await $.store.get(OFF)) !== true) $.ui.toast(`Gotowe. Potrzebuję od Ciebie: ${needs}`, { timeoutMs: 8000 })
+      // The status line keeps the count in view without scrolling.
+      $.ui.status(needs ? `czeka: ${needs}` : undefined)
     }
 
     return done
@@ -449,7 +505,7 @@ export const register: Register = on => {
               const isFence = (text: string) => text.startsWith('```')
               return (
                 <Box flexDirection="column" gap={1}>
-                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
+                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
                     <Text bold>Do zrobienia przez Ciebie</Text>
                     {all.map((item, i) =>
                       item.isItem ? (

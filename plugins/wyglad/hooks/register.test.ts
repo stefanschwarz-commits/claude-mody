@@ -448,3 +448,30 @@ test('blok do wklejenia w ramce Zrobione zostaje w całości i stoi pod ramką',
   expect(fence).toMatch(/```$/)
   expect(md.filter(t => t.trim() === '```').length).toBe(0)
 })
+
+test('„1 zrobiłem”: Claude dostaje treść zadania, narzędzie odhacz skreśla je, linia stanu liczy resztę', async ($, on) => {
+  setup(on)
+  const status: (string | undefined)[] = []
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.status', ($, e) => {
+    status.push(e.text)
+    return { value: undefined } as never
+  })
+  on('ui.invalidate', () => ({ value: undefined }) as never)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  const seen: string[][] = []
+  on('prompt.submit', ($, e) => {
+    seen.push([...(e.context ?? [])])
+    return { text: e.text }
+  })
+  const reply = ['▶ **Test.**', '', '---', '', '🔵 **Do zrobienia przez Ciebie**', '', '1. Zmień hasło (5 min) – po to', '2. Sprawdź stronę (2 min) – po to', '3. Napisz do Ligii (5 min) – po to'].join('\n')
+  await $.turn.complete({ reason: 'answer', answer: reply, durationMs: 1, isAborted: false, turnId: 't3' } as never)
+  expect(status.at(-1)).toBe('czeka: 3 zadania')
+  await $.prompt.submit({ text: '1 i 3 zrobiłem, 2 odpada', wait: false } as never)
+  expect(seen[0].join('\n')).toContain('Zadanie 1 („Zmień hasło (5 min) – po to”): zrobione.')
+  expect(seen[0].join('\n')).toContain('Zadanie 2 („Sprawdź stronę (2 min) – po to”): odpada.')
+  const out = (await $.tool.call({ tool: 'mcp__wyglad__odhacz', numery: [1, 3], stan: 'zrobione' } as never)) as { result?: unknown }
+  expect(String(out.result)).toContain('Otwartych zadań z ostatniej odpowiedzi: 1.')
+  expect(status.at(-1)).toBe('czeka: 1 zadanie')
+})

@@ -58,3 +58,10 @@ Stefan po zrzutach z 11.10:
 - Zadania bez kratek, z numerami „1.”, „2.”: Stefan może odpisać „zrobiłem 1”, a kratek Claude i tak nie widzi (zaznaczenie zostaje w aplikacji). Kratki zostają tylko w panelu „Moje sprawy”.
 - Zadanie rysowane jak punkt „Zrobione”: pogrubione „co zrobić (ile czasu)”, szare „po co” po myślniku. Podpowiedź mówi, że przed myślnikiem ma być samo działanie.
 - Blok do wklejenia (```) w ramce podsumowania zostaje w całości i stoi pod ramką; dotąd rozpadał się na puste pola kodu z przyciskiem kopiowania i zwykły tekst.
+
+## wyglad 0.21.0 (2026-10-11)
+- Narzędzie `odhacz` dla Claude'a (numery zadań z ostatniej odpowiedzi, stan zrobione/odpada/otwarte): skreśla zadania w panelu „Moje sprawy”. Kratek Claude nie widzi, numery tak.
+- Skrót Stefana „1 i 3 zrobiłem, 2 odpada”: mod dokleja do wiadomości (niewidocznie dla Stefana) treść zadań o tych numerach i prośbę o odhaczenie. Rozpoznawane słowa: zrobiłem/zrobione/gotowe/załatwione, odpada/pomijam/rezygnuję/nie zrobię.
+- Linia stanu: „czeka: 2 zadania, 1 pytanie” po każdej odpowiedzi i po odhaczeniu.
+- Kolory: „Do zrobienia przez Ciebie” niebieskie jak karty pytań (wszystko „od Ciebie” w jednej barwie, wariant A z makiety; Stefan nie wybrał jeszcze, zmiana to jedna linia), „Niewyjaśnione” wraca do pomarańczu (Stefan: żółty = „jeszcze nie wiemy”). Fiolet z 0.20.0 wycofany.
+- Odłożone decyzją Stefana: blokada groźnych poleceń, lista wyboru w kartach. Następne: ikony SVG (Tabler, MIT) i kropki jako grafika, potem karty opcji obok siebie.
