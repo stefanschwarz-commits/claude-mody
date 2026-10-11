@@ -65,3 +65,6 @@ Stefan po zrzutach z 11.10:
 - Linia stanu: „czeka: 2 zadania, 1 pytanie” po każdej odpowiedzi i po odhaczeniu.
 - Kolory: „Do zrobienia przez Ciebie” niebieskie jak karty pytań (wszystko „od Ciebie” w jednej barwie, wariant A z makiety; Stefan nie wybrał jeszcze, zmiana to jedna linia), „Niewyjaśnione” wraca do pomarańczu (Stefan: żółty = „jeszcze nie wiemy”). Fiolet z 0.20.0 wycofany.
 - Odłożone decyzją Stefana: blokada groźnych poleceń, lista wyboru w kartach. Następne: ikony SVG (Tabler, MIT) i kropki jako grafika, potem karty opcji obok siebie.
+
+## wyglad 0.21.1 (2026-10-11)
+Instrukcja v7 każe zaczynać zadania od „**Zadanie N:**”, bo wcześniejsza nakładka zamieniała numer na kratkę. Mod rysuje numer sam od 0.20.0, więc zdejmuje ten przedrostek z treści, żeby nie było „1. Zadanie 1:”. Pane „Moje sprawy” zostawia tekst bez zmian.

@@ -1,6 +1,6 @@
 {
   "name": "wyglad",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "Czytelniejsze odpowiedzi: najpierw to, czego Claude potrzebuje od Ciebie, reszta zwinięta; pasek nad polem wpisywania z przyciskiem do początku odpowiedzi. /wyglad on|off.",
   "author": {
     "name": "Stefan Schwarz"

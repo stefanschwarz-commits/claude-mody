@@ -80,9 +80,11 @@ function gist(part: Part): string {
 // piece, fences included, so a pasted instruction is not turned into tick boxes.
 // "Zmień hasło (5 min) – po to": what to do reads bold, why reads faint.
 function taskOf(text: string): { what: string; why: string } {
-  const at = /\s[–—-]\s/.exec(text)
-  if (!at) return { what: text.replace(/\*\*/g, ''), why: '' }
-  return { what: text.slice(0, at.index).replace(/\*\*/g, ''), why: text.slice(at.index + at[0].length) }
+  // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
+  const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
+  const at = /\s[–—-]\s/.exec(plain)
+  if (!at) return { what: plain, why: '' }
+  return { what: plain.slice(0, at.index), why: plain.slice(at.index + at[0].length) }
 }
 
 function itemsOf(body: string): { isItem: boolean; text: string }[] {

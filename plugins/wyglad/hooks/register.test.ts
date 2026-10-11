@@ -475,3 +475,19 @@ test('„1 zrobiłem”: Claude dostaje treść zadania, narzędzie odhacz skre�
   expect(String(out.result)).toContain('Otwartych zadań z ostatniej odpowiedzi: 1.')
   expect(status.at(-1)).toBe('czeka: 1 zadanie')
 })
+
+test('„**Zadanie 1:**” z instrukcji v7 nie dubluje numeru w ramce zadań', async ($, on) => {
+  setup(on)
+  const reply = `▶ **Test.**
+
+---
+
+🔵 **Do zrobienia przez Ciebie**
+
+1. **Zadanie 1:** Załóż projekt (2 minuty) – po co
+2. **Zadanie 2:** Odpowiedz Ligii (5 minut) – prosiła`
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Załóż projekt (2 minuty)' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Zadanie 1: Załóż projekt (2 minuty)' })).toBeUndefined()
+})
