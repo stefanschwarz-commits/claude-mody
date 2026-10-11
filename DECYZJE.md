@@ -68,3 +68,6 @@ Stefan po zrzutach z 11.10:
 
 ## wyglad 0.21.1 (2026-10-11)
 Instrukcja v7 każe zaczynać zadania od „**Zadanie N:**”, bo wcześniejsza nakładka zamieniała numer na kratkę. Mod rysuje numer sam od 0.20.0, więc zdejmuje ten przedrostek z treści, żeby nie było „1. Zadanie 1:”. Pane „Moje sprawy” zostawia tekst bez zmian.
+
+## Kolor ramki zadań (2026-10-11)
+Stefan wybrał 1A: „Do zrobienia przez Ciebie” zostaje niebieskie, jak karty pytań (wszystko „od Ciebie” w jednej barwie). „Niewyjaśnione” pomarańczowe.
