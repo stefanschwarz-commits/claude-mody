@@ -356,13 +356,15 @@ test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem
   setup(on)
   const reply = ['▶ **Lead.**', '', '---', '', '🟢 **Zrobione**', '- Testy przechodzą. 23 z 23 na kopii.', '', '---', '', '🔴 **Problem**', '- Kopia nie wyszła.', '', '---', '', '🟠 **Niewyjaśnione**', '- Nie wiem, czemu mail nie dotarł.'].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  type Node = { type: string; props?: { bold?: boolean; dimColor?: boolean }; children?: (Node | string)[] }
+  type Node = { type: string; props?: { bold?: boolean; dimColor?: boolean; text?: string }; children?: (Node | string)[] }
   const bold: string[] = []
   const faint: string[] = []
   const walk = (n: Node) => {
     const text = n.children?.filter(c => typeof c === 'string').join('') ?? ''
     if (n.type === 'Text' && n.props?.bold) bold.push(text)
     if (n.type === 'Text' && n.props?.dimColor) faint.push(text)
+    // The rest is Markdown (links stay clickable), drawn faint.
+    if (n.type === 'Markdown' && n.props?.dimColor) faint.push(n.props.text ?? '')
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)

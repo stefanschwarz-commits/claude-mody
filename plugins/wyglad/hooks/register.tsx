@@ -497,7 +497,7 @@ ${part.body}` : part.body
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
                             <Text bold>{piece.lead}</Text>
-                            {piece.rest ? <Text dimColor>{piece.rest}</Text> : null}
+                            {piece.rest ? <Markdown text={piece.rest} dimColor /> : null}
                             {piece.subs.map((sub, k) => (
                               <Markdown key={`sub${i}-${j}-${k}`} text={sub} dimColor />
                             ))}

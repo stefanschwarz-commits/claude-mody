@@ -48,3 +48,6 @@ Numer punktu w podsumowaniu i kratka przy zadaniu stoją przy pierwszej linii pu
 
 ## wyglad 0.19.7 (2026-10-10)
 Pusta linia między punktami w ramkach podsumowania (gap), bo siedem kilkulinijkowych punktów bez odstępów robiło ścianę. Podpowiedź: pogrubiony początek punktu to wynik („Gira: bez nowych wydań.”), nie temat („Centrum Gira sprawdzone:”); liczby i daty zostają w wyjaśnieniu, nie w podsumowaniu. Stefan: „nie wiem do końca, co było zrobione, a co nie”.
+
+## wyglad 0.19.8 (2026-10-11)
+Szare rozwinięcie punktu podsumowania rysowane jako Markdown, nie zwykły tekst: link `[plik](plik)` był widoczny jako surowy zapis w nawiasach (zrzut z sesji „Granty UE”). Zrzut potwierdził też odstępy i numery przy pierwszej linii z 0.19.6–0.19.7.
