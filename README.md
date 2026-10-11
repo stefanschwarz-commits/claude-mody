@@ -37,18 +37,19 @@ claude plugin install projekt@claude-mody
 - `/stan nowy` – zakłada pusty STAN.md w bieżącym folderze
 - pasek zwijasz znakiem `[-]` po jego prawej stronie
 
-## wyglad (wersja testowa)
+## wyglad
 
-Odpowiedzi Claude'a w Claude Code:
-- kolorowy pasek „▶ Nowa odpowiedź” zaznacza początek ostatniej odpowiedzi (starsze mają szary), pod nim wniosek;
-- „Potrzebuję od Ciebie”: zadania i pytania razem, pytania z tabelą opcji i przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole);
-- Zrobione i Problem zwinięte do jednej linii (zielona / czerwona), przycisk „Pokaż szczegóły” rozwija;
-- pasek nad polem wpisywania: ile zadań i pytań czeka na Ciebie oraz przycisk „↑ Początek odpowiedzi”;
-- krótkie komunikaty z trakcie pracy i kroki pracy (czytanie plików, polecenia) zwinięte do jednej szarej linii; błędy zostają widoczne;
-- zadania z kratką ☐ do odhaczenia; pasek liczy tylko te, które zostały;
-- długie wyjaśnienia: pierwsze 8 linii i przycisk „Pokaż więcej”;
+Odpowiedzi Claude'a w Claude Code, rysowane według sekcji odpowiedzi (linia ▶, potem Zrobione, Nie udało się, Niewyjaśnione, Do zrobienia przez Ciebie, Pytania do Ciebie, Dla informacji; kreski `---` między sekcjami nie są konieczne):
+- jasny pasek „▶ Nowa odpowiedź” zaznacza początek ostatniej odpowiedzi (starsze mają szary „▶ Odpowiedź”), pod nim wniosek;
+- „Do zrobienia przez Ciebie” w niebieskiej ramce: zadania z numerami, pogrubione „co zrobić”, szare „po co”; przedrostek „Zadanie N:” z instrukcji jest zdejmowany;
+- każde pytanie w niebieskiej karcie: opcje jako `1A`, `1B ★` (polecana z gwiazdką), przyciski `Wybierz 1A` wpisują odpowiedź w pole;
+- podsumowanie w osobnych ramkach z tytułem w środku: Zrobione (zielona), Nie udało się (czerwona), Niewyjaśnione (pomarańczowa), Dla informacji (szara); punkt ma pogrubiony wynik i szare rozwinięcie, linki są klikalne; blok do wklejenia stoi pod ramką w całości;
+- pasek nad polem wpisywania: ile zadań i pytań czeka, przyciski „↑ Początek odpowiedzi” i „Moje sprawy”;
+- linia stanu na dole: „czeka: 2 zadania, 1 pytanie”;
+- skrót „1 i 3 zrobiłem, 2 odpada”: mod dopisuje Claude'owi treść zadań o tych numerach, a Claude odhacza je narzędziem `odhacz` w panelu „Moje sprawy”;
+- krótkie komunikaty w trakcie pracy i kroki pracy zwinięte do jednej szarej linii; błędy zostają widoczne;
 - powiadomienie w rogu na koniec pracy, gdy coś na Ciebie czeka;
-- panel boczny „Moje sprawy” (`/sprawy` albo przycisk w pasku): wszystkie zadania z rozmowy do odhaczenia i pytania z przyciskami odpowiedzi.
+- panel boczny „Moje sprawy” (`/sprawy` albo przycisk w pasku): zadania do odhaczenia i pytania, z odnośnikami ↗ do miejsca w odpowiedzi.
 
 ```
 claude plugin install wyglad@claude-mody
