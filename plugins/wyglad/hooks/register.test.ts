@@ -161,10 +161,16 @@ test('odhaczone zadanie się skreśla, a pasek liczy tylko pozostałe', async ($
   await $.turn.complete({ reason: 'answer', answer: reply, durationMs: 1, isAborted: false, turnId: 't2' } as never)
   expect(toasts).toEqual(['Gotowe. Potrzebuję od Ciebie: 2 zadania'])
   const answer = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  const tick = await answer.find({ type: 'Button', text: '☐' })
+  // Tasks are numbered, so Stefan can say "zrobiłem 1"; what to do reads bold, why reads faint.
+  expect(await answer.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await answer.find({ type: 'Text', text: 'Zmień hasło (5 min)' })).toBeDefined()
+  expect(await answer.find({ type: 'Markdown', props: { text: 'po to' } })).toBeDefined()
+  expect(await answer.find({ type: 'Button', text: '☐' })).toBeUndefined()
+  // Ticking lives in the "Moje sprawy" pane.
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  const tick = await pane.find({ type: 'Button', text: '☐' })
   expect(tick).toBeDefined()
-  await answer.press({ key: tick!.key! })
-  expect(await answer.find({ type: 'Button', text: '☑' })).toBeDefined()
+  await pane.press({ key: tick!.key! })
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie' })).toBeDefined()
 })
@@ -220,7 +226,7 @@ test('nagłówki z kolorowymi kropkami (wersja 6 instrukcji) są rozpoznawane', 
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Markdown', props: { text: /Strona działa/ } })).toBeDefined()
   expect(await ui.find({ type: 'Markdown', props: { text: /Hasło wygasło/ } })).toBeDefined()
-  expect(await ui.find({ type: 'Button', text: '☐' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: '1.' })).toBeDefined()
 })
 
 test('gwiazdka także przy „Polecam 2B” z numerem', () => {
@@ -394,7 +400,7 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   const boxes: string[] = []
   const md: string[] = []
   const walk = (n: Node) => {
-    if (n.type === 'Button' && n.props?.label === '☐') boxes.push('☐')
+    if (n.type === 'Text' && /^\d+\.$/.test(n.children?.join('') ?? '')) boxes.push('n')
     if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
@@ -424,4 +430,21 @@ test('sekcje bez linii --- między nimi są rozpoznawane tak samo', () => {
 test('zdanie zaczynające się od „Zrobione” nie otwiera sekcji', () => {
   const reply = splitReply(['▶ **Gotowe.**', '', 'Zrobione zostało wszystko, co prosiłeś, i sprawdzone na stronie.', '', '---', '', '🟢 **Zrobione**', '- raz'].join('\n'))
   expect(reply?.parts.map(part => part.kind)).toEqual(['plain', 'done'])
+})
+
+test('blok do wklejenia w ramce Zrobione zostaje w całości i stoi pod ramką', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Gotowa wiadomość.**', '', '---', '', '🟢 **Zrobione**', '', '```', 'Sprawdź, tylko odczytem:', '1. Czy skrypt się uruchomił.', '2. Czy wysyła maila.', '```', '', '---', '', '⚪ **Dla informacji**', '1. **Brak maila nie musi oznaczać awarii.** Nie wiem.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { text?: string }; children?: (Node | string)[] }
+  const md: string[] = []
+  const walk = (n: Node) => {
+    if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  const fence = md.find(t => t.startsWith('```'))
+  expect(fence).toContain('2. Czy wysyła maila.')
+  expect(fence).toMatch(/```$/)
+  expect(md.filter(t => t.trim() === '```').length).toBe(0)
 })

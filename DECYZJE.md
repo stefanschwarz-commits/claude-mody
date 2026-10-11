@@ -51,3 +51,10 @@ Pusta linia między punktami w ramkach podsumowania (gap), bo siedem kilkulinijk
 
 ## wyglad 0.19.8 (2026-10-11)
 Szare rozwinięcie punktu podsumowania rysowane jako Markdown, nie zwykły tekst: link `[plik](plik)` był widoczny jako surowy zapis w nawiasach (zrzut z sesji „Granty UE”). Zrzut potwierdził też odstępy i numery przy pierwszej linii z 0.19.6–0.19.7.
+
+## wyglad 0.20.0 (2026-10-11)
+Stefan po zrzutach z 11.10:
+- „Niewyjaśnione” ma fioletową ramkę i fioletowe tło (🟣), bo pomarańcz mylił się z „Do zrobienia przez Ciebie”.
+- Zadania bez kratek, z numerami „1.”, „2.”: Stefan może odpisać „zrobiłem 1”, a kratek Claude i tak nie widzi (zaznaczenie zostaje w aplikacji). Kratki zostają tylko w panelu „Moje sprawy”.
+- Zadanie rysowane jak punkt „Zrobione”: pogrubione „co zrobić (ile czasu)”, szare „po co” po myślniku. Podpowiedź mówi, że przed myślnikiem ma być samo działanie.
+- Blok do wklejenia (```) w ramce podsumowania zostaje w całości i stoi pod ramką; dotąd rozpadał się na puste pola kodu z przyciskiem kopiowania i zwykły tekst.

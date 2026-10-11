@@ -33,12 +33,12 @@ const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'us�
 
 const SECTIONS = [
   'Każdą odpowiedź końcową zaczynaj od linii `▶ ` z jednozdaniowym nagłówkiem (co się stało); bez niej nic nie zostanie narysowane. Odpowiedź z ▶ jest rysowana według sekcji rozdzielonych `---`.',
-  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
+  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟣 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
   '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
   '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
-  '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
+  '- `🟣 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
   'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek to wynik, nie temat („**Gira: bez nowych wydań.**”, nie „**Centrum Gira sprawdzone:**”), i najwyżej jedno zdanie dalej; szczegóły (wersje, ceny, daty) idą do wyjaśnienia wyżej, nie do podsumowania.',
-  'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
+  'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”; mod pogrubia część przed myślnikiem, więc tam ma być samo konkretne działanie, a po myślniku tylko uzasadnienie.',
   'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
   'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
 ].join('\n')
@@ -78,6 +78,13 @@ function gist(part: Part): string {
 // Other lines in a row (a sentence, a table) stay together as one block.
 // A fenced block (``` … ```) is text to copy, never a list of tasks: it stays one
 // piece, fences included, so a pasted instruction is not turned into tick boxes.
+// "Zmień hasło (5 min) – po to": what to do reads bold, why reads faint.
+function taskOf(text: string): { what: string; why: string } {
+  const at = /\s[–—-]\s/.exec(text)
+  if (!at) return { what: text.replace(/\*\*/g, ''), why: '' }
+  return { what: text.slice(0, at.index).replace(/\*\*/g, ''), why: text.slice(at.index + at[0].length) }
+}
+
 function itemsOf(body: string): { isItem: boolean; text: string }[] {
   const out: { isItem: boolean; text: string }[] = []
   let inFence = false
@@ -106,9 +113,12 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
 // Numbering restarts after a paragraph; nested points and tables stay as they are.
 function numbered(body: string): string {
   let n = 0
+  let inFence = false
   return body
     .split(/\r?\n/)
     .map(line => {
+      if (/^\s*```/.test(line)) inFence = !inFence
+      if (inFence || /^\s*```/.test(line)) return line
       const point = /^[-*•]\s+(.*)$/.exec(line)
       if (point) {
         n += 1
@@ -127,7 +137,7 @@ function numbered(body: string): string {
 const SECTION = {
   done: { title: 'Zrobione', color: 'success', tint: 'green' },
   failed: { title: 'Nie udało się', color: 'error', tint: 'red' },
-  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange' },
+  open: { title: 'Niewyjaśnione', color: '#A78BDA', tint: 'violet' },
   info: { title: 'Dla informacji', color: 'inactive', tint: 'grey' },
 } as const
 
@@ -140,7 +150,19 @@ type Piece = { n: string; lead: string; rest: string; subs: string[] } | { text:
 
 function pieces(body: string): Piece[] {
   const out: Piece[] = []
+  let fence: { text: string } | undefined
   for (const line of body.split(/\r?\n/)) {
+    // A fenced block is one piece, kept whole.
+    if (fence) {
+      fence.text += `\n${line}`
+      if (/^\s*```/.test(line)) fence = undefined
+      continue
+    }
+    if (/^\s*```/.test(line)) {
+      fence = { text: line }
+      out.push(fence)
+      continue
+    }
     if (line.trim() === '') continue
     const last = out[out.length - 1]
     if (/^\s+\S/.test(line) && last && 'n' in last) {
@@ -165,10 +187,10 @@ function pieces(body: string): Piece[] {
 
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; violet: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', violet: '#F3EEFB' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', violet: '#221A30' }
   } catch {
     return undefined
   }
@@ -432,8 +454,15 @@ export const register: Register = on => {
                     {all.map((item, i) =>
                       item.isItem ? (
                         <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                          <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
-                          {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
+                          <Text>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
+                          {ticked.includes(`${key}:${i}`) ? (
+                            <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text>
+                          ) : (
+                            <Box flexDirection="column">
+                              <Text bold>{taskOf(item.text).what}</Text>
+                              {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor /> : null}
+                            </Box>
+                          )}
                         </Box>
                       ) : isFence(item.text) ? null : (
                         <Markdown key={`d${i}`} text={item.text} />
@@ -487,11 +516,16 @@ export const register: Register = on => {
               const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
 
 ${part.body}` : part.body
+              const all = pieces(numbered(body))
+              // A block to paste (```) is drawn whole, below the frame, so its fences
+              // never become empty code boxes inside it.
+              const isFence = (piece: Piece) => 'text' in piece && piece.text.startsWith('```')
               return (
-                <Box key={`f${i}`} flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
+                <Box key={`f${i}`} flexDirection="column" gap={1}>
+                <Box flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
                   <Text bold>{look.title}</Text>
                   {!isLongFold || full ? (
-                    pieces(numbered(body)).map((piece, j) =>
+                    all.filter(piece => !isFence(piece)).map((piece, j) =>
                       'n' in piece ? (
                         <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${piece.n}.`}</Text>
@@ -510,6 +544,10 @@ ${part.body}` : part.body
                   ) : (
                     <Text wrap="truncate-end">{gist(part)}</Text>
                   )}
+                </Box>
+                {(!isLongFold || full ? all.filter(isFence) : []).map((piece, j) => (
+                  <Markdown key={`fence${i}-${j}`} text={'text' in piece ? piece.text : ''} />
+                ))}
                 </Box>
               )
             })}
