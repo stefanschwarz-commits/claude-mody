@@ -98,6 +98,16 @@ function gist(part: Part): string {
 // A fenced block (``` … ```) is text to copy, never a list of tasks: it stays one
 // piece, fences included, so a pasted instruction is not turned into tick boxes.
 // "Zmień hasło (5 min) – po to": what to do reads bold, why reads faint.
+// "[plan.pdf](plan.pdf)", "[Plan](C:\Projekty\plan.pdf)": a link to a file on this
+// computer, not a web address. Returns its label and path.
+export function fileOf(text: string): { label: string; path: string } | undefined {
+  const link = /^\s*\**\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\**\s*[.;,]?\s*$/.exec(text)
+  if (!link) return undefined
+  const path = link[2]
+  if (/^(https?|mailto|ftp):/i.test(path)) return undefined
+  return { label: link[1], path }
+}
+
 function taskOf(text: string): { what: string; why: string } {
   // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
   const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
@@ -123,8 +133,11 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
     }
     if (line.trim() === '') continue
     const item = /^\s*(\d+\.|[-*])\s+(.*)$/.exec(line)
-    if (item) out.push({ isItem: true, text: item[2] })
-    else if (prev && !prev.isItem) prev.text += `\n${line}`
+    // A link to a file on this computer is not a task: it is drawn below the frame.
+    if (item && fileOf(item[2])) out.push({ isItem: false, text: item[2] })
+    else if (item) out.push({ isItem: true, text: item[2] })
+    else if (/^\s*plik[a-z]*:\s*$/i.test(line)) continue
+    else if (prev && !prev.isItem && !fileOf(prev.text)) prev.text += `\n${line}`
     else out.push({ isItem: false, text: line })
   }
   return out
@@ -566,13 +579,26 @@ export const register: Register = on => {
                             </Box>
                           )}
                         </Box>
-                      ) : isFence(item.text) ? null : (
+                      ) : isFence(item.text) || fileOf(item.text) ? null : (
                         <Markdown key={`d${i}`} text={item.text} />
                       ),
                     )}
                   </Box>
                   {all.filter(item => !item.isItem && isFence(item.text)).map((item, i) => (
                     <Markdown key={`fence${i}`} text={item.text} />
+                  ))}
+                  {/* Files on this computer: a row each, with a button that shows the file in its folder
+                      (the desktop app's own tool); on the phone a note, as the file is not there. */}
+                  {all.flatMap(item => (!item.isItem && fileOf(item.text) ? [fileOf(item.text)!] : [])).map((file, i) => (
+                    <Box key={`file${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      {icon(els, e.surface, 'file', ink.grey, '·')}
+                      <Text>{file.label}</Text>
+                      {e.surface === 'mobile' ? (
+                        <Text dimColor>plik na komputerze, poproś o załącznik</Text>
+                      ) : (
+                        <Button key={`reveal-${key}-${i}`} label="Pokaż w folderze" onPress={() => void $.tool.call({ tool: 'mcp__ccd_host__reveal_path', path: file.path } as never).catch(() => $.ui.toast(`Nie udało się pokazać pliku ${file.label}`))} />
+                      )}
+                    </Box>
                   ))}
                 </Box>
               )
