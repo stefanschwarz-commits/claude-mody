@@ -94,3 +94,8 @@ Sesja „Migracja NGO na konto Elmi” poprawiła polecenie w kolejce dla ELMI: 
 
 ## STAN: instrukcja w wersji 8 (2026-10-19)
 Stefan „1A” w sesji „💻 Mody” na koncie ELMI: wiersz o instrukcji w STAN.md mówił o wersji 7. Poprawiony na wersję 8. Dopisane, że pole instrukcji w Ustawieniach claude.ai jest jedno dla profilu Stefana i wszystkie trzy konta mają tę samą treść (ustaliła sesja „Instrukcje dla Claude”, zapis w poleceniu `_przeprowadzka-elmi/skrzynka/polecenia-dla-elmi/wykonane/2026-10-19-1230-mody-instrukcje-i-sesja.md`). Kod modów bez zmian.
+
+## Bez „Zadanie N:” w zadaniach; CLAUDE.md o jednych instrukcjach (2026-10-19)
+Prośba sesji „Centralna dystrybucja maili”: numer przy polu ☐. Sprawdzone: w odpowiedzi nakładka rysuje numer od 0.20.0, a „Zadanie N:” ukrywa od 0.21.1; ☐ bez numeru są tylko w panelu „Moje sprawy”, gdzie numer z jednej odpowiedzi myliłby się z innymi. Stefan:
+- „2A”: kodu nie zmieniamy; z reguły `~/.claude/rules/format-zadania-i-pytania.md` zdjęty wymóg „Zadanie N:” (punkt 2, punkt 4, uwaga na końcu). Zmiana instrukcji globalnej (v8 nadal każe pisać „Zadanie N:”) przekazana sesji „Instrukcje dla Claude” przez kolejkę Personal: `_przeprowadzka-elmi/skrzynka/polecenia-dla-personal/2026-10-19-1500-instrukcje-bez-zadanie-n.md`.
+- „1A”: CLAUDE.md nie mówi już, że instrukcje wkleja się na każdym koncie osobno (pole jest jedno dla profilu Stefana).

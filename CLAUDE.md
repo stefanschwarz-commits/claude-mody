@@ -23,7 +23,9 @@ przyciski (1A, 1B), polecana z białą ★ z czcionki; zadania numerowane, bez k
 ramka zadań i pytań, pomarańczowe „Niewyjaśnione”; pogrubiony początek punktu to wynik, szare rozwinięcie;
 blok do wklejenia i linki do plików na komputerze pod ramką, nie w niej.
 
-## Co jest per konto, a nie per komputer
-Instrukcje globalne w Ustawieniach claude.ai (plik `instrukcje-globalne-vN.md` w OneDrive „Instrukcje Claude”)
-trzeba wkleić na każdym koncie osobno. Bez nich Claude na danym koncie pisze w innym układzie i mod rysuje
-tylko część ramek. Pamięć sesji i reguły w `~/.claude/rules` są wspólne dla komputera.
+## Instrukcje globalne: jedne dla wszystkich kont
+Pole instrukcji w Ustawieniach claude.ai (plik `instrukcje-globalne-vN.md` w OneDrive „Instrukcje Claude”) jest
+jedno dla profilu Stefana: Personal, ELMI i ATERIMA SERVICES mają tę samą treść (sprawdzone 2026-10-19), więc
+wkleja się je raz. Bez nich Claude pisze w innym układzie i mod rysuje tylko część ramek; jeśli ramki rozjeżdżają
+się tylko na jednym koncie, najpierw sprawdź, czy sesja ma instrukcje w kontekście. Zmiany w instrukcjach idą
+przez sesję „Instrukcje dla Claude”. Pamięć sesji i reguły w `~/.claude/rules` są wspólne dla komputera.
