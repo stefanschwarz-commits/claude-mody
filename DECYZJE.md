@@ -91,3 +91,6 @@ Dwa konta: mody są instalowane raz dla komputera, więc działają tak samo na 
 
 ## Dopisek (2026-10-19)
 Sesja „Migracja NGO na konto Elmi” poprawiła polecenie w kolejce dla ELMI: wklejana ma być wersja 8 instrukcji (obowiązuje od 18.10, decyzja Stefana 2A), nie 7. Kolejki poleceń są teraz osobne dla każdego konta (polecenia-dla-elmi, -personal, -aterima) według reguły kolejka-polecen-miedzy-kontami.md.
+
+## STAN: instrukcja w wersji 8 (2026-10-19)
+Stefan „1A” w sesji „💻 Mody” na koncie ELMI: wiersz o instrukcji w STAN.md mówił o wersji 7. Poprawiony na wersję 8. Dopisane, że pole instrukcji w Ustawieniach claude.ai jest jedno dla profilu Stefana i wszystkie trzy konta mają tę samą treść (ustaliła sesja „Instrukcje dla Claude”, zapis w poleceniu `_przeprowadzka-elmi/skrzynka/polecenia-dla-elmi/wykonane/2026-10-19-1230-mody-instrukcje-i-sesja.md`). Kod modów bez zmian.

@@ -1,6 +1,6 @@
 # STAN – claude-mody
 
-Aktualizacja: 2026-10-11 · Folder roboczy: C:\Projekty\claude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
+Aktualizacja: 2026-10-19 · Folder roboczy: C:\Projekty\claude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
 
 
 | Sprawa | Status | Następny krok | Kto |
@@ -14,7 +14,7 @@ Aktualizacja: 2026-10-11 · Folder roboczy: C:\Projekty\claude-mody (kopia repoz
 | Karty opcji obok siebie (własny obszar HTML, tylko komputer) | Następne w kolejce | — | Claude |
 | Zegar (przypomnienia o czekających zadaniach) | Pomysł, Stefan chce wyjaśnień | Wrócić po ikonach i kartach | Claude |
 | Blokada groźnych poleceń, lista wyboru w kartach | Odłożone decyzją Stefana | — | — |
-| Instrukcja współpracy | Wersja 7 w Ustawieniach claude.ai, rozesłana przez sesję „Instrukcje dla Claude” | — | — |
+| Instrukcja współpracy | Wersja 8 (obowiązuje od 2026-10-18); pole instrukcji w Ustawieniach claude.ai jest jedno dla profilu Stefana, więc Personal, ELMI i ATERIMA SERVICES mają tę samą treść (sprawdziła sesja „Instrukcje dla Claude” 2026-10-19) | — | — |
 | Pusty folder OneDrive „Mody Claude Code” | Usunięty | — | — |
 
 Ustalenia wyglądu (stałe): kolorowe kropki ● zamiast kolorowego tekstu; tytuł ramki w środku ramki; opcje nazywane jak przyciski (1A, 1B), polecana z ★; bez tabel w pytaniach; w tabelach ✓ ✗ ~ ?; zadania numerowane, bez kratek w odpowiedzi (kratki tylko w panelu); pogrubiony początek punktu to wynik, szare rozwinięcie; blok do wklejenia zawsze w całości pod ramką.
