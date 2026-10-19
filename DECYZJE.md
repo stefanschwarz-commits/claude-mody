@@ -88,3 +88,6 @@ Pomysł od sesji „Instrukcje dla Claude” (zrzut z sesji o planie KNX): w ram
 ## wyglad 0.23.1 (2026-10-19)
 Zgłoszenie Stefana (zrzut z konta ELMI) i sesji „Migracja NGO na konto Elmi”; Stefan: 1A, poprawić w modzie, nie wymuszać wzoru na sesjach. (1) „**Pytanie 1: …**” w treści jest rozpoznawane jako nagłówek pytania, karta nie dubluje „Pytanie 1:”. (2) Opcja „- **1A) ★ Tytuł.** reszta” (pogrubienie ciągnie się przez pierwsze zdanie) jest opcją z przyciskiem; tytuł zostaje pogrubiony. (3) Dopiski po opcjach („Na Twoją decyzję czekają też…”) zostają w karcie; przenoszenie ich pod kartę odłożone, bo nie wiadomo, czy to nie część pytania.
 Dwa konta: mody są instalowane raz dla komputera, więc działają tak samo na obu; różnią się tylko instrukcje w Ustawieniach claude.ai (per konto). CLAUDE.md w repo opisuje wspólny tryb pracy dla sesji „Mody” na obu kontach. Polecenie dla konta ELMI (wklejenie instrukcji v7 i otwarcie sesji „💻 Mody”) w kolejce `_przeprowadzka-elmi/skrzynka/polecenia-dla-elmi/2026-10-19-1230-mody-instrukcje-i-sesja.md`.
+
+## Dopisek (2026-10-19)
+Sesja „Migracja NGO na konto Elmi” poprawiła polecenie w kolejce dla ELMI: wklejana ma być wersja 8 instrukcji (obowiązuje od 18.10, decyzja Stefana 2A), nie 7. Kolejki poleceń są teraz osobne dla każdego konta (polecenia-dla-elmi, -personal, -aterima) według reguły kolejka-polecen-miedzy-kontami.md.
