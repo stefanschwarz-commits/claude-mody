@@ -83,6 +83,20 @@ test('komunikat z trakcie pracy zwija się do jednej szarej linii', async ($, on
   expect(await ui.find({ type: 'Text', text: '· Sprawdzam, jakie dane dostaje mod.' })).toBeDefined()
 })
 
+test('krótka odpowiedź końcowa bez ▶ nie zwija się do szarej linii', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.render', () => ({ type: 'Text', props: {}, children: ['zwykły'] }) as never)
+  const answer = 'Przeczytałem CLAUDE.md i czekam na sprawę.'
+  await $.turn.complete({ reason: 'answer', answer, durationMs: 1, isAborted: false, turnId: 'f1' } as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(answer) })
+  expect(await ui.find({ type: 'Text', text: `· ${answer}` })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: 'zwykły' })).toBeDefined()
+  // A work note in the same session still folds.
+  const note = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message('Sprawdzam mod.') })
+  expect(await note.find({ type: 'Text', text: '· Sprawdzam mod.' })).toBeDefined()
+})
+
 test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   setup(on)
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['zwykły'] }) as never)

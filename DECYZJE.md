@@ -99,3 +99,8 @@ Stefan „1A” w sesji „💻 Mody” na koncie ELMI: wiersz o instrukcji w ST
 Prośba sesji „Centralna dystrybucja maili”: numer przy polu ☐. Sprawdzone: w odpowiedzi nakładka rysuje numer od 0.20.0, a „Zadanie N:” ukrywa od 0.21.1; ☐ bez numeru są tylko w panelu „Moje sprawy”, gdzie numer z jednej odpowiedzi myliłby się z innymi. Stefan:
 - „2A”: kodu nie zmieniamy; z reguły `~/.claude/rules/format-zadania-i-pytania.md` zdjęty wymóg „Zadanie N:” (punkt 2, punkt 4, uwaga na końcu). Zmiana instrukcji globalnej (v8 nadal każe pisać „Zadanie N:”) przekazana sesji „Instrukcje dla Claude” przez kolejkę Personal: `_przeprowadzka-elmi/skrzynka/polecenia-dla-personal/2026-10-19-1500-instrukcje-bez-zadanie-n.md`.
 - „1A”: CLAUDE.md nie mówi już, że instrukcje wkleja się na każdym koncie osobno (pole jest jedno dla profilu Stefana).
+
+
+## wyglad 0.23.2 (2026-10-20)
+Stefan w sesji „💻 Laptopy zespołu”: „to strasznie wygląda”. Przyczyna: krótka odpowiedź końcowa bez ▶ (jedno-dwa zdania) mod brał za komunikat z trakcie pracy i rysował jako szarą, pochyłą linię „· …”. Teraz mod zapamiętuje tekst odpowiedzi końcowej z `turn.complete` i taka odpowiedź zostaje w zwykłym wyglądzie; komunikaty w trakcie pracy dalej się zwijają. Nowy test.
+Ustalenie przy okazji: w tej sesji (założonej przez inną sesję w aplikacji) w kontekście Claude nie było podpowiedzi moda z `prompt.compose` („Każdą odpowiedź końcową zaczynaj od linii ▶”), ani instrukcji globalnych z claude.ai; docierają reguły z `~/.claude/rules`. To prawdopodobnie główny powód sesji bez ramek. Czy dopisać układ odpowiedzi do reguły w `~/.claude/rules`, decyduje Stefan.

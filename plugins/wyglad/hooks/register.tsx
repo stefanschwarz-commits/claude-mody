@@ -33,6 +33,8 @@ const doneTasks = atom({ plugin: 'wyglad', key: 'doneTasks' } as const, [] as st
 const openTexts = atom({ plugin: 'wyglad', key: 'openTexts' } as const, [] as string[])
 // Every task asked of Stefan in this session, and the questions of the latest answer.
 const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[])
+// The text of the latest final answer, so a short one without ▶ is not taken for a work note.
+const finalText = atom({ plugin: 'wyglad', key: 'finalText' } as const, null as string | null)
 const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
@@ -377,6 +379,7 @@ export const register: Register = on => {
   on('turn.complete', async ($, e, next) => {
     const done = await next(e)
     if (e.reason === 'answer' && e.agentId === undefined) {
+      await update($, finalText, () => e.answer.trim() || null)
       const reply = splitReply(e.answer)
       const summary = reply ? summaryOf(reply) : null
       await update($, last, () => summary)
@@ -475,7 +478,10 @@ export const register: Register = on => {
     const { Box, Text, Markdown, Button } = els
 
     // Messages written while Claude works: one faint, slanted line.
-    if (isProgress(text)) {
+    // The final answer never is one, even short and without ▶: it keeps the engine's drawing.
+    const answer = await read($, finalText)
+    const isFinal = answer !== null && text.trim() !== '' && answer.endsWith(text.trim())
+    if (isProgress(text) && !isFinal) {
       return (
         <Box>
           <Text dimColor italic>{`· ${firstLine(text)}`}</Text>

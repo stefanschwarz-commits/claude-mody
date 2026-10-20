@@ -1,6 +1,6 @@
 # STAN – claude-mody
 
-Aktualizacja: 2026-10-19 · Folder roboczy: C:\Projekty\claude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
+Aktualizacja: 2026-10-20 · Folder roboczy: C:\Projekty\claude-mody (kopia repozytorium; mody instaluje się z GitHuba poleceniem `claude plugin update <mod>@claude-mody`)
 
 
 | Sprawa | Status | Następny krok | Kto |
@@ -8,7 +8,8 @@ Aktualizacja: 2026-10-19 · Folder roboczy: C:\Projekty\claude-mody (kopia repoz
 | Mod `dzwiek` 0.1.0 (dźwięk na koniec pracy i przy pytaniu) | Działa | — | — |
 | Mod `projekt` 0.1.2 (pasek projektu nad polem, /stan) | Działa, dzieli pasek z innymi modami | — | — |
 | Mod `komputer` 0.1.0 (znaczek 💻 w tytule sesji lokalnej) | Zainstalowany; do sprawdzenia w nowej sesji i w sesji z zadania zaplanowanego | Stefan otwiera nową sesję, pisze dwie wiadomości i patrzy na tytuł | Stefan |
-| Mod `wyglad` 0.23.1 | Zainstalowany: ramki sekcji w kolorach, zadania numerowane (niebieskie), karty pytań 1A/1B ★, skrót „1 zrobiłem” + narzędzie `odhacz`, linia stanu, panel „Moje sprawy”, podpowiedź dla Claude o układzie odpowiedzi | Stefan restartuje aplikację i sprawdza skrót „1 zrobiłem” w dowolnym wątku | Stefan |
+| Mod `wyglad` 0.23.2 | Zainstalowany: ramki sekcji w kolorach, zadania numerowane (niebieskie), karty pytań 1A/1B ★, skrót „1 zrobiłem” + narzędzie `odhacz`, linia stanu, panel „Moje sprawy”, podpowiedź dla Claude o układzie odpowiedzi; krótka odpowiedź końcowa bez ▶ nie jest już szarym dopiskiem | Stefan restartuje aplikację | Stefan |
+| Podpowiedź moda o układzie odpowiedzi nie dociera do sesji w aplikacji (co najmniej do sesji założonych przez inną sesję) | Stwierdzone 2026-10-20 w sesji „💻 Laptopy zespołu”: w kontekście Claude nie było tekstu z `prompt.compose`; docierają za to reguły z `~/.claude/rules` | Decyzja Stefana, czy układ odpowiedzi ma trafić do reguły w `~/.claude/rules` | Stefan |
 | Kolor ramki zadań | Niebieski, potwierdzony przez Stefana (1A) | — | — |
 | Ikony i kropki jako grafika SVG (Tabler, MIT) | Wdrożone w 0.22.0 (styl 1B, wszystkie znaczki 2A); przyciski zostają tekstowe | Stefan ogląda po restarcie | Stefan |
 | Karty opcji obok siebie (własny obszar HTML, tylko komputer) | Następne w kolejce | — | Claude |
