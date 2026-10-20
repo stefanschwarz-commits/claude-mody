@@ -1,6 +1,6 @@
 {
   "name": "komputer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tytuł każdej sesji na komputerze zaczyna się od „💻 ”. Dopisuje znaczek, gdy go brakuje; reszty tytułu nie rusza.",
   "author": {
     "name": "Stefan Schwarz"

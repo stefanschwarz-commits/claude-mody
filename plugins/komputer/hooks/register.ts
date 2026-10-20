@@ -23,13 +23,15 @@ export const register: Register = on => {
   // gets its title after the first message, so the prompt hook below catches it then.
   on('classic.SessionStart', async ($, e, next) => {
     const out = await next(e)
-    const title = prefixed(e.session_title, e.cwd)
+    // A settings hook beneath (znaczek-komputer.js) may already have set the title, with its ◦ mark: keep it.
+    const title = out.sessionTitle ? undefined : prefixed(e.session_title, e.cwd)
     return title ? { ...out, sessionTitle: title } : out
   })
 
   on('classic.UserPromptSubmit', async ($, e, next) => {
     const out = await next(e)
-    const title = prefixed(e.session_title, e.cwd)
+    // A settings hook beneath (znaczek-komputer.js) may already have set the title, with its ◦ mark: keep it.
+    const title = out.sessionTitle ? undefined : prefixed(e.session_title, e.cwd)
     return title ? { ...out, sessionTitle: title } : out
   })
 }

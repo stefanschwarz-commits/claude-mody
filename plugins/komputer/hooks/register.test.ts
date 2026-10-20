@@ -27,3 +27,10 @@ test('start sesji z tytułem też dostaje znaczek', async ($, on) => {
   const out = await $.classic.SessionStart({ session_id: 's', transcript_path: 't', cwd: 'C:\\Projekty', hook_event_name: 'SessionStart', source: 'startup', session_title: 'Mody' } as never)
   expect((out as { sessionTitle?: string }).sessionTitle).toBe('💻 Mody')
 })
+
+test('tytuł ustawiony niżej przez hook z ustawień (z kółeczkiem ◦) zostaje', async ($, on) => {
+  on('classic.UserPromptSubmit', () => ({ sessionTitle: '💻 Mody ◦' }))
+  const base = { session_id: 's', transcript_path: 't', cwd: 'C:\Projekty', hook_event_name: 'UserPromptSubmit' as const, prompt: 'x' }
+  const out = await $.classic.UserPromptSubmit({ ...base, session_title: 'Mody' } as never)
+  expect((out as { sessionTitle?: string }).sessionTitle).toBe('💻 Mody ◦')
+})
