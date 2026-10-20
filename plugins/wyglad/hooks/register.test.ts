@@ -107,13 +107,6 @@ test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeUndefined()
 })
 
-test('wskazówka o sekcjach Zrobione i Problem trafia do Claude', async ($, on) => {
-  setup(on)
-  on('prompt.compose', () => ({ sections: [{ id: 'base', text: 'x', scope: 'shared' }] }) as never)
-  const { sections } = await $.prompt.compose({ model: 'm', promptModel: 'm', outputStyle: null, traits: [], surfaces: [], tools: [] } as never)
-  expect(sections.some(s => s.id === 'wyglad:sekcje' && s.text.includes('Zrobione'))).toBe(true)
-})
-
 test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) => {
   const filled = setup(on)
   const reply = [

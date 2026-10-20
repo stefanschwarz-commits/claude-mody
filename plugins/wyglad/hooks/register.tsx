@@ -52,17 +52,8 @@ const STEPS: Record<string, string> = {
 }
 const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'usługa zewnętrzna' : tool)
 
-const SECTIONS = [
-  'Każdą odpowiedź końcową zaczynaj od linii `▶ ` z jednozdaniowym nagłówkiem (co się stało); bez niej nic nie zostanie narysowane. Odpowiedź z ▶ jest rysowana według sekcji rozdzielonych `---`.',
-  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🔵 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
-  '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
-  '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
-  '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
-  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek to wynik, nie temat („**Gira: bez nowych wydań.**”, nie „**Centrum Gira sprawdzone:**”), i najwyżej jedno zdanie dalej; szczegóły (wersje, ceny, daty) idą do wyjaśnienia wyżej, nie do podsumowania.',
-  'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”; mod pogrubia część przed myślnikiem, więc tam ma być samo konkretne działanie, a po myślniku tylko uzasadnienie.',
-  'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
-].join('\n')
+// The answer layout Claude is told about lives in ~/.claude/rules/wyglad-uklad-odpowiedzi.md:
+// since Claude 2.1.304 a Team plan's built-in security plugin skips a mod's prompt.compose hook.
 
 // The same reply always gets the same key, so the band can scroll to it.
 function keyOf(headline: string): string {
@@ -365,14 +356,6 @@ export const register: Register = on => {
     await $.ui.invalidate('ui.render')
 
     return { text: isOff ? 'Wygląd odpowiedzi: zwykły. Włączysz: /wyglad on' : 'Wygląd odpowiedzi: kolorowy. Wyłączysz: /wyglad off' }
-  })
-
-  // Tell Claude about the sections this mod draws.
-  on('prompt.compose', async ($, e, next) => {
-    const out = await next(e)
-    if ((await $.store.get(OFF)) === true) return out
-
-    return { sections: [...out.sections, { id: 'wyglad:sekcje', text: SECTIONS, scope: 'session' }] }
   })
 
   // Remember the last answer for the band above the prompt.

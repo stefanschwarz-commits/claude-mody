@@ -18,20 +18,7 @@ export function prefixed(title: string | undefined, cwd: string | undefined): st
   return `${PREFIX}${clean}`
 }
 
-export const register: Register = on => {
-  // At session start the app may not have titled the session yet; a new session
-  // gets its title after the first message, so the prompt hook below catches it then.
-  on('classic.SessionStart', async ($, e, next) => {
-    const out = await next(e)
-    // A settings hook beneath (znaczek-komputer.js) may already have set the title, with its ◦ mark: keep it.
-    const title = out.sessionTitle ? undefined : prefixed(e.session_title, e.cwd)
-    return title ? { ...out, sessionTitle: title } : out
-  })
-
-  on('classic.UserPromptSubmit', async ($, e, next) => {
-    const out = await next(e)
-    // A settings hook beneath (znaczek-komputer.js) may already have set the title, with its ◦ mark: keep it.
-    const title = out.sessionTitle ? undefined : prefixed(e.session_title, e.cwd)
-    return title ? { ...out, sessionTitle: title } : out
-  })
-}
+// The title hooks moved to a settings hook, ~/.claude/hooks/znaczek-komputer.js (2026-10-20):
+// since Claude 2.1.304 a Team plan's built-in security plugin skips this mod's classic hooks,
+// and each skip printed a grey line in every session. prefixed() stays as the rule it follows.
+export const register: Register = () => {}
