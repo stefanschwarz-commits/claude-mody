@@ -117,3 +117,5 @@ komputer 0.1.1: mod nie nadpisuje tytułu, który ustawił już hook z ustawień
 
 ## wyglad 0.24.0, komputer 0.2.0: bez hooków pomijanych przez wtyczkę bezpieczeństwa (2026-10-20)
 Stefan: „zdejmij z modów hooki zastąpione obejściami, żeby szare linie zniknęły”. Każde pominięcie hooka modu przez `cc-plugin-sec-default` dawało w każdej sesji na ELMI szarą linię „its … hook was skipped”. wyglad: zdjęty `prompt.compose` i stała SECTIONS; układ odpowiedzi jest tylko w regule `~/.claude/rules/wyglad-uklad-odpowiedzi.md` (to teraz jedyne źródło; `/wyglad off` wyłącza już tylko rysowanie). komputer: zdjęte `classic.SessionStart` i `classic.UserPromptSubmit`; znaczek 💻 i kółeczko ◦ robi tylko hook z ustawień `~/.claude/hooks/znaczek-komputer.js`. Gdy Anthropic poprawi wtyczkę, można wrócić do hooków w modach.
+
+Zmiana do wpisu o regule `uklad-odpowiedzi.md` (2026-10-20, sesja „💻 Laptopy zespołu”): w tej samej chwili sesja „Mody” zapisała `wyglad-uklad-odpowiedzi.md`; reguły różniły się przy gwiazdce ★. Stefan: „1A”, zostaje tylko `wyglad-uklad-odpowiedzi.md`. `uklad-odpowiedzi.md` usunięta, polecenie w kolejce Personal wycofane (nie zostało wykonane).
