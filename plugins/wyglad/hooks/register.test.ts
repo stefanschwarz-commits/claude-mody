@@ -500,3 +500,17 @@ test('„**Zadanie 1:**” z instrukcji v7 nie dubluje numeru w ramce zadań', a
   expect(await ui.find({ type: 'Text', text: 'Załóż projekt (2 minuty)' })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: 'Zadanie 1: Załóż projekt (2 minuty)' })).toBeUndefined()
 })
+
+test('zadanie bez myślnika: pogrubione tylko pierwsze zdanie, reszta szara', async ($, on) => {
+  setup(on)
+  const reply = `▶ **Test.**
+
+---
+
+🔵 **Do zrobienia przez Ciebie**
+
+1. Usuń starą kartę (minuta). Na otwartej karcie kliknij „Usuń” i potwierdź.`
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: 'Usuń starą kartę (minuta)' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /^Usuń starą kartę \(minuta\)\. Na otwartej/ })).toBeUndefined()
+})

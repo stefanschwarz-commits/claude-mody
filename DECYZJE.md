@@ -121,3 +121,6 @@ Stefan: „zdejmij z modów hooki zastąpione obejściami, żeby szare linie zni
 Zmiana do wpisu o regule `uklad-odpowiedzi.md` (2026-10-20, sesja „💻 Laptopy zespołu”): w tej samej chwili sesja „Mody” zapisała `wyglad-uklad-odpowiedzi.md`; reguły różniły się przy gwiazdce ★. Stefan: „1A”, zostaje tylko `wyglad-uklad-odpowiedzi.md`. `uklad-odpowiedzi.md` usunięta, polecenie w kolejce Personal wycofane (nie zostało wykonane).
 ## Kółeczko ◦ dopisane wstecz (2026-10-20)
 Stefan: „dopisz wstecz … na wszystkich sesjach założonych automatycznie”. Na koncie ELMI 28 niezarchiwizowanych sesji: kółeczko dostało 25, czyli wszystkie z `parentSessionId` (otwarte przez inną sesję) albo `scheduledTaskId` (zadanie zaplanowane); ręczne zostały bez zmian: „💻 ELMC.EU”, „💻 Przeprowadzka”, „💻 Test”. „Przejęcie rejestru na koncie ELMI” dostało też 💻. Sesje konta Personal i zarchiwizowane nie są stąd widoczne, więc ich nie ruszano.
+
+## wyglad 0.24.1: zadanie bez myślnika pogrubione tylko w pierwszym zdaniu (2026-10-22)
+Zrzut Stefana (sesja o karcie Google Cloud na ELMI): zadanie „Usuń starą kartę (minuta). Na otwartej karcie …” nie miało myślnika, więc mod pogrubiał cały, kilkuwierszowy tekst. Teraz bez myślnika pogrubione jest pierwsze zdanie (co zrobić), reszta szara jak „po co”. Test dopisany.

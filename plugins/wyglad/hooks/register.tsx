@@ -105,7 +105,12 @@ function taskOf(text: string): { what: string; why: string } {
   // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
   const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
   const at = /\s[–—-]\s/.exec(plain)
-  if (!at) return { what: plain, why: '' }
+  if (!at) {
+    // No dash: "Usuń starą kartę (minuta). Na otwartej karcie …" – the first sentence is what to do.
+    const stop = /[.!?]\s+(?=\S)/.exec(plain)
+    if (!stop) return { what: plain, why: '' }
+    return { what: plain.slice(0, stop.index), why: plain.slice(stop.index + stop[0].length) }
+  }
   return { what: plain.slice(0, at.index), why: plain.slice(at.index + at[0].length) }
 }
 
