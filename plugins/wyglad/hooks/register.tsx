@@ -13,6 +13,9 @@ const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', bl
 
 // An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
 type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
+// A mail draft is a light sheet in both themes, so it never looks like Claude's own text.
+const PAPER = { sheet: '#FBFAF6', ink: '#222222', label: '#6b6a66', edge: '#9a958a' }
+
 function inkOf(tint: { blue: string } | undefined): Ink {
   return tint?.blue === '#EEF4FC' ? INK_LIGHT : INK_DARK
 }
@@ -99,6 +102,30 @@ export function fileOf(text: string): { label: string; path: string } | undefine
   const path = link[2]
   if (/^(https?|mailto|ftp):/i.test(path)) return undefined
   return { label: link[1], path }
+}
+
+// A mail draft, written as a fenced block tagged `mail`: header lines ("Do: Anna",
+// "Temat: …") up to the first blank line, then the body exactly as it is to be sent.
+export type Mail = { headers: [string, string][]; body: string }
+const MAIL_HEADER = /^(Do|DW|UDW|Od|Temat|Załączniki?)\s*:\s*(.*)$/i
+
+// Takes the mail drafts out of a text, so they can be drawn as cards of their own.
+export function mailsOf(text: string): { rest: string; mails: Mail[] } {
+  const mails: Mail[] = []
+  const rest = text.replace(/^[ \t]*```+[ \t]*(mail|e-?mail|mejl)[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*```+[ \t]*$/gim, (_all, _tag, inner: string) => {
+    const lines = inner.split(/\r?\n/)
+    const headers: [string, string][] = []
+    let at = 0
+    while (at < lines.length && MAIL_HEADER.test(lines[at])) {
+      const m = MAIL_HEADER.exec(lines[at])!
+      headers.push([m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase(), m[2].trim()])
+      at++
+    }
+    if (headers.length > 0) while (at < lines.length && lines[at].trim() === '') at++
+    mails.push({ headers, body: lines.slice(at).join('\n').replace(/\s+$/, '') })
+    return ''
+  })
+  return { rest: rest.replace(/\n{3,}/g, '\n\n').trim(), mails }
 }
 
 function taskOf(text: string): { what: string; why: string } {
@@ -520,7 +547,7 @@ export const register: Register = on => {
         </Box>
         {(() => {
           // A long explanation shows its first lines until opened.
-          const lines = plain.map(part => part.body).join('\n\n').split('\n')
+          const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')
           if (lines.length === 1 && lines[0] === '') return null
           // Cut only at a blank line outside a table, so no table is ever split.
           // …and never right after a heading ("Zrobię sam:", "**Na ciebie**"), which would leave it empty.
@@ -545,6 +572,42 @@ export const register: Register = on => {
             </Box>
           )
         })()}
+        {/* A mail draft reads like a sheet of paper: who and what on top, then only the text to send. */}
+        {mailsOf(plain.map(part => part.body).join('\n\n')).mails.map((mail, i) => (
+          <Box key={`${key}-mail${i}`} flexDirection="column" borderStyle="round" borderColor={PAPER.edge} backgroundColor={PAPER.sheet} paddingX={1} gap={1}>
+            <Box flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'mail', PAPER.edge, '✉')}
+              <Text bold color={PAPER.ink}>Szkic maila</Text>
+            </Box>
+            {mail.headers.length > 0 ? (
+              <Box flexDirection="column">
+                {mail.headers.map(([label, value], j) => (
+                  <Box key={`${key}-mail${i}-h${j}`} flexDirection="row" gap={1}>
+                    <Text color={PAPER.label}>{`${label}:`}</Text>
+                    <Text color={PAPER.ink} bold={label === 'Temat'}>{value}</Text>
+                  </Box>
+                ))}
+              </Box>
+            ) : null}
+            <Box flexDirection="column" gap={1}>
+              {mail.body.split(/\r?\n[ \t]*\r?\n/).map((paragraph, j) => (
+                <Text key={`${key}-mail${i}-p${j}`} color={PAPER.ink}>{paragraph}</Text>
+              ))}
+            </Box>
+            <Box>
+              <Button
+                key={`${key}-mail${i}-copy`}
+                label="Kopiuj treść"
+                onPress={(press: { surface?: string }) =>
+                  void $.ui
+                    .copy({ text: mail.body, surface: press?.surface as never })
+                    .then(out => $.ui.toast(out.isCopied ? 'Skopiowałem treść maila.' : 'Nie udało się skopiować; zaznacz treść myszą.'))
+                    .catch(() => undefined)
+                }
+              />
+            </Box>
+          </Box>
+        ))}
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
             {/* Every frame carries its own title inside, so it is clear what it holds. */}

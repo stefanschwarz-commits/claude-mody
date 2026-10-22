@@ -124,3 +124,6 @@ Stefan: „dopisz wstecz … na wszystkich sesjach założonych automatycznie”
 
 ## wyglad 0.24.1: zadanie bez myślnika pogrubione tylko w pierwszym zdaniu (2026-10-22)
 Zrzut Stefana (sesja o karcie Google Cloud na ELMI): zadanie „Usuń starą kartę (minuta). Na otwartej karcie …” nie miało myślnika, więc mod pogrubiał cały, kilkuwierszowy tekst. Teraz bez myślnika pogrubione jest pierwsze zdanie (co zrobić), reszta szara jak „po co”. Test dopisany.
+
+## wyglad 0.25.0: szkic maila jako karta „Szkic maila” (2026-10-22)
+Stefan: proponowane treści maili mają być wyraźne, „żebym wiedział, co jest treścią maila, a co nie”; wybrał 1A (karta jak kartka papieru z przyciskiem kopiowania). Zapis w odpowiedzi: blok ```mail z liniami „Do:”, „DW:”, „Załącznik:”, „Temat:”, pustą linią i treścią (reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md`, akapit „Szkic maila”). Mod wyjmuje taki blok z wyjaśnienia i rysuje pod nim jasną kartę (to samo jasne tło w obu motywach, ikona koperty Tabler `mail`), nagłówki osobno, „Temat” pogrubiony, pod spodem przycisk „Kopiuj treść” ($.ui.copy, sama treść bez nagłówków; przy niepowodzeniu komunikat „zaznacz treść myszą”). Testy w `hooks/mail.test.ts`.
