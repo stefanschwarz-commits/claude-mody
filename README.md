@@ -2,7 +2,7 @@
 
 Własne mody (wtyczki) do Claude Code Stefana.
 
-**Jedyne źródło modów:** https://github.com/stefanschwarz-commits/claude-mody (gałąź `main`). Każda sesja Claude, na każdym koncie i komputerze, instaluje i aktualizuje mody wyłącznie stąd, żeby wszędzie były identyczne. Repozytorium jest prywatne: potrzebny jest dostęp z konta GitHub `stefanschwarz-commits` (na komputerze Stefana jest już zalogowany).
+**Jedyne źródło modów:** https://github.com/stefanschwarz-commits/claude-mody (gałąź `main`). Każda sesja Claude, na każdym koncie i komputerze, instaluje i aktualizuje mody wyłącznie stąd, żeby wszędzie były identyczne. Repozytorium jest publiczne (decyzja Stefana z 2026-10-22), więc instalacja nie wymaga logowania do GitHuba.
 
 ## Dla innych sesji i kont: gdzie są mody i jak je zainstalować
 
