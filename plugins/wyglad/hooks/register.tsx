@@ -4,6 +4,28 @@ import type { Register } from 'claude-code'
 import type { Last, Sprawa } from '../types'
 import { firstLine, isProgress, lettersOf, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
+import { svgOf } from './icons'
+
+// Ink colours for the icons, light or dark as the theme is.
+type Ink = { green: string; red: string; orange: string; blue: string; grey: string; text: string }
+const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', grey: '#8a8984', text: '#e8e6e3' }
+const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', grey: '#6b6a66', text: '#222222' }
+
+// An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
+type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
+// A mail draft is a light sheet in both themes, so it never looks like Claude's own text.
+const PAPER = { sheet: '#FBFAF6', ink: '#222222', label: '#6b6a66', edge: '#9a958a' }
+
+function inkOf(tint: { blue: string } | undefined): Ink {
+  return tint?.blue === '#EEF4FC' ? INK_LIGHT : INK_DARK
+}
+
+function icon(els: unknown, surface: string, name: string, color: string, glyph: string, size = 16): unknown {
+  const { Svg, Text } = els as Drawers
+  // The terminal's table answers every name, so the surface decides, not the table.
+  if (Svg && surface !== 'terminal') return <Svg source={svgOf(name, color, size)} alt={glyph} width={size} height={size} />
+  return <Text>{glyph}</Text>
+}
 
 const OFF = 'off'
 
@@ -14,6 +36,8 @@ const doneTasks = atom({ plugin: 'wyglad', key: 'doneTasks' } as const, [] as st
 const openTexts = atom({ plugin: 'wyglad', key: 'openTexts' } as const, [] as string[])
 // Every task asked of Stefan in this session, and the questions of the latest answer.
 const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[])
+// The text of the latest final answer, so a short one without ▶ is not taken for a work note.
+const finalText = atom({ plugin: 'wyglad', key: 'finalText' } as const, null as string | null)
 const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
@@ -31,17 +55,8 @@ const STEPS: Record<string, string> = {
 }
 const stepOf = (tool: string) => STEPS[tool] ?? (tool.startsWith('mcp__') ? 'usługa zewnętrzna' : tool)
 
-const SECTIONS = [
-  'Odpowiedź końcowa z ▶ jest rysowana według sekcji rozdzielonych `---`.',
-  'Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🟠 **Do zrobienia przez Ciebie**, 🔵 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️ i „Problem” też działają). Każda tylko, gdy występuje:',
-  '- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;',
-  '- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;',
-  '- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).',
-  'Zadania są w ramce „Do zrobienia przez Ciebie”, każde pytanie w swojej karcie, a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek (co się stało) i najwyżej jedno zdanie dalej; szczegóły idą do wyjaśnienia wyżej, nie do podsumowania.',
-  'W „Do zrobienia przez Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić (ile czasu) – po co”.',
-  'W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.',
-  'Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.',
-].join('\n')
+// The answer layout Claude is told about lives in ~/.claude/rules/wyglad-uklad-odpowiedzi.md:
+// since Claude 2.1.304 a Team plan's built-in security plugin skips a mod's prompt.compose hook.
 
 // The same reply always gets the same key, so the band can scroll to it.
 function keyOf(headline: string): string {
@@ -78,6 +93,54 @@ function gist(part: Part): string {
 // Other lines in a row (a sentence, a table) stay together as one block.
 // A fenced block (``` … ```) is text to copy, never a list of tasks: it stays one
 // piece, fences included, so a pasted instruction is not turned into tick boxes.
+// "Zmień hasło (5 min) – po to": what to do reads bold, why reads faint.
+// "[plan.pdf](plan.pdf)", "[Plan](C:\Projekty\plan.pdf)": a link to a file on this
+// computer, not a web address. Returns its label and path.
+export function fileOf(text: string): { label: string; path: string } | undefined {
+  const link = /^\s*\**\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\**\s*[.;,]?\s*$/.exec(text)
+  if (!link) return undefined
+  const path = link[2]
+  if (/^(https?|mailto|ftp):/i.test(path)) return undefined
+  return { label: link[1], path }
+}
+
+// A mail draft, written as a fenced block tagged `mail`: header lines ("Do: Anna",
+// "Temat: …") up to the first blank line, then the body exactly as it is to be sent.
+export type Mail = { headers: [string, string][]; body: string }
+const MAIL_HEADER = /^(Do|DW|UDW|Od|Temat|Załączniki?)\s*:\s*(.*)$/i
+
+// Takes the mail drafts out of a text, so they can be drawn as cards of their own.
+export function mailsOf(text: string): { rest: string; mails: Mail[] } {
+  const mails: Mail[] = []
+  const rest = text.replace(/^[ \t]*```+[ \t]*(mail|e-?mail|mejl)[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*```+[ \t]*$/gim, (_all, _tag, inner: string) => {
+    const lines = inner.split(/\r?\n/)
+    const headers: [string, string][] = []
+    let at = 0
+    while (at < lines.length && MAIL_HEADER.test(lines[at])) {
+      const m = MAIL_HEADER.exec(lines[at])!
+      headers.push([m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase(), m[2].trim()])
+      at++
+    }
+    if (headers.length > 0) while (at < lines.length && lines[at].trim() === '') at++
+    mails.push({ headers, body: lines.slice(at).join('\n').replace(/\s+$/, '') })
+    return ''
+  })
+  return { rest: rest.replace(/\n{3,}/g, '\n\n').trim(), mails }
+}
+
+function taskOf(text: string): { what: string; why: string } {
+  // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
+  const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
+  const at = /\s[–—-]\s/.exec(plain)
+  if (!at) {
+    // No dash: "Usuń starą kartę (minuta). Na otwartej karcie …" – the first sentence is what to do.
+    const stop = /[.!?]\s+(?=\S)/.exec(plain)
+    if (!stop) return { what: plain, why: '' }
+    return { what: plain.slice(0, stop.index), why: plain.slice(stop.index + stop[0].length) }
+  }
+  return { what: plain.slice(0, at.index), why: plain.slice(at.index + at[0].length) }
+}
+
 function itemsOf(body: string): { isItem: boolean; text: string }[] {
   const out: { isItem: boolean; text: string }[] = []
   let inFence = false
@@ -95,8 +158,11 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
     }
     if (line.trim() === '') continue
     const item = /^\s*(\d+\.|[-*])\s+(.*)$/.exec(line)
-    if (item) out.push({ isItem: true, text: item[2] })
-    else if (prev && !prev.isItem) prev.text += `\n${line}`
+    // A link to a file on this computer is not a task: it is drawn below the frame.
+    if (item && fileOf(item[2])) out.push({ isItem: false, text: item[2] })
+    else if (item) out.push({ isItem: true, text: item[2] })
+    else if (/^\s*plik[a-z]*:\s*$/i.test(line)) continue
+    else if (prev && !prev.isItem && !fileOf(prev.text)) prev.text += `\n${line}`
     else out.push({ isItem: false, text: line })
   }
   return out
@@ -106,9 +172,12 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
 // Numbering restarts after a paragraph; nested points and tables stay as they are.
 function numbered(body: string): string {
   let n = 0
+  let inFence = false
   return body
     .split(/\r?\n/)
     .map(line => {
+      if (/^\s*```/.test(line)) inFence = !inFence
+      if (inFence || /^\s*```/.test(line)) return line
       const point = /^[-*•]\s+(.*)$/.exec(line)
       if (point) {
         n += 1
@@ -125,10 +194,10 @@ function numbered(body: string): string {
 
 // How each summary section is drawn: its title, frame colour and tint.
 const SECTION = {
-  done: { title: 'Zrobione', color: 'success', tint: 'green' },
-  failed: { title: 'Nie udało się', color: 'error', tint: 'red' },
-  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange' },
-  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey' },
+  done: { title: 'Zrobione', color: 'success', tint: 'green', icon: 'circle-check', glyph: '●' },
+  failed: { title: 'Nie udało się', color: 'error', tint: 'red', icon: 'circle-x', glyph: '●' },
+  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange', icon: 'help-circle', glyph: '●' },
+  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey', icon: 'info-circle', glyph: '●' },
 } as const
 
 // A summary split into drawable pieces: a numbered point is { n, lead, rest },
@@ -140,7 +209,19 @@ type Piece = { n: string; lead: string; rest: string; subs: string[] } | { text:
 
 function pieces(body: string): Piece[] {
   const out: Piece[] = []
+  let fence: { text: string } | undefined
   for (const line of body.split(/\r?\n/)) {
+    // A fenced block is one piece, kept whole.
+    if (fence) {
+      fence.text += `\n${line}`
+      if (/^\s*```/.test(line)) fence = undefined
+      continue
+    }
+    if (/^\s*```/.test(line)) {
+      fence = { text: line }
+      out.push(fence)
+      continue
+    }
     if (line.trim() === '') continue
     const last = out[out.length - 1]
     if (/^\s+\S/.test(line) && last && 'n' in last) {
@@ -165,10 +246,10 @@ function pieces(body: string): Piece[] {
 
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; violet: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', violet: '#F3EEFB' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', violet: '#221A30' }
   } catch {
     return undefined
   }
@@ -179,6 +260,13 @@ function needsOf(todos: number, questions: number): string {
     todos > 0 ? count(todos, 'zadanie', 'zadania', 'zadań') : '',
     questions > 0 ? count(questions, 'pytanie', 'pytania', 'pytań') : '',
   ].filter(Boolean).join(' i ')
+}
+
+// Tasks of the latest answer, in the order of their numbers in the frame.
+async function tasksOfLast($: Parameters<typeof read>[0]): Promise<Sprawa[]> {
+  const answer = await read($, last)
+  if (!answer) return []
+  return (await read($, sprawy)).filter(one => one.kind === 'todo' && one.id.startsWith(`${answer.key}:`))
 }
 
 function count(n: number, one: string, few: string, many: string): string {
@@ -193,8 +281,55 @@ export const register: Register = on => {
       description: 'Wygląd odpowiedzi: /wyglad on albo /wyglad off',
     })
     await $.command.register({ name: 'sprawy', description: 'Panel „Moje sprawy”: zadania do odhaczenia i pytania' })
+    // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
+    await $.tool.register({
+      name: 'odhacz',
+      description: 'Odhacza zadania z ostatniej odpowiedzi w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Do zrobienia przez Ciebie”.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          numery: { type: 'array', items: { type: 'integer', minimum: 1 }, description: 'Numery zadań z ostatniej odpowiedzi' },
+          stan: { type: 'string', enum: ['zrobione', 'odpada', 'otwarte'], description: 'zrobione i odpada skreślają zadanie; otwarte przywraca je' },
+        },
+        required: ['numery'],
+      },
+      isDeferred: false,
+    })
 
     return next(e)
+  })
+
+  on('tool.call', { tool: 'mcp__wyglad__odhacz' }, async ($, e) => {
+    const input = e as unknown as { numery?: number[]; stan?: string }
+    const tasks = await tasksOfLast($)
+    const stan = input.stan ?? 'zrobione'
+    const hit = (input.numery ?? []).map(n => ({ n, task: tasks[n - 1] }))
+    const ids = hit.flatMap(h => (h.task ? [h.task.id] : []))
+    await update($, doneTasks, list => (stan === 'otwarte' ? list.filter(id => !ids.includes(id)) : [...list.filter(id => !ids.includes(id)), ...ids]))
+    await $.ui.invalidate('ui.render')
+    const lines = hit.map(h => (h.task ? `${h.n}. ${h.task.text} – ${stan}` : `${h.n}. brak takiego zadania w ostatniej odpowiedzi`))
+    const open = tasks.length - (await read($, doneTasks)).filter(id => tasks.some(t => t.id === id)).length
+    $.ui.status(open > 0 ? `czeka: ${count(open, 'zadanie', 'zadania', 'zadań')}` : undefined)
+    return { result: [...lines, `Otwartych zadań z ostatniej odpowiedzi: ${open}.`].join('\n') }
+  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'wyglad: odhaczanie nie powiodło się' }))
+
+  // "1 zrobiłem, 3 odpada": the model reads which tasks those numbers name.
+  const SAID = /(\d+(?:\s*(?:,|i|oraz)\s*\d+)*)\s*(zrobi[łl][ae]m|zrobione|gotowe|załatwione|odpada|odpad[łl]o|pomijam|rezygnuj[eę]|nie zrobi[eę])/giu
+  on('prompt.submit', async ($, e, next) => {
+    if (e.text.length > 400) return next(e)
+    const tasks = await tasksOfLast($)
+    if (tasks.length === 0) return next(e)
+    const notes: string[] = []
+    for (const m of e.text.matchAll(SAID)) {
+      const stan = /zrobi|gotowe|załatw/i.test(m[2]) ? 'zrobione' : 'odpada'
+      for (const n of m[1].split(/\D+/).filter(Boolean).map(Number)) {
+        const task = tasks[n - 1]
+        notes.push(task ? `Zadanie ${n} („${task.text}”): ${stan}.` : `Zadanie ${n}: brak takiego numeru w ostatniej odpowiedzi.`)
+      }
+    }
+    if (notes.length === 0) return next(e)
+    const note = [`Numery w wiadomości Stefana odnoszą się do ramki „Do zrobienia przez Ciebie” z Twojej ostatniej odpowiedzi:`, ...notes, 'Odhacz je narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
+    return next({ ...e, context: [...(e.context ?? []), note] })
   })
 
   on('command.run', { command: 'sprawy' }, async $ => {
@@ -255,18 +390,11 @@ export const register: Register = on => {
     return { text: isOff ? 'Wygląd odpowiedzi: zwykły. Włączysz: /wyglad on' : 'Wygląd odpowiedzi: kolorowy. Wyłączysz: /wyglad off' }
   })
 
-  // Tell Claude about the sections this mod draws.
-  on('prompt.compose', async ($, e, next) => {
-    const out = await next(e)
-    if ((await $.store.get(OFF)) === true) return out
-
-    return { sections: [...out.sections, { id: 'wyglad:sekcje', text: SECTIONS, scope: 'session' }] }
-  })
-
   // Remember the last answer for the band above the prompt.
   on('turn.complete', async ($, e, next) => {
     const done = await next(e)
     if (e.reason === 'answer' && e.agentId === undefined) {
+      await update($, finalText, () => e.answer.trim() || null)
       const reply = splitReply(e.answer)
       const summary = reply ? summaryOf(reply) : null
       await update($, last, () => summary)
@@ -287,6 +415,8 @@ export const register: Register = on => {
       }
       const needs = summary ? needsOf(summary.todos, summary.questions) : ''
       if (needs && (await $.store.get(OFF)) !== true) $.ui.toast(`Gotowe. Potrzebuję od Ciebie: ${needs}`, { timeoutMs: 8000 })
+      // The status line keeps the count in view without scrolling.
+      $.ui.status(needs ? `czeka: ${needs}` : undefined)
     }
 
     return done
@@ -297,7 +427,9 @@ export const register: Register = on => {
     const answer = await read($, last)
     if (e.props.hasSurvey || e.props.isWorking || answer === null || (await $.store.get(OFF)) === true) return below
 
-    const { Box, Text, Button } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text, Button } = els
+    const ink = inkOf(await tintOf($))
     const ticked = (await read($, doneTasks)).filter(id => id.startsWith(`${answer.key}:`)).length
     const needs = needsOf(Math.max(0, answer.todos - ticked), answer.questions)
 
@@ -306,7 +438,7 @@ export const register: Register = on => {
         <Box flexDirection="row" gap={2}>
           {needs || answer.isStructured ? (
             <Box flexDirection="row" gap={1}>
-              <Text color={needs ? 'warning' : 'success'}>●</Text>
+              {icon(els, e.surface, 'dot', needs ? ink.orange : ink.green, '●')}
               <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
             </Box>
           ) : null}
@@ -326,27 +458,45 @@ export const register: Register = on => {
   // running calls keep the engine's own drawing, so nothing that matters hides.
   on('ui.render', { component: 'ToolGroup' }, async ($, e, next) => {
     if (e.props.isExpanded || (await $.store.get(OFF)) === true) return next(e)
-    const { Text } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text } = els
+    const ink = inkOf(await tintOf($))
     const kinds = [...new Set(e.props.calls.map(call => stepOf(call.tool)))].slice(0, 3).join(', ')
     const running = e.props.calls.some(call => call.isRunning) ? ' …' : ''
-    return <Text dimColor italic wrap="truncate-end">{`· ${count(e.props.calls.length, 'krok', 'kroki', 'kroków')} w tle (${kinds})${running}`}</Text>
+    return (
+      <Box flexDirection="row" gap={1}>
+        {icon(els, e.surface, 'settings', ink.grey, '·', 14)}
+        <Text dimColor italic wrap="truncate-end">{`${count(e.props.calls.length, 'krok', 'kroki', 'kroków')} w tle (${kinds})${running}`}</Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
     const { tool, isRunning, isErrored, isInterrupted } = e.props
     if (isRunning || isErrored || isInterrupted || (await $.store.get(OFF)) === true) return next(e)
-    const { Text } = $.ui.resolve(e)
-    return <Text dimColor italic>{`· ${stepOf(tool)}`}</Text>
+    const els = $.ui.resolve(e)
+    const { Box, Text } = els
+    const ink = inkOf(await tintOf($))
+    return (
+      <Box flexDirection="row" gap={1}>
+        {icon(els, e.surface, 'settings', ink.grey, '·', 14)}
+        <Text dimColor italic>{stepOf(tool)}</Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     const { text, isSummary } = e.props
     if (isSummary || (await $.store.get(OFF)) === true) return next(e)
 
-    const { Box, Text, Markdown, Button } = $.ui.resolve(e)
+    const els = $.ui.resolve(e)
+    const { Box, Text, Markdown, Button } = els
 
     // Messages written while Claude works: one faint, slanted line.
-    if (isProgress(text)) {
+    // The final answer never is one, even short and without ▶: it keeps the engine's drawing.
+    const answer = await read($, finalText)
+    const isFinal = answer !== null && text.trim() !== '' && answer.endsWith(text.trim())
+    if (isProgress(text) && !isFinal) {
       return (
         <Box>
           <Text dimColor italic>{`· ${firstLine(text)}`}</Text>
@@ -367,6 +517,7 @@ export const register: Register = on => {
     const ticked = await read($, doneTasks)
     const isOpen = (await read($, openTexts)).includes(key)
     const tint = await tintOf($)
+    const ink = inkOf(tint)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
     const fill = (value: string) => () => {
       void $.prompt.fill({ text: `${value} `, mode: 'append' }).catch(() => undefined)
@@ -382,17 +533,21 @@ export const register: Register = on => {
         <Box key={key} flexDirection="column" gap={1}>
           {/* A light bar marks where the latest answer starts; older ones get a faint line. */}
           {isLatest ? (
-            <Box backgroundColor="inactive" paddingX={1}>
-              <Text color="inverseText" bold>▶ Nowa odpowiedź</Text>
+            <Box backgroundColor="inactive" paddingX={1} flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'player-play', ink.text, '▶')}
+              <Text color="inverseText" bold>Nowa odpowiedź</Text>
             </Box>
           ) : (
-            <Text dimColor>▶ Odpowiedź</Text>
+            <Box flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'player-play', ink.grey, '▶')}
+              <Text dimColor>Odpowiedź</Text>
+            </Box>
           )}
           <Text bold>{reply.headline}</Text>
         </Box>
         {(() => {
           // A long explanation shows its first lines until opened.
-          const lines = plain.map(part => part.body).join('\n\n').split('\n')
+          const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')
           if (lines.length === 1 && lines[0] === '') return null
           // Cut only at a blank line outside a table, so no table is ever split.
           // …and never right after a heading ("Zrobię sam:", "**Na ciebie**"), which would leave it empty.
@@ -417,6 +572,42 @@ export const register: Register = on => {
             </Box>
           )
         })()}
+        {/* A mail draft reads like a sheet of paper: who and what on top, then only the text to send. */}
+        {mailsOf(plain.map(part => part.body).join('\n\n')).mails.map((mail, i) => (
+          <Box key={`${key}-mail${i}`} flexDirection="column" borderStyle="round" borderColor={PAPER.edge} backgroundColor={PAPER.sheet} paddingX={1} gap={1}>
+            <Box flexDirection="row" gap={1}>
+              {icon(els, e.surface, 'mail', PAPER.edge, '✉')}
+              <Text bold color={PAPER.ink}>Szkic maila</Text>
+            </Box>
+            {mail.headers.length > 0 ? (
+              <Box flexDirection="column">
+                {mail.headers.map(([label, value], j) => (
+                  <Box key={`${key}-mail${i}-h${j}`} flexDirection="row" gap={1}>
+                    <Text color={PAPER.label}>{`${label}:`}</Text>
+                    <Text color={PAPER.ink} bold={label === 'Temat'}>{value}</Text>
+                  </Box>
+                ))}
+              </Box>
+            ) : null}
+            <Box flexDirection="column" gap={1}>
+              {mail.body.split(/\r?\n[ \t]*\r?\n/).map((paragraph, j) => (
+                <Text key={`${key}-mail${i}-p${j}`} color={PAPER.ink}>{paragraph}</Text>
+              ))}
+            </Box>
+            <Box>
+              <Button
+                key={`${key}-mail${i}-copy`}
+                label="Kopiuj treść"
+                onPress={(press: { surface?: string }) =>
+                  void $.ui
+                    .copy({ text: mail.body, surface: press?.surface as never })
+                    .then(out => $.ui.toast(out.isCopied ? 'Skopiowałem treść maila.' : 'Nie udało się skopiować; zaznacz treść myszą.'))
+                    .catch(() => undefined)
+                }
+              />
+            </Box>
+          </Box>
+        ))}
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
             {/* Every frame carries its own title inside, so it is clear what it holds. */}
@@ -427,21 +618,44 @@ export const register: Register = on => {
               const isFence = (text: string) => text.startsWith('```')
               return (
                 <Box flexDirection="column" gap={1}>
-                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="warning" backgroundColor={tint?.orange} paddingX={1} gap={1}>
-                    <Text bold>Do zrobienia przez Ciebie</Text>
+                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
+                    <Box flexDirection="row" gap={1}>
+                      {icon(els, e.surface, 'list-check', ink.blue, '●')}
+                      <Text bold>Do zrobienia przez Ciebie</Text>
+                    </Box>
                     {all.map((item, i) =>
                       item.isItem ? (
-                        <Box key={`d${i}`} flexDirection="row" gap={1}>
-                          <Button key={`tick-${key}-${i}`} label={ticked.includes(`${key}:${i}`) ? '☑' : '☐'} onPress={tick(`${key}:${i}`)} />
-                          {ticked.includes(`${key}:${i}`) ? <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text> : <Markdown text={item.text} />}
+                        <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                          <Text>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
+                          {ticked.includes(`${key}:${i}`) ? (
+                            <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text>
+                          ) : (
+                            <Box flexDirection="column">
+                              <Text bold>{taskOf(item.text).what}</Text>
+                              {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor /> : null}
+                            </Box>
+                          )}
                         </Box>
-                      ) : isFence(item.text) ? null : (
+                      ) : isFence(item.text) || fileOf(item.text) ? null : (
                         <Markdown key={`d${i}`} text={item.text} />
                       ),
                     )}
                   </Box>
                   {all.filter(item => !item.isItem && isFence(item.text)).map((item, i) => (
                     <Markdown key={`fence${i}`} text={item.text} />
+                  ))}
+                  {/* Files on this computer: a row each, with a button that shows the file in its folder
+                      (the desktop app's own tool); on the phone a note, as the file is not there. */}
+                  {all.flatMap(item => (!item.isItem && fileOf(item.text) ? [fileOf(item.text)!] : [])).map((file, i) => (
+                    <Box key={`file${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      {icon(els, e.surface, 'file', ink.grey, '·')}
+                      <Text>{file.label}</Text>
+                      {e.surface === 'mobile' ? (
+                        <Text dimColor>plik na komputerze, poproś o załącznik</Text>
+                      ) : (
+                        <Button key={`reveal-${key}-${i}`} label="Pokaż w folderze" onPress={() => void $.tool.call({ tool: 'mcp__ccd_host__reveal_path', path: file.path } as never).catch(() => $.ui.toast(`Nie udało się pokazać pliku ${file.label}`))} />
+                      )}
+                    </Box>
                   ))}
                 </Box>
               )
@@ -452,14 +666,17 @@ export const register: Register = on => {
               const [title, ...why] = q.text.split('\n\n')
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
-                  <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, 'message-question', ink.blue, '●')}
+                    <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                  </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
-                    <Markdown
-                      key={`o${i}-${option.id}`}
-                      text={`**${option.id}${option.isBest ? ' ★' : ''}**  ${option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()}`}
-                    />
+                    <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      <Text bold>{`${option.id}${option.isBest ? ' ★' : ''}`}</Text>
+                      <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
+                    </Box>
                   ))}
                   {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
                   {optionsOf(q).length > 0 ? (
@@ -487,17 +704,25 @@ export const register: Register = on => {
               const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
 
 ${part.body}` : part.body
+              const all = pieces(numbered(body))
+              // A block to paste (```) is drawn whole, below the frame, so its fences
+              // never become empty code boxes inside it.
+              const isFence = (piece: Piece) => 'text' in piece && piece.text.startsWith('```')
               return (
-                <Box key={`f${i}`} flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1}>
-                  <Text bold>{look.title}</Text>
+                <Box key={`f${i}`} flexDirection="column" gap={1}>
+                <Box flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
+                  <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, look.icon, ink[look.tint], look.glyph)}
+                    <Text bold>{look.title}</Text>
+                  </Box>
                   {!isLongFold || full ? (
-                    pieces(numbered(body)).map((piece, j) =>
+                    all.filter(piece => !isFence(piece)).map((piece, j) =>
                       'n' in piece ? (
-                        <Box key={`s${i}-${j}`} flexDirection="row" gap={1}>
+                        <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
                             <Text bold>{piece.lead}</Text>
-                            {piece.rest ? <Text dimColor>{piece.rest}</Text> : null}
+                            {piece.rest ? <Markdown text={piece.rest} dimColor /> : null}
                             {piece.subs.map((sub, k) => (
                               <Markdown key={`sub${i}-${j}-${k}`} text={sub} dimColor />
                             ))}
@@ -510,6 +735,10 @@ ${part.body}` : part.body
                   ) : (
                     <Text wrap="truncate-end">{gist(part)}</Text>
                   )}
+                </Box>
+                {(!isLongFold || full ? all.filter(isFence) : []).map((piece, j) => (
+                  <Markdown key={`fence${i}-${j}`} text={'text' in piece ? piece.text : ''} />
+                ))}
                 </Box>
               )
             })}

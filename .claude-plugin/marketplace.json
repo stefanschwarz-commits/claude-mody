@@ -18,6 +18,11 @@
       "name": "wyglad",
       "source": "./plugins/wyglad",
       "description": "Wniosek ▶ na kolorowym tle, zadania i pytania w ramkach, zwinięte komunikaty z trakcie pracy."
+    },
+    {
+      "name": "komputer",
+      "source": "./plugins/komputer",
+      "description": "Tytuł każdej sesji na komputerze zaczyna się od „💻 ”; dopisuje znaczek, gdy go brakuje."
     }
   ],
   "description": "Mody do Claude Code Stefana Schwarza"

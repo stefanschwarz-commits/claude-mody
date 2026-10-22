@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { optionsOf, splitQuestions, tableOf, tipOf } from './split'
+import { optionsOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
 
 const REPLY = [
   '▶ **Mod działa i jest gotowy do testu.**',
@@ -60,7 +60,9 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
   const filled = setup(on)
   for (const surface of ['terminal', 'desktop', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
-    expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeDefined()
+    // The ▶ marker is an icon where the surface draws SVG, the glyph on the terminal.
+    expect(await ui.find(surface === 'terminal' ? { type: 'Text', text: '▶' } : { type: 'Svg' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /[Oo]dpowiedź$/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Mod działa i jest gotowy do testu.' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Do zrobienia przez Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
@@ -81,6 +83,20 @@ test('komunikat z trakcie pracy zwija się do jednej szarej linii', async ($, on
   expect(await ui.find({ type: 'Text', text: '· Sprawdzam, jakie dane dostaje mod.' })).toBeDefined()
 })
 
+test('krótka odpowiedź końcowa bez ▶ nie zwija się do szarej linii', async ($, on) => {
+  setup(on)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.render', () => ({ type: 'Text', props: {}, children: ['zwykły'] }) as never)
+  const answer = 'Przeczytałem CLAUDE.md i czekam na sprawę.'
+  await $.turn.complete({ reason: 'answer', answer, durationMs: 1, isAborted: false, turnId: 'f1' } as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(answer) })
+  expect(await ui.find({ type: 'Text', text: `· ${answer}` })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: 'zwykły' })).toBeDefined()
+  // A work note in the same session still folds.
+  const note = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message('Sprawdzam mod.') })
+  expect(await note.find({ type: 'Text', text: '· Sprawdzam mod.' })).toBeDefined()
+})
+
 test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   setup(on)
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['zwykły'] }) as never)
@@ -89,13 +105,6 @@ test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   expect(out.text).toContain('zwykły')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'terminal', component: 'AssistantMessage', props: message(REPLY) })
   expect(await ui.find({ type: 'Text', text: /^▶ / })).toBeUndefined()
-})
-
-test('wskazówka o sekcjach Zrobione i Problem trafia do Claude', async ($, on) => {
-  setup(on)
-  on('prompt.compose', () => ({ sections: [{ id: 'base', text: 'x', scope: 'shared' }] }) as never)
-  const { sections } = await $.prompt.compose({ model: 'm', promptModel: 'm', outputStyle: null, traits: [], surfaces: [], tools: [] } as never)
-  expect(sections.some(s => s.id === 'wyglad:sekcje' && s.text.includes('Zrobione'))).toBe(true)
 })
 
 test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) => {
@@ -161,10 +170,16 @@ test('odhaczone zadanie się skreśla, a pasek liczy tylko pozostałe', async ($
   await $.turn.complete({ reason: 'answer', answer: reply, durationMs: 1, isAborted: false, turnId: 't2' } as never)
   expect(toasts).toEqual(['Gotowe. Potrzebuję od Ciebie: 2 zadania'])
   const answer = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  const tick = await answer.find({ type: 'Button', text: '☐' })
+  // Tasks are numbered, so Stefan can say "zrobiłem 1"; what to do reads bold, why reads faint.
+  expect(await answer.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await answer.find({ type: 'Text', text: 'Zmień hasło (5 min)' })).toBeDefined()
+  expect(await answer.find({ type: 'Markdown', props: { text: 'po to' } })).toBeDefined()
+  expect(await answer.find({ type: 'Button', text: '☐' })).toBeUndefined()
+  // Ticking lives in the "Moje sprawy" pane.
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  const tick = await pane.find({ type: 'Button', text: '☐' })
   expect(tick).toBeDefined()
-  await answer.press({ key: tick!.key! })
-  expect(await answer.find({ type: 'Button', text: '☑' })).toBeDefined()
+  await pane.press({ key: tick!.key! })
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie' })).toBeDefined()
 })
@@ -173,11 +188,11 @@ test('kroki pracy: jedna szara linia, błąd zostaje widoczny', async ($, on) =>
   setup(on)
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['silnik'] }) as never)
   const ok = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolUse', props: { tool: 'Read', input: {}, isRunning: false, isErrored: false, isInterrupted: false } as never })
-  expect(await ok.find({ type: 'Text', text: '· czytam plik' })).toBeDefined()
+  expect(await ok.find({ type: 'Text', text: 'czytam plik' })).toBeDefined()
   const bad = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolUse', props: { tool: 'Bash', input: {}, isRunning: false, isErrored: true, isInterrupted: false } as never })
   expect(await bad.find({ type: 'Text', text: 'silnik' })).toBeDefined()
   const group = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'ToolGroup', props: { calls: [{ tool: 'Read', input: {}, isRunning: false }, { tool: 'Grep', input: {}, isRunning: false }], isActive: false, isExpanded: false } as never })
-  expect(await group.find({ type: 'Text', text: '· 2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
+  expect(await group.find({ type: 'Text', text: '2 kroki w tle (czytam plik, szukam w plikach)' })).toBeDefined()
 })
 
 test('długie wyjaśnienie: zwija się dopiero powyżej 40 linii i nigdy w środku tabeli', async ($, on) => {
@@ -220,7 +235,7 @@ test('nagłówki z kolorowymi kropkami (wersja 6 instrukcji) są rozpoznawane', 
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Markdown', props: { text: /Strona działa/ } })).toBeDefined()
   expect(await ui.find({ type: 'Markdown', props: { text: /Hasło wygasło/ } })).toBeDefined()
-  expect(await ui.find({ type: 'Button', text: '☐' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: '1.' })).toBeDefined()
 })
 
 test('gwiazdka także przy „Polecam 2B” z numerem', () => {
@@ -356,13 +371,15 @@ test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem
   setup(on)
   const reply = ['▶ **Lead.**', '', '---', '', '🟢 **Zrobione**', '- Testy przechodzą. 23 z 23 na kopii.', '', '---', '', '🔴 **Problem**', '- Kopia nie wyszła.', '', '---', '', '🟠 **Niewyjaśnione**', '- Nie wiem, czemu mail nie dotarł.'].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  type Node = { type: string; props?: { bold?: boolean; dimColor?: boolean }; children?: (Node | string)[] }
+  type Node = { type: string; props?: { bold?: boolean; dimColor?: boolean; text?: string }; children?: (Node | string)[] }
   const bold: string[] = []
   const faint: string[] = []
   const walk = (n: Node) => {
     const text = n.children?.filter(c => typeof c === 'string').join('') ?? ''
     if (n.type === 'Text' && n.props?.bold) bold.push(text)
     if (n.type === 'Text' && n.props?.dimColor) faint.push(text)
+    // The rest is Markdown (links stay clickable), drawn faint.
+    if (n.type === 'Markdown' && n.props?.dimColor) faint.push(n.props.text ?? '')
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
@@ -392,7 +409,7 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   const boxes: string[] = []
   const md: string[] = []
   const walk = (n: Node) => {
-    if (n.type === 'Button' && n.props?.label === '☐') boxes.push('☐')
+    if (n.type === 'Text' && /^\d+\.$/.test(n.children?.join('') ?? '')) boxes.push('n')
     if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
@@ -411,4 +428,89 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   expect(inFrame.some(t => t.startsWith('```'))).toBe(false)
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 3 zadania' })).toBeDefined()
+})
+
+test('sekcje bez linii --- między nimi są rozpoznawane tak samo', () => {
+  const reply = splitReply(['▶ **Gotowe.**', '', 'Opis.', '', '🟢 **Zrobione**', '1. **Raz.** Tak.', '', '🟠 **Do zrobienia przez Ciebie**', '1. Zrób (1 min) – po co', '', '⚪ **Dla informacji**', '- drobiazg', '```', '🟢 **Zrobione** w kodzie nie dzieli', '```'].join('\n'))
+  expect(reply?.parts.map(part => part.kind)).toEqual(['plain', 'done', 'todo', 'info'])
+  expect(reply?.parts[3].body).toContain('w kodzie nie dzieli')
+})
+
+test('zdanie zaczynające się od „Zrobione” nie otwiera sekcji', () => {
+  const reply = splitReply(['▶ **Gotowe.**', '', 'Zrobione zostało wszystko, co prosiłeś, i sprawdzone na stronie.', '', '---', '', '🟢 **Zrobione**', '- raz'].join('\n'))
+  expect(reply?.parts.map(part => part.kind)).toEqual(['plain', 'done'])
+})
+
+test('blok do wklejenia w ramce Zrobione zostaje w całości i stoi pod ramką', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Gotowa wiadomość.**', '', '---', '', '🟢 **Zrobione**', '', '```', 'Sprawdź, tylko odczytem:', '1. Czy skrypt się uruchomił.', '2. Czy wysyła maila.', '```', '', '---', '', '⚪ **Dla informacji**', '1. **Brak maila nie musi oznaczać awarii.** Nie wiem.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  type Node = { type: string; props?: { text?: string }; children?: (Node | string)[] }
+  const md: string[] = []
+  const walk = (n: Node) => {
+    if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  const fence = md.find(t => t.startsWith('```'))
+  expect(fence).toContain('2. Czy wysyła maila.')
+  expect(fence).toMatch(/```$/)
+  expect(md.filter(t => t.trim() === '```').length).toBe(0)
+})
+
+test('„1 zrobiłem”: Claude dostaje treść zadania, narzędzie odhacz skreśla je, linia stanu liczy resztę', async ($, on) => {
+  setup(on)
+  const status: (string | undefined)[] = []
+  on('ui.toast', () => ({ value: undefined }) as never)
+  on('ui.status', ($, e) => {
+    status.push(e.text)
+    return { value: undefined } as never
+  })
+  on('ui.invalidate', () => ({ value: undefined }) as never)
+  on('turn.complete', () => ({ text: '' }))
+  on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
+  const seen: string[][] = []
+  on('prompt.submit', ($, e) => {
+    seen.push([...(e.context ?? [])])
+    return { text: e.text }
+  })
+  const reply = ['▶ **Test.**', '', '---', '', '🔵 **Do zrobienia przez Ciebie**', '', '1. Zmień hasło (5 min) – po to', '2. Sprawdź stronę (2 min) – po to', '3. Napisz do Ligii (5 min) – po to'].join('\n')
+  await $.turn.complete({ reason: 'answer', answer: reply, durationMs: 1, isAborted: false, turnId: 't3' } as never)
+  expect(status.at(-1)).toBe('czeka: 3 zadania')
+  await $.prompt.submit({ text: '1 i 3 zrobiłem, 2 odpada', wait: false } as never)
+  expect(seen[0].join('\n')).toContain('Zadanie 1 („Zmień hasło (5 min) – po to”): zrobione.')
+  expect(seen[0].join('\n')).toContain('Zadanie 2 („Sprawdź stronę (2 min) – po to”): odpada.')
+  const out = (await $.tool.call({ tool: 'mcp__wyglad__odhacz', numery: [1, 3], stan: 'zrobione' } as never)) as { result?: unknown }
+  expect(String(out.result)).toContain('Otwartych zadań z ostatniej odpowiedzi: 1.')
+  expect(status.at(-1)).toBe('czeka: 1 zadanie')
+})
+
+test('„**Zadanie 1:**” z instrukcji v7 nie dubluje numeru w ramce zadań', async ($, on) => {
+  setup(on)
+  const reply = `▶ **Test.**
+
+---
+
+🔵 **Do zrobienia przez Ciebie**
+
+1. **Zadanie 1:** Załóż projekt (2 minuty) – po co
+2. **Zadanie 2:** Odpowiedz Ligii (5 minut) – prosiła`
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Załóż projekt (2 minuty)' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Zadanie 1: Załóż projekt (2 minuty)' })).toBeUndefined()
+})
+
+test('zadanie bez myślnika: pogrubione tylko pierwsze zdanie, reszta szara', async ($, on) => {
+  setup(on)
+  const reply = `▶ **Test.**
+
+---
+
+🔵 **Do zrobienia przez Ciebie**
+
+1. Usuń starą kartę (minuta). Na otwartej karcie kliknij „Usuń” i potwierdź.`
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: 'Usuń starą kartę (minuta)' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /^Usuń starą kartę \(minuta\)\. Na otwartej/ })).toBeUndefined()
 })

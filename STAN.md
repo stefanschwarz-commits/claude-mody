@@ -5,12 +5,18 @@ Aktualizacja: 2026-10-22 · Folder roboczy: C:\Projekty\claude-mody (kopia repoz
 
 | Sprawa | Status | Następny krok | Kto |
 |---|---|---|---|
-| Mod `dzwiek` (dźwięk na koniec pracy i przy pytaniu) | Działa | — | — |
-| Mod `projekt` 0.1.1 (pasek projektu nad polem, /stan) | Działa, dzieli pasek z innymi modami | — | — |
-| Mod `wyglad` 0.10.0 | Zainstalowany: znacznik „▶ Nowa odpowiedź”, „Potrzebuję od Ciebie”, kropki statusu, karty pytań bez tabeli z „Wybierz 1A / 1B ★”, odhaczanie zadań, panel „Moje sprawy” (/sprawy), zwijanie kroków pracy i długich wyjaśnień, powiadomienie | Stefan ogląda w nowej sesji i zgłasza poprawki zrzutem ekranu | Stefan |
-| Powiadomienie na koniec pracy | Na próbę | Zostawić albo usunąć po kilku dniach | Stefan |
-| Instrukcja współpracy v6 | Gotowa w folderze „Instrukcje Claude”, przekazana sesji „Instrukcje dla Claude” | Wkleić do Ustawień claude.ai po jej przeglądzie | Stefan |
-| Mody na wszystkich kontach | README opisuje jedyne źródło (to repozytorium), instalację, aktualizację i akapit do instrukcji współpracy | Stefan wkleja akapit z README do ustawień każdego konta claude.ai (lub do instrukcji v6) | Stefan |
-| Lista wyboru i pole tekstowe w kartach pytań | Pomysł | Dodać, gdy pojawi się pytanie z wieloma opcjami | Claude |
+| Mod `dzwiek` 0.1.0 (dźwięk na koniec pracy i przy pytaniu) | Działa | — | — |
+| Mod `projekt` 0.1.2 (pasek projektu nad polem, /stan) | Działa, dzieli pasek z innymi modami | — | — |
+| Mod `komputer` 0.2.0 (bez hooków; znaczek 💻 i kółeczko ◦ za tytułem sesji otwartych przez Claude robi hook z ustawień `~/.claude/hooks/znaczek-komputer.js`) | Zainstalowany; do sprawdzenia w nowej sesji i w sesji z zadania zaplanowanego | Stefan otwiera nową sesję, pisze dwie wiadomości i patrzy na tytuł | Stefan |
+| Mod `wyglad` 0.25.0 (szkic maila jako karta; układ odpowiedzi w regule `~/.claude/rules/wyglad-uklad-odpowiedzi.md`, nie w hooku) | Zainstalowany: ramki sekcji w kolorach, zadania numerowane (niebieskie), karty pytań 1A/1B ★, skrót „1 zrobiłem” + narzędzie `odhacz`, linia stanu, panel „Moje sprawy”, podpowiedź dla Claude o układzie odpowiedzi; krótka odpowiedź końcowa bez ▶ nie jest już szarym dopiskiem | Stefan restartuje aplikację | Stefan |
+| Podpowiedź moda o układzie odpowiedzi i znaczek 💻 nie docierają na koncie ELMI | Przyczyna: wbudowana wtyczka bezpieczeństwa Claude 2.1.304 na planie Team pomija hooki modów (prompt.compose, SessionStart, UserPromptSubmit). Obejścia 2026-10-20 (1A, 2A): reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md` i hook `~/.claude/hooks/znaczek-komputer.js` w ustawieniach | Działa, potwierdzone przez Stefana 2026-10-20 (💻 w tytule, bez szarych linii); zdjąć obejścia, gdy Anthropic poprawi | — |
+| Kolor ramki zadań | Niebieski, potwierdzony przez Stefana (1A) | — | — |
+| Ikony i kropki jako grafika SVG (Tabler, MIT) | Wdrożone w 0.22.0 (styl 1B, wszystkie znaczki 2A); przyciski zostają tekstowe | Stefan ogląda po restarcie | Stefan |
+| Karty opcji obok siebie (własny obszar HTML, tylko komputer) | Następne w kolejce | — | Claude |
+| Zegar (przypomnienia o czekających zadaniach) | Pomysł, Stefan chce wyjaśnień | Wrócić po ikonach i kartach | Claude |
+| Blokada groźnych poleceń, lista wyboru w kartach | Odłożone decyzją Stefana | — | — |
+| Instrukcja współpracy | Wersja 9 (obowiązuje od 2026-10-19): zadania bez „Zadanie N:”, kropka 🔵 przy zadaniach jak przy pytaniach; pole instrukcji wspólne dla Personal, ELMI i ATERIMA SERVICES | — | Instrukcje dla Claude |
+| Pusty folder OneDrive „Mody Claude Code” | Usunięty | — | — |
+| Mody na wszystkich kontach i komputerach | README: jedyne źródło (to repozytorium), instalacja i aktualizacja czterech modów, akapit do instrukcji; propozycja zmiany w PR nr 1 | Stefan scala PR nr 1 i wkleja akapit z README raz do pola instrukcji claude.ai (albo przekazuje sesji „Instrukcje dla Claude”); decyzja, czy repozytorium ma być publiczne | Stefan |
 
-Ustalenia wyglądu (stałe): kolorowe kropki ● zamiast kolorowego tekstu; mocny pomarańczowy pasek tylko jako znacznik początku ostatniej odpowiedzi; opcje nazywane jak przyciski (1A, 1B), polecana z ★; bez tabel w pytaniach.
+Ustalenia wyglądu (stałe): kolorowe kropki ● zamiast kolorowego tekstu; tytuł ramki w środku ramki; opcje nazywane jak przyciski (1A, 1B), polecana z ★; bez tabel w pytaniach; w tabelach ✓ ✗ ~ ?; zadania numerowane, bez kratek w odpowiedzi (kratki tylko w panelu); pogrubiony początek punktu to wynik, szare rozwinięcie; blok do wklejenia zawsze w całości pod ramką.

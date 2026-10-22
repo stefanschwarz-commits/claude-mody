@@ -5,6 +5,6 @@ export type Sprawa = { id: string; kind: 'todo' | 'question'; text: string; lett
 
 declare module 'claude-code' {
   interface PluginState {
-    wyglad: { last: Last | null; isFull: boolean; doneTasks: string[]; openTexts: string[]; sprawy: Sprawa[] }
+    wyglad: { last: Last | null; isFull: boolean; doneTasks: string[]; openTexts: string[]; sprawy: Sprawa[]; finalText: string | null }
   }
 }

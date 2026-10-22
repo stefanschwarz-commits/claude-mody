@@ -6,13 +6,14 @@ Własne mody (wtyczki) do Claude Code Stefana.
 
 ## Dla innych sesji i kont: gdzie są mody i jak je zainstalować
 
-Mody działają w programie Claude Code na komputerze, nie na koncie claude.ai. Na jednym komputerze są wspólne dla wszystkich kont, na które Stefan się loguje. Na nowym komputerze trzeba je zainstalować raz, w terminalu (PowerShell na Windows, Terminal na Macu):
+Mody działają w programie Claude Code na komputerze, nie na koncie claude.ai. Na jednym komputerze są wspólne dla wszystkich kont, na które Stefan się loguje (Personal, ELMI, ATERIMA SERVICES). Na nowym komputerze trzeba je zainstalować raz, w terminalu (PowerShell na Windows, Terminal na Macu):
 
 ```
 claude plugin marketplace add stefanschwarz-commits/claude-mody
 claude plugin install dzwiek@claude-mody
 claude plugin install projekt@claude-mody
 claude plugin install wyglad@claude-mody
+claude plugin install komputer@claude-mody
 ```
 
 Aktualizacja do najnowszej wersji (po każdej zmianie w repozytorium):
@@ -22,18 +23,19 @@ claude plugin marketplace update claude-mody
 claude plugin update dzwiek@claude-mody
 claude plugin update projekt@claude-mody
 claude plugin update wyglad@claude-mody
+claude plugin update komputer@claude-mody
 ```
 
 Sprawdzenie, co jest zainstalowane i w jakiej wersji: `claude plugin list`.
 
 Zasady dla sesji Claude:
-- Zmiany w modach robi się tylko w tym repozytorium (folder roboczy na komputerze Stefana: `C:\Projekty\claude-mody`), nigdy w ukrytej kopii, którą Claude Code trzyma u siebie, ani w kopii na OneDrive.
+- Zmiany w modach robi się tylko w tym repozytorium (folder roboczy na komputerze Stefana: `C:\Projekty\claude-mody`), nigdy w ukrytej kopii, którą Claude Code trzyma u siebie, ani w kopii na OneDrive. Pełny tok pracy jest w `CLAUDE.md`.
 - Po zmianie: podbić wersję w `plugin.json` danego moda, dopisać decyzję do `DECYZJE.md`, wypchnąć na `main`, a potem na komputerze uruchomić polecenia aktualizacji powyżej.
 - Sesja w chmurze (claude.ai/code) może zmieniać kod i wypychać go, ale nie zainstaluje moda na komputerze Stefana; instalację robi sesja lokalna albo Stefan.
 
-Gotowy akapit do instrukcji współpracy (wklejany do ustawień każdego konta claude.ai):
+Gotowy akapit do instrukcji współpracy (pole instrukcji w ustawieniach claude.ai jest jedno dla wszystkich kont Stefana, więc wkleja się je raz; zmiany instrukcji idą przez sesję „Instrukcje dla Claude”):
 
-> MODY CLAUDE CODE. Moje mody (dźwięk, projekt, wygląd) są wyłącznie w https://github.com/stefanschwarz-commits/claude-mody; plik README mówi, jak je zainstalować i zaktualizować. Nie twórz kopii modów w innym miejscu. Zmiany modów zgłaszaj albo rób tylko w tym repozytorium.
+> MODY CLAUDE CODE. Moje mody (dźwięk, projekt, wygląd, komputer) są wyłącznie w https://github.com/stefanschwarz-commits/claude-mody; plik README mówi, jak je zainstalować i zaktualizować. Nie twórz kopii modów w innym miejscu. Zmiany modów zgłaszaj albo rób tylko w tym repozytorium.
 
 ## dzwiek
 
@@ -70,18 +72,19 @@ claude plugin install projekt@claude-mody
 - `/stan nowy` – zakłada pusty STAN.md w bieżącym folderze
 - pasek zwijasz znakiem `[-]` po jego prawej stronie
 
-## wyglad (wersja testowa)
+## wyglad
 
-Odpowiedzi Claude'a w Claude Code:
-- kolorowy pasek „▶ Nowa odpowiedź” zaznacza początek ostatniej odpowiedzi (starsze mają szary), pod nim wniosek;
-- „Potrzebuję od Ciebie”: zadania i pytania razem, pytania z tabelą opcji i przyciskami (np. `1A`, `1B` – wpisują odpowiedź w pole);
-- Zrobione i Problem zwinięte do jednej linii (zielona / czerwona), przycisk „Pokaż szczegóły” rozwija;
-- pasek nad polem wpisywania: ile zadań i pytań czeka na Ciebie oraz przycisk „↑ Początek odpowiedzi”;
-- krótkie komunikaty z trakcie pracy i kroki pracy (czytanie plików, polecenia) zwinięte do jednej szarej linii; błędy zostają widoczne;
-- zadania z kratką ☐ do odhaczenia; pasek liczy tylko te, które zostały;
-- długie wyjaśnienia: pierwsze 8 linii i przycisk „Pokaż więcej”;
+Odpowiedzi Claude'a w Claude Code, rysowane według sekcji odpowiedzi (linia ▶, potem Zrobione, Nie udało się, Niewyjaśnione, Do zrobienia przez Ciebie, Pytania do Ciebie, Dla informacji; kreski `---` między sekcjami nie są konieczne):
+- jasny pasek „▶ Nowa odpowiedź” zaznacza początek ostatniej odpowiedzi (starsze mają szary „▶ Odpowiedź”), pod nim wniosek;
+- „Do zrobienia przez Ciebie” w niebieskiej ramce: zadania z numerami, pogrubione „co zrobić”, szare „po co”; przedrostek „Zadanie N:” z instrukcji jest zdejmowany;
+- każde pytanie w niebieskiej karcie: opcje jako `1A`, `1B ★` (polecana z gwiazdką), przyciski `Wybierz 1A` wpisują odpowiedź w pole;
+- podsumowanie w osobnych ramkach z tytułem w środku: Zrobione (zielona), Nie udało się (czerwona), Niewyjaśnione (pomarańczowa), Dla informacji (szara); punkt ma pogrubiony wynik i szare rozwinięcie, linki są klikalne; blok do wklejenia stoi pod ramką w całości;
+- pasek nad polem wpisywania: ile zadań i pytań czeka, przyciski „↑ Początek odpowiedzi” i „Moje sprawy”;
+- linia stanu na dole: „czeka: 2 zadania, 1 pytanie”;
+- skrót „1 i 3 zrobiłem, 2 odpada”: mod dopisuje Claude'owi treść zadań o tych numerach, a Claude odhacza je narzędziem `odhacz` w panelu „Moje sprawy”;
+- krótkie komunikaty w trakcie pracy i kroki pracy zwinięte do jednej szarej linii; błędy zostają widoczne;
 - powiadomienie w rogu na koniec pracy, gdy coś na Ciebie czeka;
-- panel boczny „Moje sprawy” (`/sprawy` albo przycisk w pasku): wszystkie zadania z rozmowy do odhaczenia i pytania z przyciskami odpowiedzi.
+- panel boczny „Moje sprawy” (`/sprawy` albo przycisk w pasku): zadania do odhaczenia i pytania, z odnośnikami ↗ do miejsca w odpowiedzi.
 
 ```
 claude plugin install wyglad@claude-mody
@@ -89,3 +92,11 @@ claude plugin install wyglad@claude-mody
 
 - `/wyglad off` – zwykły wygląd, `/wyglad on` – kolorowy
 - `/sprawy` – panel „Moje sprawy”
+
+## komputer
+
+Tytuł każdej sesji na komputerze zaczyna się od „💻 ” (sesje w chmurze zostają bez znaczka). Mod dopisuje znaczek tylko wtedy, gdy go brakuje, i nie zmienia reszty tytułu, więc dyspozytor poczty nadal znajduje sesje po dokładnym tytule. Nowa sesja dostaje tytuł od aplikacji po pierwszej wiadomości, więc znaczek pojawia się przy drugiej.
+
+```
+claude plugin install komputer@claude-mody
+```

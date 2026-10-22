@@ -28,7 +28,18 @@ export function firstLine(text: string): string {
   return text.trim().split(/\r?\n/)[0]?.replace(/[*_`]/g, '') ?? ''
 }
 
-// A reply in Stefan's form: the ▶ line, then sections between `---` rules.
+function kindOf(line: string): Kind {
+  return KINDS.find(([, pattern]) => pattern.test(line.trim()))?.[0] ?? 'plain'
+}
+
+// "🟢 **Zrobione**", "## Do zrobienia przez Ciebie:" — the header alone, no sentence after it.
+function isHeaderOnly(line: string): boolean {
+  const text = line.trim().replace(MARK, '').replace(/\*\*/g, '').replace(/:\s*$/, '').trim()
+  return text.length <= 40 && !/[.!?]/.test(text)
+}
+
+// A reply in Stefan's form: the ▶ line, then sections under known headers,
+// with or without `---` rules between them.
 export function splitReply(text: string): Reply | undefined {
   const lines = text.split(/\r?\n/)
   const at = lines.findIndex(line => line.trimStart().startsWith('▶'))
@@ -38,11 +49,23 @@ export function splitReply(text: string): Reply | undefined {
   const rest = [...lines.slice(0, at), ...lines.slice(at + 1)].join('\n')
   const parts: Part[] = []
 
-  for (const chunk of rest.split(/^\s*---+\s*$/m)) {
+  // A section starts at a `---` rule or at a line that is only a known header,
+  // so answers without rules between sections are drawn the same way.
+  const chunks: string[] = []
+  let inFence = false
+  for (const line of rest.split(/\r?\n/)) {
+    if (/^\s*```/.test(line)) inFence = !inFence
+    const isRule = !inFence && /^\s*---+\s*$/.test(line)
+    const isHead = !inFence && kindOf(line) !== 'plain' && isHeaderOnly(line)
+    if (isRule || isHead || chunks.length === 0) chunks.push('')
+    if (!isRule) chunks[chunks.length - 1] += `${line}\n`
+  }
+
+  for (const chunk of chunks) {
     const body = chunk.trim()
     if (body === '') continue
     const [head, ...tail] = body.split(/\r?\n/)
-    const kind = KINDS.find(([, pattern]) => pattern.test(head.trim()))?.[0] ?? 'plain'
+    const kind = isHeaderOnly(head) ? kindOf(head) : 'plain'
     if (kind === 'plain') {
       parts.push({ kind, title: '', body })
     } else {
@@ -61,7 +84,8 @@ export function splitQuestions(body: string): Question[] {
   for (const raw of body.split(/\r?\n/)) {
     const line = raw.trim()
     if (line === '') continue
-    const start = /^(?:#+\s*)?\**\s*(\d+)\.\s*\**\s*(.*?)\**\s*$/.exec(line)
+    // "**1. Pytanie?**" or "**Pytanie 1: Pytanie?**" (the card adds "Pytanie N:" itself).
+    const start = /^(?:#+\s*)?\**\s*(?:Pytanie\s+)?(\d+)[.:]\s*\**\s*(.*?)\**\s*$/i.exec(line)
     if (start) {
       current = { number: start[1], text: `**${start[2]}**`, options: [], table: [], tip: '' }
       out.push(current)
@@ -71,7 +95,8 @@ export function splitQuestions(body: string): Question[] {
       current = { number: '1', text: '', options: [], table: [], tip: '' }
       out.push(current)
     }
-    if (/^[-*]\s+\*\*\d*[A-Z]\)\s*★?\s*\*\*/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
+    // "- **1A) ★** text" and "- **1A) ★ Title.** text" (the bold runs into the text) both count.
+    if (/^[-*]\s+\*\*\d*[A-Z]\)\s*★?/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
     else if (line.startsWith('|')) current.table.push(line)
     else if (/^➜/.test(line)) current.tip = line
     else current.text += `${current.text ? '\n\n' : ''}${line}`
@@ -115,7 +140,7 @@ export function tableOf(q: Question): string {
   if (q.table.length > 0) return q.table.map((row, i) => (i === 0 ? head(row) : mark(row, q, best))).join('\n')
   if (q.options.length === 0) return ''
   const rows = q.options.map(option => {
-    const rest = option.replace(/^\*\*\d*[A-Z]\)\s*★?\s*\*\*\s*/, '').replaceAll('|', '/')
+    const rest = textOf(option).replaceAll('|', '/')
     return mark(`| **${letterOf(option)}** | ${rest} |`, q, best)
   })
   return [head('| Opcja | Co się stanie |'), '|---|---|', ...rows].join('\n')
@@ -140,10 +165,16 @@ export function optionsOf(q: Question): Option[] {
   }
   return q.options.map(option => {
     const letter = letterOf(option)
-    return { id: `${q.number}${letter}`, isBest: letter === best || /★/.test(option), text: option.replace(/^\*\*\d*[A-Z]\)\s*★?\s*\*\*\s*/, '') }
+    return { id: `${q.number}${letter}`, isBest: letter === best || /★/.test(option), text: textOf(option) }
   })
 }
 
 export function letterOf(option: string): string {
-  return /\*\*\d*([A-Z])\)\s*★?\s*\*\*/.exec(option)?.[1] ?? '?'
+  return /\*\*\d*([A-Z])\)\s*★?/.exec(option)?.[1] ?? '?'
+}
+
+// The option without its "**1A) ★**" head. When the bold ran on into the text
+// ("**1A) ★ Title.** rest"), the bold is reopened so the title stays bold.
+export function textOf(option: string): string {
+  return option.replace(/^\*\*\d*[A-Z]\)\s*★?\s*(\*\*\s*)?/, (_, close?: string) => (close ? '' : '**'))
 }
