@@ -127,3 +127,9 @@ Zrzut Stefana (sesja o karcie Google Cloud na ELMI): zadanie „Usuń starą kar
 
 ## wyglad 0.25.0: szkic maila jako karta „Szkic maila” (2026-10-22)
 Stefan: proponowane treści maili mają być wyraźne, „żebym wiedział, co jest treścią maila, a co nie”; wybrał 1A (karta jak kartka papieru z przyciskiem kopiowania). Zapis w odpowiedzi: blok ```mail z liniami „Do:”, „DW:”, „Załącznik:”, „Temat:”, pustą linią i treścią (reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md`, akapit „Szkic maila”). Mod wyjmuje taki blok z wyjaśnienia i rysuje pod nim jasną kartę (to samo jasne tło w obu motywach, ikona koperty Tabler `mail`), nagłówki osobno, „Temat” pogrubiony, pod spodem przycisk „Kopiuj treść” ($.ui.copy, sama treść bez nagłówków; przy niepowodzeniu komunikat „zaznacz treść myszą”). Testy w `hooks/mail.test.ts`.
+
+## README dla innych sesji i kont: jedyne źródło modów (2026-10-22)
+Stefan chce, żeby sesje na innych kontach wiedziały, skąd brać mody, i żeby mody były identyczne na wszystkich kontach. Mody żyją na komputerze (`~/.claude/plugins`), nie na koncie claude.ai, więc na jednym komputerze są już wspólne; wspólnym punktem odniesienia dla każdej sesji jest to repozytorium (CLAUDE.md mówi to sesjom pracującym w repozytorium, README mówi to sesjom z zewnątrz). README dostał sekcję: gdzie są mody, instalacja i aktualizacja na nowym komputerze (wszystkie cztery mody), zasady dla sesji oraz akapit do wklejenia raz w polu instrukcji claude.ai (pole jest wspólne dla Personal, ELMI i ATERIMA SERVICES).
+
+## Repozytorium claude-mody publiczne (2026-10-22)
+Stefan wybrał 1A: repozytorium z modami ma być publiczne, żeby każde konto i każdy komputer instalowały mody bez logowania do GitHuba. W modach nie ma haseł ani danych firmowych (sprawdzone). Przełączenia nie da się zrobić z sesji w chmurze (łącze do GitHuba blokuje zmiany ustawień repozytorium), więc robi je Stefan w ustawieniach repozytorium na GitHubie.
