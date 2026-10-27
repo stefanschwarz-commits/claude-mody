@@ -17,6 +17,6 @@ Aktualizacja: 2026-10-22 · Folder roboczy: C:\Projekty\claude-mody (kopia repoz
 | Blokada groźnych poleceń, lista wyboru w kartach | Odłożone decyzją Stefana | — | — |
 | Instrukcja współpracy | Wersja 9 (obowiązuje od 2026-10-19): zadania bez „Zadanie N:”, kropka 🔵 przy zadaniach jak przy pytaniach; pole instrukcji wspólne dla Personal, ELMI i ATERIMA SERVICES | — | Instrukcje dla Claude |
 | Pusty folder OneDrive „Mody Claude Code” | Usunięty | — | — |
-| Mody na wszystkich kontach i komputerach | README: jedyne źródło (to repozytorium), instalacja i aktualizacja czterech modów, akapit do instrukcji; propozycja zmiany w PR nr 1 | Stefan scala PR nr 1 i wkleja akapit z README raz do pola instrukcji claude.ai (albo przekazuje sesji „Instrukcje dla Claude”); repozytorium publiczne od 2026-10-23 (Stefan przełączył) | Stefan |
+| Mody na wszystkich kontach i komputerach | README: jedyne źródło (to repozytorium), instalacja i aktualizacja czterech modów, akapit do instrukcji; propozycja zmiany w PR nr 1 | Akapit przekazany sesji „Instrukcje dla Claude” 2026-10-27 (dopisuje do instrukcji); Stefan scala PR nr 1; repozytorium publiczne od 2026-10-23 (Stefan przełączył) | Stefan |
 
 Ustalenia wyglądu (stałe): kolorowe kropki ● zamiast kolorowego tekstu; tytuł ramki w środku ramki; opcje nazywane jak przyciski (1A, 1B), polecana z ★; bez tabel w pytaniach; w tabelach ✓ ✗ ~ ?; zadania numerowane, bez kratek w odpowiedzi (kratki tylko w panelu); pogrubiony początek punktu to wynik, szare rozwinięcie; blok do wklejenia zawsze w całości pod ramką.
