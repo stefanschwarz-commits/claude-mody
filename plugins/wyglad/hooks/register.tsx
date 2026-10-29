@@ -128,6 +128,12 @@ export function mailsOf(text: string): { rest: string; mails: Mail[] } {
   return { rest: rest.replace(/\n{3,}/g, '\n\n').trim(), mails }
 }
 
+// One-line places (the pane, a struck task, a folded gist) cannot draw a link, so
+// "[nazwa](adres)" becomes its name and the markers go; nothing raw is shown.
+function plainOf(text: string): string {
+  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_`]/g, '')
+}
+
 function taskOf(text: string): { what: string; why: string } {
   // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
   const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
@@ -360,21 +366,21 @@ export const register: Register = on => {
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☐" onPress={tick(one.id)} />
             <Button key={`j-${one.id}`} label="↗" onPress={jump(`${answerOf(one.id)}-todo`)} />
-            <Text wrap="truncate-end">{one.text}</Text>
+            <Text wrap="truncate-end">{plainOf(one.text)}</Text>
           </Box>
         ))}
         {asks.length > 0 ? <Text bold>{`Pytania (${asks.length})`}</Text> : null}
         {asks.map(one => (
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`j-${one.id}`} label="↗" onPress={jump(`${answerOf(one.id)}-${one.id.split(':')[1]}`)} />
-            <Text wrap="truncate-end">{one.text}</Text>
+            <Text wrap="truncate-end">{plainOf(one.text)}</Text>
           </Box>
         ))}
         {done.length > 0 ? <Text bold dimColor>{`Odhaczone (${done.length})`}</Text> : null}
         {done.map(one => (
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☑" onPress={tick(one.id)} />
-            <Text dimColor strikethrough wrap="truncate-end">{one.text}</Text>
+            <Text dimColor strikethrough wrap="truncate-end">{plainOf(one.text)}</Text>
           </Box>
         ))}
       </Box>
@@ -543,7 +549,8 @@ export const register: Register = on => {
               <Text dimColor>Odpowiedź</Text>
             </Box>
           )}
-          <Text bold>{reply.headline}</Text>
+          {/* Markdown, not Text: a link in the headline stays clickable. */}
+          <Markdown text={`**${reply.headline}**`} />
         </Box>
         {(() => {
           // A long explanation shows its first lines until opened.
@@ -628,7 +635,7 @@ export const register: Register = on => {
                         <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
                           {ticked.includes(`${key}:${i}`) ? (
-                            <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text>
+                            <Text dimColor strikethrough>{plainOf(item.text)}</Text>
                           ) : (
                             <Box flexDirection="column">
                               {/* Markdown, not Text: a link in the task's head stays clickable. */}
@@ -679,7 +686,7 @@ export const register: Register = on => {
                       <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
                     </Box>
                   ))}
-                  {q.tip ? <Text bold>{tipOf(q)}</Text> : null}
+                  {q.tip ? <Markdown text={`**${tipOf(q)}**`} /> : null}
                   {optionsOf(q).length > 0 ? (
                     <Box flexDirection="row" flexWrap="wrap" gap={2}>
                       {optionsOf(q).map(option => (
@@ -734,7 +741,7 @@ ${part.body}` : part.body
                       ),
                     )
                   ) : (
-                    <Text wrap="truncate-end">{gist(part)}</Text>
+                    <Text wrap="truncate-end">{plainOf(gist(part))}</Text>
                   )}
                 </Box>
                 {(!isLongFold || full ? all.filter(isFence) : []).map((piece, j) => (

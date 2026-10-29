@@ -4,7 +4,7 @@ import { expect, mock, test } from 'claude-code/testing'
 // A link in the head of a task, in the head of a summary point and in a question
 // title is drawn through Markdown, bold, so it stays a clickable link.
 const REPLY = [
-  '▶ **Dokument gotowy.**',
+  '▶ **Dokument gotowy: [Strona główna](https://claude.ai/artifact/xyz)**',
   '',
   '---',
   '',
@@ -44,6 +44,7 @@ test('linki w pogrubionych początkach są rysowane przez Markdown, nie jako go�
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(md).toContain('**Dokument gotowy: [Strona główna](https://claude.ai/artifact/xyz)**')
   expect(md).toContain('**Otwórz [dokument](https://claude.ai/artifact/abc) i kliknij Share (2 minuty)**')
   expect(md).toContain('**Pytanie 1: Zostawić [stary wpis](https://example.org/wpis)?**')
   expect(md).toContain('**Opublikowałem [politykę](https://example.org/polityka).**')
