@@ -1,6 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { bolds } from './drzewo'
 import { mailsOf } from './register'
 
 const REPLY = [
@@ -51,7 +52,7 @@ for (const surface of ['terminal', 'desktop'] as const) {
     expect(await ui.find({ type: 'Text', text: 'RE: Google Cloud – konto Google na Twój adres' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Cześć Aniu,' })).toBeDefined()
     expect(await ui.find({ type: 'Button', text: 'Kopiuj treść' })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: 'Usuń starą kartę (minuta)' })).toBeDefined()
+    expect(bolds(await ui.find({ type: 'Box' }))).toContain('Usuń starą kartę (minuta)')
   })
 }
 

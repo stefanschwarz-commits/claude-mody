@@ -1,6 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { bolds } from './drzewo'
 import { optionsOf, splitQuestions, textOf } from './split'
 
 // A question written the way a session without the instructions writes it:
@@ -45,8 +46,9 @@ test('karta takiego pytania ma jeden nagłówek i przyciski Wybierz 1A / 1B', as
   setup(on)
   const reply = ['▶ **Archiwa.**', '', '---', '', '🔵 **Pytania do Ciebie**', '', BODY].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
-  expect(await ui.find({ type: 'Text', text: /^Pytanie 1: Jak chronić/ })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /Pytanie 1: Pytanie 1/ })).toBeUndefined()
+  const heads = bolds(await ui.find({ type: 'Box' }))
+  expect(heads.some(h => h.startsWith('Pytanie 1: Jak chronić'))).toBe(true)
+  expect(heads.some(h => h.includes('Pytanie 1: Pytanie 1'))).toBe(false)
   expect(await ui.find({ type: 'Button', text: 'Wybierz 1A ★' })).toBeDefined()
   expect(await ui.find({ type: 'Button', text: 'Wybierz 1B' })).toBeDefined()
 })

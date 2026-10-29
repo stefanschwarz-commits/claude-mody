@@ -631,7 +631,8 @@ export const register: Register = on => {
                             <Text dimColor strikethrough>{item.text.replace(/[*_`]/g, '')}</Text>
                           ) : (
                             <Box flexDirection="column">
-                              <Text bold>{taskOf(item.text).what}</Text>
+                              {/* Markdown, not Text: a link in the task's head stays clickable. */}
+                              <Markdown text={`**${taskOf(item.text).what}**`} />
                               {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor /> : null}
                             </Box>
                           )}
@@ -668,7 +669,7 @@ export const register: Register = on => {
                 <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
                     {icon(els, e.surface, 'message-question', ink.blue, '●')}
-                    <Text bold>{`Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}`}</Text>
+                    <Markdown text={`**Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
@@ -721,7 +722,7 @@ ${part.body}` : part.body
                         <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
-                            <Text bold>{piece.lead}</Text>
+                            <Markdown text={`**${piece.lead}**`} />
                             {piece.rest ? <Markdown text={piece.rest} dimColor /> : null}
                             {piece.subs.map((sub, k) => (
                               <Markdown key={`sub${i}-${j}-${k}`} text={sub} dimColor />

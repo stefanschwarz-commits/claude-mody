@@ -1,6 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { bolds } from './drzewo'
 import { optionsOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
 
 const REPLY = [
@@ -125,7 +126,7 @@ test('pytanie z tabelą opcji: tabela i przyciski z jej wierszy', async ($, on) 
     '➜ Polecam A. Odpisz A albo B.',
   ].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  expect(await ui.find({ type: 'Text', text: 'Pytanie 1: Który wygląd?' })).toBeDefined()
+  expect(bolds(await ui.find({ type: 'Box' }))).toContain('Pytanie 1: Który wygląd?')
   expect(await ui.find({ type: 'Button', key: 'b0-1B' })).toBeDefined()
   await ui.press({ key: 'b0-1B' })
   expect(filled).toEqual(['1B '])
@@ -172,7 +173,7 @@ test('odhaczone zadanie się skreśla, a pasek liczy tylko pozostałe', async ($
   const answer = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   // Tasks are numbered, so Stefan can say "zrobiłem 1"; what to do reads bold, why reads faint.
   expect(await answer.find({ type: 'Text', text: '2.' })).toBeDefined()
-  expect(await answer.find({ type: 'Text', text: 'Zmień hasło (5 min)' })).toBeDefined()
+  expect(bolds(await answer.find({ type: 'Box' }))).toContain('Zmień hasło (5 min)')
   expect(await answer.find({ type: 'Markdown', props: { text: 'po to' } })).toBeDefined()
   expect(await answer.find({ type: 'Button', text: '☐' })).toBeUndefined()
   // Ticking lives in the "Moje sprawy" pane.
@@ -308,10 +309,10 @@ test('podsumowanie: punkty z numerami zamiast kropek, delikatne szare tło', asy
   const bold: string[] = []
   const walk = (n: Node) => {
     if (n.props?.backgroundColor) found.push(n.props.backgroundColor)
-    if (n.type === 'Text' && n.props?.bold) bold.push(n.children?.filter(c => typeof c === 'string').join('') ?? '')
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  bold.push(...bolds(await ui.find({ type: 'Box' })))
   expect(found).toContain('#172116')
   expect(found).toContain('#2A1616')
   expect(bold).toContain('Pierwsze.')
@@ -376,13 +377,13 @@ test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem
   const faint: string[] = []
   const walk = (n: Node) => {
     const text = n.children?.filter(c => typeof c === 'string').join('') ?? ''
-    if (n.type === 'Text' && n.props?.bold) bold.push(text)
     if (n.type === 'Text' && n.props?.dimColor) faint.push(text)
     // The rest is Markdown (links stay clickable), drawn faint.
     if (n.type === 'Markdown' && n.props?.dimColor) faint.push(n.props.text ?? '')
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  bold.push(...bolds(await ui.find({ type: 'Box' })))
   expect(bold).toContain('Testy przechodzą.')
   expect(faint).toContain('23 z 23 na kopii.')
   expect(bold).toContain('Nie udało się')
@@ -497,8 +498,9 @@ test('„**Zadanie 1:**” z instrukcji v7 nie dubluje numeru w ramce zadań', a
 2. **Zadanie 2:** Odpowiedz Ligii (5 minut) – prosiła`
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Text', text: '2.' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: 'Załóż projekt (2 minuty)' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: 'Zadanie 1: Załóż projekt (2 minuty)' })).toBeUndefined()
+  const heads = bolds(await ui.find({ type: 'Box' }))
+  expect(heads).toContain('Załóż projekt (2 minuty)')
+  expect(heads).not.toContain('Zadanie 1: Załóż projekt (2 minuty)')
 })
 
 test('zadanie bez myślnika: pogrubione tylko pierwsze zdanie, reszta szara', async ($, on) => {
@@ -511,6 +513,7 @@ test('zadanie bez myślnika: pogrubione tylko pierwsze zdanie, reszta szara', as
 
 1. Usuń starą kartę (minuta). Na otwartej karcie kliknij „Usuń” i potwierdź.`
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  expect(await ui.find({ type: 'Text', text: 'Usuń starą kartę (minuta)' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /^Usuń starą kartę \(minuta\)\. Na otwartej/ })).toBeUndefined()
+  const heads = bolds(await ui.find({ type: 'Box' }))
+  expect(heads).toContain('Usuń starą kartę (minuta)')
+  expect(heads.some(h => h.startsWith('Usuń starą kartę (minuta). Na otwartej'))).toBe(false)
 })
