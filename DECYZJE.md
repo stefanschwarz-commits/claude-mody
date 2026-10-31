@@ -142,3 +142,6 @@ Zrzut Stefana: nagłówek odpowiedzi pod „Nowa odpowiedź” pokazywał [nazwa
 
 ## wyglad 0.26.2: gołe ścieżki obok adresu stają się linkami (2026-10-31)
 Zrzut Stefana (sesja Akademii): „Strony do obejrzenia: https://akademiaopiekunow.pl/dyzury-ekspertow/ · /jak-pracuja-eksperci/ · /kontakt/” – tylko pierwszy adres był linkiem, reszta to ścieżki wpisane skrótowo przez sesję. Stefan: „Chyba nie muszę tłumaczyć, gdzie jest problem”. Mod dopełnia teraz każdą gołą ścieżkę (/coś/) adresem z pierwszego pełnego linku w tej samej linii i rysuje ją jako link (linkPaths w split.ts, przed podziałem odpowiedzi; bloki kodu pominięte). Zdanie w regule układu odpowiedzi („każdy adres jako odnośnik”) nadal czeka na decyzję Stefana.
+
+## Reguła o linkach w układzie odpowiedzi (2026-10-31)
+Stefan wybrał 1A: do `~/.claude/rules/wyglad-uklad-odpowiedzi.md` dopisany akapit „Linki”: każdy adres jako odnośnik [krótka nazwa](pełny adres), nigdy goły tekst, skrócona ścieżka ani kod; dotyczy nagłówka ▶, zadań, pytań i punktów podsumowania; plik na komputerze też jako odnośnik (mod rysuje „Pokaż w folderze”). Reguła leży poza repozytorium (per komputer); tu tylko zapis decyzji.
