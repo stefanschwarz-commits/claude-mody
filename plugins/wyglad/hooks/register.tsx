@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Last, Sprawa } from '../types'
-import { firstLine, isProgress, lettersOf, optionsOf, splitQuestions, splitReply, tipOf } from './split'
+import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 
@@ -510,7 +510,7 @@ export const register: Register = on => {
       )
     }
 
-    const reply = splitReply(text)
+    const reply = splitReply(linkPaths(text))
     if (!reply) return next(e)
 
     const key = keyOf(reply.headline)

@@ -1,6 +1,16 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { linkPaths } from './split'
+
+test('gołe ścieżki obok pełnego adresu w tej samej linii stają się linkami', () => {
+  const line = 'Strony do obejrzenia: https://akademiaopiekunow.pl/dyzury-ekspertow/ · /jak-pracuja-eksperci/ · /kontakt/'
+  expect(linkPaths(line)).toBe('Strony do obejrzenia: https://akademiaopiekunow.pl/dyzury-ekspertow/ · [/jak-pracuja-eksperci/](https://akademiaopiekunow.pl/jak-pracuja-eksperci/) · [/kontakt/](https://akademiaopiekunow.pl/kontakt/)')
+  expect(linkPaths('Ścieżka /tmp/plik bez adresu w linii')).toBe('Ścieżka /tmp/plik bez adresu w linii')
+  expect(linkPaths('```\nhttps://x.pl/ · /a/\n```')).toBe('```\nhttps://x.pl/ · /a/\n```')
+  expect(linkPaths('[Strona](https://x.pl/a/) i /b/')).toBe('[Strona](https://x.pl/a/) i [/b/](https://x.pl/b/)')
+})
+
 // A link in the head of a task, in the head of a summary point and in a question
 // title is drawn through Markdown, bold, so it stays a clickable link.
 const REPLY = [

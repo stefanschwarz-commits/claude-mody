@@ -24,6 +24,22 @@ export function isProgress(text: string): boolean {
   return !text.includes('▶') && lines.length <= 2 && text.length <= 300
 }
 
+// "https://x.pl/a/ · /b/ · /c/": bare paths beside a full address on the same line
+// become links to that address, so every page named is one click away.
+export function linkPaths(text: string): string {
+  let inFence = false
+  return text
+    .split(/\r?\n/)
+    .map(line => {
+      if (/^\s*```/.test(line)) inFence = !inFence
+      if (inFence) return line
+      const origin = /https?:\/\/[^\s/)\]]+/.exec(line)?.[0]
+      if (!origin) return line
+      return line.replace(/(^|[\s·,;(])(\/[\w\-./]*\/?)(?=$|[\s·,;)])/g, (m, before: string, path: string) => `${before}[${path}](${origin}${path})`)
+    })
+    .join('\n')
+}
+
 export function firstLine(text: string): string {
   return text.trim().split(/\r?\n/)[0]?.replace(/[*_`]/g, '') ?? ''
 }

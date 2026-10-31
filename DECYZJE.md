@@ -139,3 +139,6 @@ Zgłoszenie z sesji „Napisz politykę prywatności Akademii Opiekunów”, sł
 
 ## wyglad 0.26.1: żadnego surowego zapisu linku nigdzie (2026-10-29)
 Zrzut Stefana: nagłówek odpowiedzi pod „Nowa odpowiedź” pokazywał [nazwa](adres) jako goły tekst; Stefan: „Tego rodzaju pokazywanie linków musi się natychmiast skończyć”. Przegląd wszystkich miejsc, w których mod rysował tekst odpowiedzi jako Text: nagłówek ▶ i wskazówka „➜ Polecam” idą przez Markdown w pogrubieniu (link klikalny); miejsca jednowierszowe, które nie mogą narysować linku (panel „Moje sprawy”, skreślone zadanie, zwinięty skrót sekcji), pokazują samą nazwę linku zamiast nawiasów (plainOf). Test nagłówka w `hooks/linki.test.ts`.
+
+## wyglad 0.26.2: gołe ścieżki obok adresu stają się linkami (2026-10-31)
+Zrzut Stefana (sesja Akademii): „Strony do obejrzenia: https://akademiaopiekunow.pl/dyzury-ekspertow/ · /jak-pracuja-eksperci/ · /kontakt/” – tylko pierwszy adres był linkiem, reszta to ścieżki wpisane skrótowo przez sesję. Stefan: „Chyba nie muszę tłumaczyć, gdzie jest problem”. Mod dopełnia teraz każdą gołą ścieżkę (/coś/) adresem z pierwszego pełnego linku w tej samej linii i rysuje ją jako link (linkPaths w split.ts, przed podziałem odpowiedzi; bloki kodu pominięte). Zdanie w regule układu odpowiedzi („każdy adres jako odnośnik”) nadal czeka na decyzję Stefana.
