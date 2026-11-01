@@ -139,3 +139,22 @@ test('„2B” w wiadomości Stefana: model dostaje, że to Pytanie 1 ostatniej 
   await $.prompt.submit({ text: '2B' } as never)
   expect((context ?? []).join('\n')).toContain('2B: Pytanie 1 z Twojej ostatniej odpowiedzi')
 })
+
+test('odpowiedziane pytanie traci przyciski i pokazuje wybór; pytania starszej odpowiedzi przygaszone', async ($, on) => {
+  setup(on)
+  on('prompt.submit', ($, e) => ({ text: e.text }) as never)
+  await complete($, ASK('Pierwsza sprawa.'), 'a')
+  await complete($, ASK('Druga sprawa.'), 'b')
+  const older = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Pierwsza sprawa.'), isFirstOfReply: true } as never })
+  const oldTexts = texts((await older.find({ type: 'Box' })) as unknown as Node)
+  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź: aktualne pytania'))).toBe(true)
+  expect(await older.find({ type: 'Button', text: 'Wybierz 1A' })).toBeUndefined()
+  await $.prompt.submit({ text: '2B' } as never)
+  const latest = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Druga sprawa.'), isFirstOfReply: true } as never })
+  const newTexts = texts((await latest.find({ type: 'Box' })) as unknown as Node)
+  expect(newTexts).toContain('odpowiedziałeś 2B')
+  expect(await latest.find({ type: 'Button', text: 'Wybierz 2A' })).toBeUndefined()
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  expect(texts((await pane.find({ type: 'Box' })) as unknown as Node).some(t => t.startsWith('Pytania ('))).toBe(false)
+})
+

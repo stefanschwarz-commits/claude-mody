@@ -37,6 +37,8 @@ const doneTasks = atom({ plugin: 'wyglad', key: 'doneTasks' } as const, [] as st
 const staleTasks = atom({ plugin: 'wyglad', key: 'staleTasks' } as const, [] as string[])
 // Each answer's number in the conversation and the moment it was finished, by its key.
 const stamps = atom({ plugin: 'wyglad', key: 'stamps' } as const, {} as Record<string, Stamp>)
+// Questions Stefan has answered, by their id ("<answer key>:q1"): what he chose ("7B").
+const answered = atom({ plugin: 'wyglad', key: 'answered' } as const, {} as Record<string, string>)
 
 // "1.11.2026, 14:03:27" in local time; the day left out when it is `sameDayAs`.
 function stampText(at: number, sameDayAs?: number): string {
@@ -386,7 +388,11 @@ export const register: Register = on => {
     if (answer && stamp && stamp.questions > 0) {
       for (const m of e.text.matchAll(/\b(\d+)\s*([A-Z])\b/g)) {
         const n = Number(m[1])
-        if (n > stamp.qBase && n <= stamp.qBase + stamp.questions) notes.push(`${m[1]}${m[2]}: Pytanie ${n - stamp.qBase} z Twojej ostatniej odpowiedzi (u Stefana numerowane narastająco jako ${n}), opcja ${m[2]}.`)
+        if (n > stamp.qBase && n <= stamp.qBase + stamp.questions) {
+          notes.push(`${m[1]}${m[2]}: Pytanie ${n - stamp.qBase} z Twojej ostatniej odpowiedzi (u Stefana numerowane narastająco jako ${n}), opcja ${m[2]}.`)
+          const id = `${answer.key}:q${n - stamp.qBase}`
+          await update($, answered, all => ({ ...all, [id]: `${n}${m[2]}` }))
+        }
       }
     }
     for (const m of e.text.matchAll(SAID)) {
@@ -417,7 +423,8 @@ export const register: Register = on => {
     const tasks = list.filter(one => one.kind === 'todo')
     const open = tasks.filter(one => !ticked.includes(one.id))
     const done = tasks.filter(one => ticked.includes(one.id))
-    const asks = list.filter(one => one.kind === 'question')
+    const replied = await read($, answered)
+    const asks = list.filter(one => one.kind === 'question' && !replied[one.id])
     const tick = (id: string) => () => void update($, doneTasks, l => (l.includes(id) ? l.filter(x => x !== id) : [...l, id]))
     const jump = (target: string) => () => void $.ui.scroll({ to: { key: target }, block: 'start' }).catch(() => undefined)
     const answerOf = (id: string) => id.split(':')[0]
@@ -645,11 +652,11 @@ export const register: Register = on => {
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
     const stale = await read($, staleTasks)
-    // An answer recorded earlier, with a newer one after it: its tasks may be out of date,
-    // so its frame says so and dims them. A message still streaming has no record yet.
-    const isOlder = !isLatest && (await read($, sprawy)).some(one => one.id.startsWith(`${key}:`))
+    const replied = await read($, answered)
     // The bar names the answer and the moment it was finished, so two answers are never confused.
     const stamp = (await read($, stamps))[key]
+    // Recorded at its turn's end, with a newer answer after it: an older answer (a streaming one has no stamp yet).
+    const isOlder = !isLatest && stamp !== undefined
     const now = await $.clock.now().catch(() => Date.now())
     const barText = stamp ? `Odpowiedź ${stamp.n} · ${stampText(stamp.at, isLatest ? undefined : now)}` : isLatest ? 'Nowa odpowiedź' : 'Odpowiedź'
     const isOpen = (await read($, openTexts)).includes(key)
@@ -810,25 +817,36 @@ export const register: Register = on => {
                 {icon(els, e.surface, 'message-question', ink.yellow, '●')}
                 <Text bold>Pytania do Ciebie</Text>
               </Box>
+              {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne pytania są w najnowszej odpowiedzi niżej.</Text> : null}
             {questions.map((q, i) => {
               // A decision block: the question, its options, the advice and the buttons.
               const [title, ...why] = q.text.split('\n\n')
               // The number runs on through the conversation once the answer is recorded.
               const g = (stamp?.qBase ?? 0) + Number(q.number)
               const named = (id: string) => `${g}${letterOfId(id)}`
+              const choice = replied[`${key}:q${q.number}`]
+              // Answered: the question keeps its title and the choice, loses its options and buttons.
+              if (choice) {
+                return (
+                  <Box key={`${key}-q${q.number}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
+                    <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
+                  </Box>
+                )
+              }
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="column" gap={1}>
-                  <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
+                  <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor={isOlder} />
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
                     <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                      <Text bold>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
-                      <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
+                      <Text bold dimColor={isOlder}>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
+                      <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} dimColor={isOlder} />
                     </Box>
                   ))}
-                  {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} /> : null}
-                  {optionsOf(q).length > 0 ? (
+                  {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} dimColor={isOlder} /> : null}
+                  {optionsOf(q).length > 0 && !isOlder ? (
                     <Box flexDirection="row" flexWrap="wrap" gap={2}>
                       {optionsOf(q).map(option => (
                         <Button
