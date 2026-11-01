@@ -35,21 +35,21 @@ async function complete($: { turn: { complete: (e: never) => Promise<unknown> } 
   await $.turn.complete({ reason: 'answer', answer, durationMs: 1, isAborted: false, turnId: id } as never)
 }
 
-test('starsza ramka zadań mówi, że aktualne zadania są niżej, i przygasza swoje', async ($, on) => {
+test('starsza odpowiedź nie jest przez to nieaktualna: jej zadania zostają pełne, bez przygaszenia', async ($, on) => {
   setup(on)
   await complete($, FIRST, 'a')
   await complete($, SECOND, 'b')
   const older = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: FIRST, isFirstOfReply: true } as never })
   const oldTexts = texts((await older.find({ type: 'Box' })) as unknown as Node)
-  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(true)
-  expect(oldTexts).toContain('dim:**Zadanie 1: Wejdź na stronę i wpisz kod C57H2PBE7 (minuta)**')
+  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(false)
+  expect(oldTexts).toContain('**Zadanie 1: Wejdź na stronę i wpisz kod C57H2PBE7 (minuta)**')
   const latest = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: SECOND, isFirstOfReply: true } as never })
   const newTexts = texts((await latest.find({ type: 'Box' })) as unknown as Node)
   expect(newTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(false)
   expect(newTexts).toContain('**Zadanie 1: Wejdź na stronę i wpisz kod CZLZPGDFZ (minuta)**')
 })
 
-test('odpowiedź, która jeszcze nie ma wpisu w sprawach, nie jest „starsza”', async ($, on) => {
+test('odpowiedź bez wpisu w sprawach też rysuje się pełna', async ($, on) => {
   setup(on)
   await complete($, FIRST, 'a')
   const fresh = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: SECOND, isFirstOfReply: true } as never })
@@ -140,15 +140,15 @@ test('„2B” w wiadomości Stefana: model dostaje, że to Pytanie 1 ostatniej 
   expect((context ?? []).join('\n')).toContain('2B: Pytanie 1 z Twojej ostatniej odpowiedzi')
 })
 
-test('odpowiedziane pytanie traci przyciski i pokazuje wybór; pytania starszej odpowiedzi przygaszone', async ($, on) => {
+test('odpowiedziane pytanie traci przyciski i pokazuje wybór; pytanie starszej odpowiedzi bez odpowiedzi zostaje pełne', async ($, on) => {
   setup(on)
   on('prompt.submit', ($, e) => ({ text: e.text }) as never)
   await complete($, ASK('Pierwsza sprawa.'), 'a')
   await complete($, ASK('Druga sprawa.'), 'b')
   const older = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Pierwsza sprawa.'), isFirstOfReply: true } as never })
   const oldTexts = texts((await older.find({ type: 'Box' })) as unknown as Node)
-  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź: aktualne zadania i pytania'))).toBe(true)
-  expect(await older.find({ type: 'Button', text: 'Wybierz 1A' })).toBeUndefined()
+  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(false)
+  expect(await older.find({ type: 'Button', text: 'Wybierz 1A' })).toBeDefined()
   await $.prompt.submit({ text: '2B' } as never)
   const latest = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Druga sprawa.'), isFirstOfReply: true } as never })
   const newTexts = texts((await latest.find({ type: 'Box' })) as unknown as Node)
