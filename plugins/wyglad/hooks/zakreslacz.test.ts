@@ -43,20 +43,24 @@ function spans(root: Node): { text: string; bg?: unknown }[] {
 
 test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i tabela zostają Markdown', () => {
   const blocks = blocksOf(['Zdanie z **ważną** częścią.', '', 'Link [x](https://x.pl) i **bold**.', '', '- lista **a**', '', '| a | b |', '|---|---|', '', 'Bez pogrubienia.'].join('\n'))
-  expect(blocks.map(b => b.kind)).toEqual(['para', 'md'])
-  expect(blocks[0].kind === 'para' ? blocks[0].runs : []).toEqual([
-    { text: 'Zdanie z ', isMark: false },
-    { text: 'ważną', isMark: true },
-    { text: ' częścią.', isMark: false },
+  expect(blocks.map(b => b.kind)).toEqual(['para', 'md', 'para'])
+  // The marker covers the whole sentence the bold stands in.
+  expect(blocks[0].kind === 'para' ? blocks[0].runs : []).toEqual([{ text: 'Zdanie z ważną częścią.', isMark: true }])
+  // A paragraph without a bold gives the short view its first sentence.
+  expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'Bez pogrubienia.'])
+  const two = blocksOf('Pierwsze zdanie jest zwykłe. Drugie ma **dwa słowa** i więcej. Trzecie jest zwykłe.')
+  expect(two[0].kind === 'para' ? two[0].runs : []).toEqual([
+    { text: 'Pierwsze zdanie jest zwykłe. ', isMark: false },
+    { text: 'Drugie ma dwa słowa i więcej.', isMark: true },
+    { text: ' Trzecie jest zwykłe.', isMark: false },
   ])
-  expect(marksOf(blocks)).toEqual(['ważną'])
 })
 
 test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zostawia same zakreślenia', async ($, on) => {
   setup(on)
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  const mark = all.find(s => s.text === 'ramki rysują się po restarcie')
+  const mark = all.find(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.')
   expect(mark).toBeDefined()
   expect(mark?.bg).toBe('#4a4420')
   expect(await ui.find({ type: 'Markdown', props: { text: /dokumentu/ } })).toBeDefined()
@@ -64,8 +68,8 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   expect(only).toBeDefined()
   await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
   const after = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(after.some(s => s.text === 'ramki rysują się po restarcie')).toBe(true)
-  expect(after.some(s => s.text.includes('a reszta to szczegóły'))).toBe(false)
+  expect(after.some(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.')).toBe(true)
+  expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
   expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
 })
 
@@ -97,7 +101,7 @@ test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', 
   ].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  const missing = ['stary wygląd zostaje', 'od tego zależy telefon', 'krótko', 'nic do zrobienia'].filter(text => all.find(s => s.text === text)?.bg !== '#4a4420')
+  const missing = ['Bez tego stary wygląd zostaje, bo mody wczytują się przy starcie.', 'Dlaczego to ważne: od tego zależy telefon, nie komputer.', 'Pierwszy – plus: krótko; minus: nic.', 'Dla Ciebie nic do zrobienia poza restartem.'].filter(text => all.find(s => s.text === text)?.bg !== '#4a4420')
   expect(missing).toEqual([])
 })
 

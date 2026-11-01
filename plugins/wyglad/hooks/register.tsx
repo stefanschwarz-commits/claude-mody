@@ -5,7 +5,7 @@ import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
-import { blocksOf, marksOf } from './zakreslacz'
+import { blocksOf, hasMarks, marksOf } from './zakreslacz'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -33,7 +33,7 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
 function marked(els: unknown, text: string, mark: string | undefined, isDim: boolean, key?: string): unknown {
   const { Text, Markdown } = els as Drawers & { Markdown: (props: { text: string; dimColor?: boolean; key?: string }) => unknown }
   const blocks = blocksOf(text)
-  if (blocks.length !== 1 || blocks[0].kind !== 'para') return <Markdown key={key} text={text} dimColor={isDim} />
+  if (blocks.length !== 1 || blocks[0].kind !== 'para' || !hasMarks(blocks)) return <Markdown key={key} text={text} dimColor={isDim} />
   return (
     <Text key={key} dimColor={isDim}>
       {blocks[0].runs.map((run, j) => (run.isMark ? <Text key={`r${j}`} backgroundColor={mark} dimColor={false}>{run.text}</Text> : run.text))}
@@ -739,7 +739,7 @@ export const register: Register = on => {
           // and "Tylko wyróżnione" leaves those runs alone, one per line.
           const blocks = blocksOf(isLong && !isOpen ? lines.slice(0, cut).join('\n') : lines.join('\n'))
           const marks = marksOf(blocks)
-          const isOnly = marks.length > 0 && onlyMarked.includes(key)
+          const isOnly = hasMarks(blocks) && onlyMarked.includes(key)
           return (
             <Box flexDirection="column" gap={1}>
               {isOnly
@@ -749,7 +749,9 @@ export const register: Register = on => {
                     </Box>
                   ))
                 : blocks.map((block, i) =>
-                    block.kind === 'md' ? (
+                    block.kind === 'md' || !block.runs.some(run => run.isMark) ? (
+                      <Markdown key={`b${i}`} text={block.kind === 'md' ? block.text : block.runs.map(run => run.text).join('')} />
+                    ) : block.kind === 'md' ? (
                       <Markdown key={`b${i}`} text={block.text} />
                     ) : (
                       <Text key={`b${i}`}>
@@ -757,7 +759,7 @@ export const register: Register = on => {
                       </Text>
                     ),
                   )}
-              {marks.length > 0 ? (
+              {hasMarks(blocks) ? (
                 <Box>
                   <Button
                     key={`only-${key}`}
