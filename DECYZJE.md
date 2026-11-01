@@ -228,3 +228,6 @@ Stefan (zrzut): „najważniejsza część treści… jest najmniej czytelna… 
 ## wyglad 0.33.1: marker dla słowa, pogrubienie z podkreśleniem dla zdania (2026-11-01)
 Stefan: „Żółte podkreślenie jest przydatne, gdy zaznaczasz słowo lub fragment, który jest bardzo ważny. Nie stosuj go do całych zdań. Do całych zdań wolę pogrubienie i inne podkreślanie, podkreślanie w sensie underline.” Mod: pogrubienie do trzech słów rysuje się jako żółty marker, dłuższe jako tekst pogrubiony i podkreślony; rozszerzanie markera na całe zdanie (0.32.1) cofnięte, zdania liczą się tylko w skrócie „Tylko wyróżnione”, który nadal pokazuje całe zdania z wyróżnieniem. Dotyczy wyjaśnienia, zadań, pytań, opcji i podsumowań. Reguła układu odpowiedzi opisuje oba rodzaje.
 
+## wyglad 0.33.2: skrót bez żółtego tła (2026-11-01)
+Stefan: „przycisk »Tylko wyróżnione« bardzo źle działa… Zobacz, co się dzieje, jak go naciśniesz.” Skrót rysował każde zdanie na żółtym tle markera, czyli to, co Stefan właśnie wykluczył dla zdań. Teraz skrót to lista zdań z wyróżnieniem (po jednym w linii, z kropką), zwykłym tekstem, z zachowanymi wyróżnieniami w środku (marker na słowie, podkreślenie zdania), a akapit bez wyróżnienia daje pierwsze zdanie. Jeśli po tej zmianie skrót nadal nie spełnia roli, do rozważenia usunięcie przycisku.
+

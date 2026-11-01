@@ -5,7 +5,7 @@ import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
-import { blocksOf, hasMarks, marksOf } from './zakreslacz'
+import { blocksOf, hasMarks, shortViewOf } from './zakreslacz'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -750,14 +750,15 @@ export const register: Register = on => {
           // A bold run in a prose paragraph is the paragraph's point: drawn as a marker,
           // and "Tylko wyróżnione" leaves those runs alone, one per line.
           const blocks = blocksOf(isLong && !isOpen ? lines.slice(0, cut).join('\n') : lines.join('\n'))
-          const marks = marksOf(blocks)
           const isOnly = hasMarks(blocks) && onlyMarked.includes(key)
           return (
             <Box flexDirection="column" gap={1}>
               {isOnly
-                ? marks.map((mark, i) => (
-                    <Box key={`m${i}`}>
-                      <Text backgroundColor={tint?.mark}>{mark}</Text>
+                ? shortViewOf(blocks).map((sentence, i) => (
+                    // One marked sentence per line, as plain text with its own emphasis inside.
+                    <Box key={`m${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      <Text dimColor>·</Text>
+                      <Text>{sentence.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}</Text>
                     </Box>
                   ))
                 : blocks.map((block, i) =>

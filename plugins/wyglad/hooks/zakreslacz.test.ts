@@ -75,8 +75,11 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   expect(only).toBeDefined()
   await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
   const after = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(after.some(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.')).toBe(true)
+  // The short view: the sentence as plain text, its emphasis inside, no background on the sentence.
+  expect(after.some(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.' && s.bg === undefined)).toBe(true)
+  expect(after.some(s => s.text === 'ramki rysują się po restarcie' && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
+  expect(after.some(s => s.text.includes('Drugi akapit'))).toBe(false)
   expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
 })
 

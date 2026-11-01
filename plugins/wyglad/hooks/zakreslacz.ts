@@ -39,8 +39,9 @@ export function runsOf(paragraph: string): Run[] {
   return out
 }
 
-// The sentences of a paragraph that hold any mark, whole: what the short view reads.
-export function markedSentencesOf(runs: Run[]): string[] {
+// The sentences of a paragraph that hold any mark, whole, each as its runs (the marks
+// inside kept): what the short view draws, as plain sentences with their emphasis.
+export function markedSentenceRunsOf(runs: Run[]): Run[][] {
   let text = ''
   const marks: [number, number][] = []
   for (const run of runs) {
@@ -49,13 +50,34 @@ export function markedSentencesOf(runs: Run[]): string[] {
   }
   const ends = [...text.matchAll(SENTENCE_END)].map(m => m.index + 1)
   if (ends.length === 0 || ends[ends.length - 1] < text.length) ends.push(text.length)
-  const out: string[] = []
+  const out: Run[][] = []
   let start = 0
   for (const end of ends) {
-    if (marks.some(([ms, me]) => ms < end && me > start)) out.push(text.slice(start, end).trim())
+    if (marks.some(([ms, me]) => ms < end && me > start)) out.push(sliceRuns(runs, start, end))
     start = end
   }
   return out
+}
+
+// The runs between two positions of the joined text, cut at the bounds and trimmed.
+function sliceRuns(runs: Run[], from: number, to: number): Run[] {
+  const out: Run[] = []
+  let at = 0
+  for (const run of runs) {
+    const s = Math.max(from, at)
+    const e = Math.min(to, at + run.text.length)
+    if (e > s) out.push({ ...run, text: run.text.slice(s - at, e - at) })
+    at += run.text.length
+  }
+  if (out.length > 0) {
+    out[0] = { ...out[0], text: out[0].text.replace(/^\s+/, '') }
+    out[out.length - 1] = { ...out[out.length - 1], text: out[out.length - 1].text.replace(/\s+$/, '') }
+  }
+  return out.filter(run => run.text !== '')
+}
+
+export function markedSentencesOf(runs: Run[]): string[] {
+  return markedSentenceRunsOf(runs).map(sentence => sentence.map(run => run.text).join(''))
 }
 
 // The first sentence of a text, for a paragraph that marks nothing.
@@ -99,10 +121,15 @@ export function blocksOf(text: string): Block[] {
 // What "Tylko wyróżnione" shows: the marked sentences of each prose paragraph, or its
 // first sentence when it marks nothing, so no paragraph vanishes from the short view.
 export function marksOf(blocks: Block[]): string[] {
+  return shortViewOf(blocks).map(sentence => sentence.map(run => run.text).join(''))
+}
+
+// The short view: per prose paragraph its marked sentences as runs, or its first sentence plain.
+export function shortViewOf(blocks: Block[]): Run[][] {
   return blocks.flatMap(block => {
     if (block.kind !== 'para') return []
-    const marks = markedSentencesOf(block.runs)
-    return marks.length > 0 ? marks : [firstSentenceOf(block.runs.map(run => run.text).join(''))]
+    const marks = markedSentenceRunsOf(block.runs)
+    return marks.length > 0 ? marks : [[{ text: firstSentenceOf(block.runs.map(run => run.text).join('')), isMark: false }]]
   })
 }
 
