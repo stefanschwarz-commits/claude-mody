@@ -29,3 +29,10 @@ jedno dla profilu Stefana: Personal, ELMI i ATERIMA SERVICES mają tę samą tre
 wkleja się je raz. Bez nich Claude pisze w innym układzie i mod rysuje tylko część ramek; jeśli ramki rozjeżdżają
 się tylko na jednym koncie, najpierw sprawdź, czy sesja ma instrukcje w kontekście. Zmiany w instrukcjach idą
 przez sesję „Instrukcje dla Claude”. Pamięć sesji i reguły w `~/.claude/rules` są wspólne dla komputera.
+
+## Skill „uklad-odpowiedzi” (jedno źródło układu odpowiedzi, od 2026-11-01)
+`skills/uklad-odpowiedzi/SKILL.md` = część A (treść reguły `~/.claude/rules/wyglad-uklad-odpowiedzi.md`) + część B (układ bez
+nakładki dla Cowork i czatu; wzór w OneDrive „Instrukcje Claude” → `do-instrukcji-ogolnych-uklad-odpowiedzi-bez-nakladki.md`).
+Po każdej zmianie reguły: odśwież SKILL.md (skrypt w DECYZJE.md z 2026-11-01 „Skill uklad-odpowiedzi”), commit, i po „tak”
+Stefana wgraj nową wersję w claude.ai (Customize → Skills → uklad-odpowiedzi), na każdym koncie, na którym ma działać.
+
