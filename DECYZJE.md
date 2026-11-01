@@ -246,3 +246,6 @@ Zrzut Stefana: przy długim tekście kroku etykieta „Krok 1b:” łamała się
 ## wyglad 0.34.2: kroki jako „K1A”, „K1B” (2026-11-01)
 Stefan: „Może zamiast »krok jeden« pisać »K1« i »B« dużymi literami? Wiadomo, o co chodzi.” Etykieta kroku to teraz „K1A”, „K1B”, „K1C”: krócej, więcej miejsca na tekst, a litera K odróżnia krok od opcji pytania „1B”. Reguły poprawione.
 
+## wyglad 0.35.0: nazwa pliku jest odnośnikiem wszędzie (2026-11-01)
+Stefan: „Chcę, aby nazwy plików, które mi podajesz, były jednocześnie linkami lub odnośnikami do tych plików.” Mod zamienia każdy odnośnik `[nazwa](C:\ścieżka)` (także `/ścieżka` i `file://`) na odnośnik `file:///…`, który aplikacja otwiera, w nagłówku, w tytule zadania i w punktach podsumowania (Markdown przyjmuje `file:`). W zdaniu wyjaśnienia z wyróżnieniem aplikacja desktopowa nie rysuje odnośnika innego niż https (silnik: „Link… is drawn as plain text… its href is not https:”), więc plik w takim zdaniu to jego nazwa, a pod akapitem wiersz z ikoną pliku i przyciskiem „Pokaż w folderze” (narzędzie aplikacji), jak dotąd pod zadaniem. Reguła: plik wymieniany z nazwy zawsze jako odnośnik z pełną ścieżką, nigdy sama nazwa. Czy chip `file:///` w Markdown otwiera plik, do potwierdzenia przez Stefana po restarcie; przycisk działa na pewno.
+

@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { blocksOf, marksOf } from './zakreslacz'
+import { blocksOf, hrefOf, marksOf } from './zakreslacz'
 
 // A bold run in a prose paragraph of the explanation is drawn as a marker (a span
 // with its own background), and "Tylko wyróżnione" shows those runs alone.
@@ -136,5 +136,40 @@ test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', 
   const missing = ['stary wygląd zostaje', 'krótko', 'nic do zrobienia'].filter(text => all.find(s => s.text === text)?.bg !== '#3a3720')
   expect(all.find(s => s.text === 'od tego zależy telefon')?.bg).toBeUndefined()
   expect(missing).toEqual([])
+})
+
+test('nazwa pliku z pełną ścieżką jest odnośnikiem wszędzie: w zdaniu, w punkcie podsumowania, w zadaniu', async ($, on) => {
+  setup(on)
+  expect(hrefOf('C:\\Projekty\\plan nowy.md')).toBe('file:///C:/Projekty/plan%20nowy.md')
+  expect(hrefOf('https://x.pl/a')).toBe('https://x.pl/a')
+  expect(hrefOf('kontakt')).toBeUndefined()
+  const reply = [
+    '▶ **Plan jest w [plan.md](C:\\Projekty\\plan.md).**',
+    '',
+    'Zapisałem go w **jednym pliku** [plan.md](C:\\Projekty\\plan.md), żeby był pod ręką.',
+    '',
+    'Bez wyróżnienia, ale z plikiem [stan.md](C:\\Projekty\\stan.md).',
+    '',
+    '---',
+    '',
+    '🟢 **Zrobione**',
+    '- **Plan zapisany w [plan.md](C:\\Projekty\\plan.md).** Otworzysz go jednym kliknięciem.',
+  ].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  type L = { type: string; props?: { href?: string; text?: string }; children?: (L | string)[] }
+  const links: string[] = []
+  const md: string[] = []
+  const walk = (n: L) => {
+    if (n.type === 'Link' && n.props?.href) links.push(n.props.href)
+    if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as L)
+  // The desktop opens no file link inline, so a file in a sentence is its name plus a row with "Pokaż w folderze".
+  expect(links).toEqual([])
+  expect(await ui.find({ type: 'Button', text: 'Pokaż w folderze' })).toBeDefined()
+  expect(md).toContain('**Plan jest w [plan.md](file:///C:/Projekty/plan.md).**')
+  expect(md).toContain('Bez wyróżnienia, ale z plikiem [stan.md](file:///C:/Projekty/stan.md).')
+  expect(md).toContain('**Plan zapisany w [plan.md](file:///C:/Projekty/plan.md).**')
 })
 

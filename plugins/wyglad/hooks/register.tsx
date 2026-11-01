@@ -5,7 +5,7 @@ import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
-import { blocksOf, hasMarks, shortViewOf } from './zakreslacz'
+import { blocksOf, fileLinksOf, filesOf, hasMarks, shortViewOf } from './zakreslacz'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -46,7 +46,7 @@ function emphasis(els: unknown, run: { text: string; isMark?: boolean; kind?: 'w
 function marked(els: unknown, text: string, mark: string | undefined, isDim: boolean, key?: string): unknown {
   const { Text, Markdown } = els as Drawers & { Markdown: (props: { text: string; dimColor?: boolean; key?: string }) => unknown }
   const blocks = blocksOf(text)
-  if (blocks.length !== 1 || blocks[0].kind !== 'para' || !hasMarks(blocks)) return <Markdown key={key} text={text} dimColor={isDim} />
+  if (blocks.length !== 1 || blocks[0].kind !== 'para' || !hasMarks(blocks)) return <Markdown key={key} text={fileLinksOf(text)} dimColor={isDim} />
   return (
     <Text key={key} dimColor={isDim}>
       {blocks[0].runs.map((run, j) => emphasis(els, run, mark, `r${j}`))}
@@ -742,7 +742,7 @@ export const register: Register = on => {
             <Text bold>Co się zmieniło</Text>
           </Box>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
-          <Markdown text={`**${reply.headline}**`} />
+          <Markdown text={`**${fileLinksOf(reply.headline)}**`} />
         {(() => {
           // A long explanation shows its first lines until opened.
           const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')
@@ -769,18 +769,31 @@ export const register: Register = on => {
                       <Text>{sentence.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
                     </Box>
                   ))
-                : blocks.map((block, i) =>
-                    block.kind === 'md' || !block.runs.some(run => run.isMark) ? (
-                      <Markdown key={`b${i}`} text={block.kind === 'md' ? block.text : block.runs.map(run => run.text).join('')} />
-                    ) : block.kind === 'md' ? (
-                      <Markdown key={`b${i}`} text={block.text} />
-                    ) : (
-                      <Box key={`b${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                        {block.isBullet ? <Text>•</Text> : null}
-                        <Text>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
-                      </Box>
-                    ),
-                  )}
+                : blocks.map((block, i) => (
+                    <Box key={`b${i}`} flexDirection="column">
+                      {block.kind === 'md' || !block.runs.some(run => run.isMark) ? (
+                        <Markdown text={block.kind === 'md' ? block.text : fileLinksOf(block.runs.map(run => (run.href ? `[${run.text}](${run.href})` : run.path ? `[${run.text}](${run.path})` : run.text)).join(''))} />
+                      ) : (
+                        <Box flexDirection="row" alignItems="flex-start" gap={1}>
+                          {block.isBullet ? <Text>•</Text> : null}
+                          <Text>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
+                        </Box>
+                      )}
+                      {/* A file named in the block: a row with a button that shows it in its folder,
+                          since the desktop opens no file link inline; on the phone a note. */}
+                      {filesOf(block).map((file, k) => (
+                        <Box key={`f${i}-${k}`} flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet ? 2 : 0}>
+                          {icon(els, e.surface, 'file', ink.grey, '·')}
+                          <Text dimColor>{file.label}</Text>
+                          {e.surface === 'mobile' ? (
+                            <Text dimColor>plik na komputerze, poproś o załącznik</Text>
+                          ) : (
+                            <Button key={`reveal-${key}-b${i}-${k}`} label="Pokaż w folderze" onPress={() => void $.tool.call({ tool: 'mcp__ccd_host__reveal_path', path: file.path } as never).catch(() => $.ui.toast(`Nie udało się pokazać pliku ${file.label}`))} />
+                          )}
+                        </Box>
+                      ))}
+                    </Box>
+                  ))}
               {hasMarks(blocks) ? (
                 <Box>
                   <Button
@@ -866,7 +879,7 @@ export const register: Register = on => {
                             {/* Markdown, not Text: a link in the task's head stays clickable. The why is plain, not grey: it is the task. */}
                             <Box flexDirection="row" alignItems="flex-start" gap={1}>
                               {icon(els, e.surface, 'square', ink.blue, '☐')}
-                              <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} />
+                              <Markdown text={`**Zadanie ${n}: ${fileLinksOf(taskOf(item.text).what)}**`} />
                             </Box>
                             {taskOf(item.text).why ? marked(els, taskOf(item.text).why, tint?.mark, false) : null}
                             {(item.steps ?? []).map((step, k) => (
@@ -977,7 +990,7 @@ ${part.body}` : part.body
                         <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
-                            <Markdown text={`**${piece.lead}**`} />
+                            <Markdown text={`**${fileLinksOf(piece.lead)}**`} />
                             {piece.rest ? marked(els, piece.rest, tint?.mark, true) : null}
                             {piece.subs.map((sub, k) => marked(els, sub, tint?.mark, true, `sub${i}-${j}-${k}`))}
                           </Box>
@@ -993,7 +1006,7 @@ ${part.body}` : part.body
                         'n' in piece ? (
                           <Box key={`s${i}-${j}`} flexDirection="row" alignItems="flex-start" gap={1}>
                             <Text>{`${piece.n}.`}</Text>
-                            <Markdown text={`**${piece.lead}**`} />
+                            <Markdown text={`**${fileLinksOf(piece.lead)}**`} />
                           </Box>
                         ) : null,
                       )

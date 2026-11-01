@@ -5,7 +5,9 @@
 
 // A marked run is a word (a short bold: the marker) or a sentence (a long bold: bold and underlined).
 // A run with `href` is a link ([label](https://…)), drawn as a Link inside the sentence.
-export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence'; href?: string }
+// A run with `path` names a file on this computer: drawn as its name, with a row below the
+// block that shows the file in its folder (the desktop opens only https: links inline).
+export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence'; href?: string; path?: string }
 export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[]; isBullet?: boolean }
 
 const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
@@ -18,13 +20,52 @@ function isProse(paragraph: string): boolean {
   return true
 }
 
-// "[label](https://…)" runs of a text, the rest plain; a link that is not http(s) stays text.
+// A link target as a URL the surface opens: http(s) as written, a file on this computer
+// ("C:\Projekty\plan.md", "/home/x/plan.md", "file:///…") as a file: URL; anything else, none.
+export function hrefOf(target: string): string | undefined {
+  if (/^(https?|file):\/\//i.test(target)) return target
+  if (/^[A-Za-z]:[\\/]/.test(target)) return `file:///${target.replace(/\\/g, '/').replace(/ /g, '%20')}`
+  if (/^\/[^/]/.test(target)) return `file://${target.replace(/ /g, '%20')}`
+  return undefined
+}
+
+// The path a file: URL names, as the host's tools take it.
+export function pathOf(href: string): string {
+  return decodeURIComponent(href.replace(/^file:\/\/\/?/i, ''))
+}
+
+// The files a block names: label and path each, in order, no path twice.
+export function filesOf(block: Block): { label: string; path: string }[] {
+  const out: { label: string; path: string }[] = []
+  const add = (label: string, path: string) => {
+    if (!out.some(f => f.path === path)) out.push({ label, path })
+  }
+  if (block.kind === 'para') {
+    for (const run of block.runs) if (run.path) add(run.text, run.path)
+  } else {
+    for (const m of block.text.matchAll(/\[([^\]]+)\]\((file:\/\/[^)\s]+)\)/gi)) add(m[1], pathOf(m[2]))
+  }
+  return out
+}
+
+// "[label](…)" links of a Markdown text with their targets rewritten as URLs the surface
+// opens (a file path becomes file:///…), so a file's name is a link wherever it stands.
+export function fileLinksOf(text: string): string {
+  return text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label: string, target: string) => {
+    const href = hrefOf(target)
+    return href ? `[${label}](${href})` : m
+  })
+}
+
+// "[label](…)" runs of a text, the rest plain; a link without an openable target stays text.
 function linkRunsOf(text: string, isMark: boolean, kind?: 'word' | 'sentence'): Run[] {
   const out: Run[] = []
   let i = 0
   for (const m of text.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)) {
     if (m.index > i) out.push({ text: text.slice(i, m.index), isMark, kind })
-    out.push(/^https?:\/\//.test(m[2]) ? { text: m[1], isMark, kind, href: m[2] } : { text: m[1], isMark, kind })
+    const href = hrefOf(m[2])
+    if (href && /^file:/i.test(href)) out.push({ text: m[1], isMark, kind, path: pathOf(href) })
+    else out.push(href ? { text: m[1], isMark, kind, href } : { text: m[1], isMark, kind })
     i = m.index + m[0].length
   }
   if (i < text.length) out.push({ text: text.slice(i), isMark, kind })
@@ -145,8 +186,9 @@ export function blocksOf(text: string): Block[] {
       out.push({ kind: 'para', runs: runsOf(paragraph) })
     } else {
       const last = out[out.length - 1]
-      if (last && last.kind === 'md') last.text += `\n\n${paragraph}`
-      else out.push({ kind: 'md', text: paragraph })
+      const md = fileLinksOf(paragraph)
+      if (last && last.kind === 'md') last.text += `\n\n${md}`
+      else out.push({ kind: 'md', text: md })
     }
   }
   return out
