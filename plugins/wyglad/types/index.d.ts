@@ -8,6 +8,6 @@ export type Sprawa = { id: string; kind: 'todo' | 'question'; text: string; lett
 
 declare module 'claude-code' {
   interface PluginState {
-    wyglad: { last: Last | null; isFull: boolean; doneTasks: string[]; staleTasks: string[]; stamps: Record<string, Stamp>; answered: Record<string, string>; openTexts: string[]; sprawy: Sprawa[]; finalText: string | null }
+    wyglad: { last: Last | null; openFrames: string[]; doneTasks: string[]; staleTasks: string[]; stamps: Record<string, Stamp>; answered: Record<string, string>; openTexts: string[]; sprawy: Sprawa[]; finalText: string | null }
   }
 }

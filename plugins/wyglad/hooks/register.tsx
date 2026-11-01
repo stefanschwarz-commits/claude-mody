@@ -30,7 +30,8 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
 const OFF = 'off'
 
 const last = atom({ plugin: 'wyglad', key: 'last' } as const, null)
-const isFull = atom({ plugin: 'wyglad', key: 'isFull' } as const, false)
+// Summary frames opened with their own "Pokaż szczegóły", by frame id ("<answer key>-<n>").
+const openFrames = atom({ plugin: 'wyglad', key: 'openFrames' } as const, [] as string[])
 // Tasks ticked off ("<answer key>:<n>") and long explanations opened (answer keys).
 const doneTasks = atom({ plugin: 'wyglad', key: 'doneTasks' } as const, [] as string[])
 // Tasks a newer answer replaced (a fresh login code, a new link): ticked, and drawn as "zastąpione".
@@ -649,7 +650,7 @@ export const register: Register = on => {
     if (!reply) return next(e)
 
     const key = keyOf(reply.headline)
-    const full = await read($, isFull)
+    const opened = await read($, openFrames)
     // Zrobione, Problem and Dla informacji show in full; only a really long lot folds.
     const isLongFold = reply.parts
       .filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'info')
@@ -872,7 +873,9 @@ export const register: Register = on => {
         {folded.length > 0 ? (
           // The summary: one frame per section in its own colour, each with its title inside.
           <Box flexDirection="column" gap={1}>
-            {(!isLongFold || full ? folded : folded.filter(part => part.kind !== 'info')).map((part, i) => {
+            {folded.map((part, i) => {
+              // Each frame folds and opens on its own button.
+              const full = opened.includes(`${key}-${i}`)
               const look = SECTION[part.kind as keyof typeof SECTION] ?? SECTION.info
               const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
 
@@ -923,7 +926,7 @@ ${part.body}` : part.body
                   {/* The button sits inside the frame it opens, so it is clear what it shows. */}
                   {isLongFold ? (
                     <Box>
-                      <Button key={`more-${key}-${i}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
+                      <Button key={`more-${key}-${i}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, openFrames, list => (list.includes(`${key}-${i}`) ? list.filter(x => x !== `${key}-${i}`) : [...list, `${key}-${i}`]))} />
                     </Box>
                   ) : null}
                 </Box>

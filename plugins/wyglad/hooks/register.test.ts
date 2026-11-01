@@ -545,5 +545,8 @@ test('zwinięta ramka: pogrubione wyniki wszystkich punktów zostają, „Pokaż
   const open = markdowns(await ui.find({ type: 'Box' }))
   expect(open).toContain('Wyjaśnienie 3, dla kogoś spoza wątku.')
   expect(await ui.find({ type: 'Button', text: 'Zwiń szczegóły' })).toBeDefined()
+  // The other frame keeps its own button and stays folded; it is drawn, not hidden.
+  expect(await ui.find({ type: 'Button', text: 'Pokaż szczegóły' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Dla informacji' })).toBeDefined()
 })
 
