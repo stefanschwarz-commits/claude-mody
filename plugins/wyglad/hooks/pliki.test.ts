@@ -56,16 +56,20 @@ test('linki do plików nie są zadaniami: licznik, panel i ramka', async ($, on)
   expect(await phone.find({ type: 'Button', text: 'Pokaż w folderze' })).toBeUndefined()
 })
 
-test('przycisk „Pokaż w folderze” woła narzędzie aplikacji ze ścieżką pliku', async ($, on) => {
+test('„Otwórz” uruchamia plik w jego programie, „Pokaż w folderze” zaznacza go w Eksploratorze', async ($, on) => {
   setup(on)
-  const calls: unknown[] = []
-  on('tool.call', ($, e) => {
-    calls.push(e)
-    return { result: 'ok' } as never
+  const runs: (readonly string[])[] = []
+  on('process.run', ($, e) => {
+    runs.push(e.argv)
+    return { value: { exitCode: 0, stdout: '', stderr: '' } } as never
   })
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
-  const button = await ui.find({ type: 'Button', text: 'Pokaż w folderze' })
-  await ui.press({ key: button!.key! })
-  expect(calls.length).toBe(1)
-  expect(calls[0]).toMatchObject({ tool: 'mcp__ccd_host__reveal_path', path: 'plan-knx.pdf' })
+  const open = await ui.find({ type: 'Button', text: 'Otwórz' })
+  await ui.press({ key: open!.key! })
+  const reveal = await ui.find({ type: 'Button', text: 'Pokaż w folderze' })
+  await ui.press({ key: reveal!.key! })
+  expect(runs).toEqual([
+    ['cmd', '/c', 'start', '', 'plan-knx.pdf'],
+    ['explorer.exe', '/select,plan-knx.pdf'],
+  ])
 })

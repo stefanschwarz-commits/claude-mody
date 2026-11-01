@@ -358,6 +358,24 @@ async function notify($: Parameters<typeof read>[0], title: string, text: string
   await $.process.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', script], { stdin: xml, timeoutMs: 15_000 }).catch(() => undefined)
 }
 
+// Two buttons for a file on this computer: open it in its program, or show it selected in
+// its folder. Both through Windows itself (the app's own reveal tool did nothing for Stefan).
+async function openFile($: Parameters<typeof read>[0], path: string, how: 'open' | 'reveal', label: string): Promise<void> {
+  const full = path.replace(/\//g, '\\')
+  const argv = how === 'open' ? ['cmd', '/c', 'start', '', full] : ['explorer.exe', `/select,${full}`]
+  await $.process.run(argv, { timeoutMs: 15_000 }).catch(() => $.ui.toast(`Nie udało się otworzyć ${label}`))
+}
+
+function fileButtons(els: unknown, $: Parameters<typeof read>[0], keyBase: string, file: { label: string; path: string }): unknown {
+  const { Box, Button } = els as { Box: (p: object) => unknown; Button: (p: object) => unknown }
+  return (
+    <Box flexDirection="row" gap={1}>
+      <Button key={`${keyBase}-open`} label="Otwórz" onPress={() => void openFile($, file.path, 'open', file.label)} />
+      <Button key={`${keyBase}-reveal`} label="Pokaż w folderze" onPress={() => void openFile($, file.path, 'reveal', file.label)} />
+    </Box>
+  )
+}
+
 // The folder the session works in, as its short name: the nearest thing to a
 // session title a mod can read.
 async function placeOf($: Parameters<typeof read>[0]): Promise<string> {
@@ -788,7 +806,7 @@ export const register: Register = on => {
                           {e.surface === 'mobile' ? (
                             <Text dimColor>plik na komputerze, poproś o załącznik</Text>
                           ) : (
-                            <Button key={`reveal-${key}-b${i}-${k}`} label="Pokaż w folderze" onPress={() => void $.tool.call({ tool: 'mcp__ccd_host__reveal_path', path: file.path } as never).catch(() => $.ui.toast(`Nie udało się pokazać pliku ${file.label}`))} />
+                            fileButtons(els, $, `file-${key}-b${i}-${k}`, file)
                           )}
                         </Box>
                       ))}
@@ -908,7 +926,7 @@ export const register: Register = on => {
                       {e.surface === 'mobile' ? (
                         <Text dimColor>plik na komputerze, poproś o załącznik</Text>
                       ) : (
-                        <Button key={`reveal-${key}-${i}`} label="Pokaż w folderze" onPress={() => void $.tool.call({ tool: 'mcp__ccd_host__reveal_path', path: file.path } as never).catch(() => $.ui.toast(`Nie udało się pokazać pliku ${file.label}`))} />
+                        fileButtons(els, $, `file-${key}-${i}`, file)
                       )}
                     </Box>
                   ))}
