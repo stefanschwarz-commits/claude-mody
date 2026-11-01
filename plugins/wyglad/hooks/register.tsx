@@ -275,6 +275,35 @@ async function tasksOfLast($: Parameters<typeof read>[0]): Promise<Sprawa[]> {
   return (await read($, sprawy)).filter(one => one.kind === 'todo' && one.id.startsWith(`${answer.key}:`))
 }
 
+// A system notification. The engine's own `$.ui.notify` reaches terminals only
+// (the desktop app answers `no-surface`), so Windows draws the toast itself,
+// through PowerShell; the XML travels on stdin, so no quoting can break it.
+async function notify($: Parameters<typeof read>[0], title: string, text: string): Promise<void> {
+  const sent = await $.ui.notify(text, { title }).catch(() => ({ isSent: false as const }))
+  if (sent.isSent) return
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  const xml = `<toast><visual><binding template="ToastGeneric"><text>${esc(title)}</text><text>${esc(text)}</text></binding></visual></toast>`
+  const script = [
+    '[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null',
+    '[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null',
+    '$x = New-Object Windows.Data.Xml.Dom.XmlDocument',
+    '$x.LoadXml([Console]::In.ReadToEnd())',
+    '$t = New-Object Windows.UI.Notifications.ToastNotification $x',
+    "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe').Show($t)",
+  ].join('; ')
+  await $.process.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', script], { stdin: xml, timeoutMs: 15_000 }).catch(() => undefined)
+}
+
+// The folder the session works in, as its short name: the nearest thing to a
+// session title a mod can read.
+async function placeOf($: Parameters<typeof read>[0]): Promise<string> {
+  const cwd = await $.session.cwd().catch(() => '')
+  return cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop() ?? ''
+}
+
+// The Polish word for what the turn is doing, drawn in the working row.
+const DOING: Record<string, string> = { thinking: 'Myślę', requesting: 'Pytam model', 'tool-use': 'Pracuję', 'tool-input': 'Pracuję', responding: 'Piszę odpowiedź' }
+
 function count(n: number, one: string, few: string, many: string): string {
   const word = n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many
   return `${n} ${word}`
@@ -423,9 +452,38 @@ export const register: Register = on => {
       if (needs && (await $.store.get(OFF)) !== true) $.ui.toast(`Gotowe. Potrzebuję od Ciebie: ${needs}`, { timeoutMs: 8000 })
       // The status line keeps the count in view without scrolling.
       $.ui.status(needs ? `czeka: ${needs}` : undefined)
+      // A question stops the work until Stefan answers, so it is the one thing
+      // that leaves the window: a system notification, not just a toast.
+      if (summary && summary.questions > 0 && (await $.store.get(OFF)) !== true) {
+        const where = await placeOf($)
+        await notify($, `Claude czeka na Twoją odpowiedź${where ? ` · ${where}` : ''}`, `${summary.headline} Czeka: ${count(summary.questions, 'pytanie', 'pytania', 'pytań')}.`)
+      }
     }
 
     return done
+  })
+
+  // Typing "1" after an answer offers its buttons' names ("1A", "1B") and
+  // "1 zrobiłem" for its tasks, so a reply is two keystrokes.
+  on('prompt.autocomplete', { token: /^\d/ }, async ($, e, next) => {
+    const below = await next(e)
+    const answer = await read($, last)
+    if (!answer || (await $.store.get(OFF)) === true) return below
+    const mine = (await read($, sprawy)).filter(one => one.id.startsWith(`${answer.key}:`))
+    const tasks = mine.filter(one => one.kind === 'todo')
+    const letters = mine.flatMap(one => one.letters)
+    const rows = [
+      ...letters.map(l => ({ text: l, description: 'odpowiedź na pytanie' })),
+      ...tasks.map((t, i) => ({ text: `${i + 1} zrobiłem`, description: t.text })),
+    ].filter(row => row.text.toLowerCase().startsWith(e.token.toLowerCase()) && row.text !== e.token)
+    return { suggestions: [...below.suggestions, ...rows] }
+  })
+
+  // The working row speaks Polish: "Myślę", "Pracuję", "Piszę odpowiedź".
+  on('ui.render', { component: 'Spinner' }, async ($, e, next) => {
+    if ((await $.store.get(OFF)) === true) return next(e)
+    const word = DOING[e.props.mode]
+    return word ? next({ ...e, props: { ...e.props, word } }) : next(e)
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
