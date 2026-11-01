@@ -161,3 +161,6 @@ Dalsze decyzje Stefana z tej samej rozmowy:
 - Twarda blokada (Stefan: „tak, ale naprawdę niebezpiecznych i nieodwracalnych”, potem 1A z zastrzeżeniem: wysyłka tylko „gdy wysyłasz to jako ja”, nie jako Czesiek ani Claude Kowalski): nowy mod `straznik`. Hook `tool.check` zamienia w pytanie do człowieka wysyłkę przez konektor Microsoft 365 zalogowany na Stefana (outlook_send_mail, send_draft, forward_mail, teams_send_*, teams_create_chat) i trwałe usuwanie (delete_session, sharepoint_delete_item, outlook_batch_delete_messages). Pytanie zrobione przez hook zatwierdza wyłącznie osoba w okienku (nie tryb auto, nie zapisana reguła); gdzie nikogo nie można spytać, jest odmowa. Archiwizacja sesji i polecenia rm celowo poza listą (1A). Czesiek (Power Automate, Graph czesiek@) i Claude Kowalski (skrypt strony) nie idą przez te narzędzia, więc nie są blokowani.
 - Powiadomienia aplikacji: Stefan wybrał 2A – wyłączone wbudowane dymki „sesja skończyła pracę” (ustawienie aplikacji, zmienione narzędziem ustawień), zostają dymki aplikacji o pytaniu w okienku i o zgodzie na narzędzie oraz dymek moda przy pytaniach. Czytanie na głos: 3B, nie.
 
+
+## wyglad 0.27.1 (2026-11-01)
+Tylko numer wersji: dwa wydania tego dnia miały ten sam numer 0.27.0, więc instalator nie pobrał drugiego (stare ramki, pasek z czasem, kompresja). Nauczka: każdy commit z kodem moda podbija wersję.
