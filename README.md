@@ -14,6 +14,7 @@ claude plugin install dzwiek@claude-mody
 claude plugin install projekt@claude-mody
 claude plugin install wyglad@claude-mody
 claude plugin install komputer@claude-mody
+claude plugin install straznik@claude-mody
 ```
 
 Aktualizacja do najnowszej wersji (po każdej zmianie w repozytorium):
@@ -24,6 +25,7 @@ claude plugin update dzwiek@claude-mody
 claude plugin update projekt@claude-mody
 claude plugin update wyglad@claude-mody
 claude plugin update komputer@claude-mody
+claude plugin update straznik@claude-mody
 ```
 
 Sprawdzenie, co jest zainstalowane i w jakiej wersji: `claude plugin list`.

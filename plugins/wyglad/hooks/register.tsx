@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { Last, Sprawa } from '../types'
+import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
@@ -33,6 +33,20 @@ const last = atom({ plugin: 'wyglad', key: 'last' } as const, null)
 const isFull = atom({ plugin: 'wyglad', key: 'isFull' } as const, false)
 // Tasks ticked off ("<answer key>:<n>") and long explanations opened (answer keys).
 const doneTasks = atom({ plugin: 'wyglad', key: 'doneTasks' } as const, [] as string[])
+// Tasks a newer answer replaced (a fresh login code, a new link): ticked, and drawn as "zastąpione".
+const staleTasks = atom({ plugin: 'wyglad', key: 'staleTasks' } as const, [] as string[])
+// Each answer's number in the conversation and the moment it was finished, by its key.
+const stamps = atom({ plugin: 'wyglad', key: 'stamps' } as const, {} as Record<string, Stamp>)
+
+// "1.11.2026, 14:03:27" in local time; the day left out when it is `sameDayAs`.
+function stampText(at: number, sameDayAs?: number): string {
+  const d = new Date(at)
+  const two = (n: number) => String(n).padStart(2, '0')
+  const day = `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`
+  const time = `${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`
+  const isSameDay = sameDayAs !== undefined && new Date(sameDayAs).toDateString() === d.toDateString()
+  return isSameDay ? time : `${day}, ${time}`
+}
 const openTexts = atom({ plugin: 'wyglad', key: 'openTexts' } as const, [] as string[])
 // Every task asked of Stefan in this session, and the questions of the latest answer.
 const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[])
@@ -319,14 +333,14 @@ export const register: Register = on => {
     // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
     await $.tool.register({
       name: 'odhacz',
-      description: 'Odhacza zadania z ostatniej odpowiedzi w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Do zrobienia przez Ciebie”.',
+      description: 'Odhacza zadania w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Do zrobienia przez Ciebie” ostatniej odpowiedzi. Gdy dajesz Stefanowi nowe zadanie zamiast wcześniejszego (nowy kod logowania, nowy link, zmieniony krok), wywołaj z `tekst` = fragment treści starego zadania i `stan` = nieaktualne, żeby stare zadanie znikło z panelu i było skreślone jako zastąpione.',
       inputSchema: {
         type: 'object',
         properties: {
           numery: { type: 'array', items: { type: 'integer', minimum: 1 }, description: 'Numery zadań z ostatniej odpowiedzi' },
-          stan: { type: 'string', enum: ['zrobione', 'odpada', 'otwarte'], description: 'zrobione i odpada skreślają zadanie; otwarte przywraca je' },
+          tekst: { type: 'string', description: 'Fragment treści zadania z dowolnej wcześniejszej odpowiedzi (zamiast numerów), np. „kod C57H2”' },
+          stan: { type: 'string', enum: ['zrobione', 'odpada', 'nieaktualne', 'otwarte'], description: 'zrobione i odpada skreślają zadanie; nieaktualne skreśla je jako zastąpione nowszym; otwarte przywraca je' },
         },
-        required: ['numery'],
       },
       isDeferred: false,
     })
@@ -335,14 +349,21 @@ export const register: Register = on => {
   })
 
   on('tool.call', { tool: 'mcp__wyglad__odhacz' }, async ($, e) => {
-    const input = e as unknown as { numery?: number[]; stan?: string }
+    const input = e as unknown as { numery?: number[]; tekst?: string; stan?: string }
     const tasks = await tasksOfLast($)
     const stan = input.stan ?? 'zrobione'
-    const hit = (input.numery ?? []).map(n => ({ n, task: tasks[n - 1] }))
+    const hit: { n: number | string; task?: Sprawa }[] = (input.numery ?? []).map(n => ({ n, task: tasks[n - 1] }))
+    // A fragment names a task of any earlier answer, open or not, newest match first.
+    const fragment = input.tekst?.trim().toLowerCase()
+    if (fragment) {
+      const found = (await read($, sprawy)).filter(one => one.kind === 'todo' && plainOf(one.text).toLowerCase().includes(fragment)).reverse()
+      hit.push(found.length > 0 ? { n: `„${input.tekst}”`, task: found[0] } : { n: `„${input.tekst}”` })
+    }
     const ids = hit.flatMap(h => (h.task ? [h.task.id] : []))
     await update($, doneTasks, list => (stan === 'otwarte' ? list.filter(id => !ids.includes(id)) : [...list.filter(id => !ids.includes(id)), ...ids]))
+    await update($, staleTasks, list => (stan === 'nieaktualne' ? [...list.filter(id => !ids.includes(id)), ...ids] : list.filter(id => !ids.includes(id))))
     await $.ui.invalidate('ui.render')
-    const lines = hit.map(h => (h.task ? `${h.n}. ${h.task.text} – ${stan}` : `${h.n}. brak takiego zadania w ostatniej odpowiedzi`))
+    const lines = hit.map(h => (h.task ? `${h.n}. ${h.task.text} – ${stan}` : `${h.n}. brak takiego zadania`))
     const open = tasks.length - (await read($, doneTasks)).filter(id => tasks.some(t => t.id === id)).length
     $.ui.status(open > 0 ? `czeka: ${count(open, 'zadanie', 'zadania', 'zadań')}` : undefined)
     return { result: [...lines, `Otwartych zadań z ostatniej odpowiedzi: ${open}.`].join('\n') }
@@ -379,6 +400,7 @@ export const register: Register = on => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const list = await read($, sprawy)
     const ticked = await read($, doneTasks)
+    const stale = await read($, staleTasks)
     const tasks = list.filter(one => one.kind === 'todo')
     const open = tasks.filter(one => !ticked.includes(one.id))
     const done = tasks.filter(one => ticked.includes(one.id))
@@ -410,6 +432,7 @@ export const register: Register = on => {
           <Box key={one.id} flexDirection="row" gap={1}>
             <Button key={`p-${one.id}`} label="☑" onPress={tick(one.id)} />
             <Text dimColor strikethrough wrap="truncate-end">{plainOf(one.text)}</Text>
+            {stale.includes(one.id) ? <Text dimColor>zastąpione</Text> : null}
           </Box>
         ))}
       </Box>
@@ -433,6 +456,10 @@ export const register: Register = on => {
       const reply = splitReply(e.answer)
       const summary = reply ? summaryOf(reply) : null
       await update($, last, () => summary)
+      if (summary) {
+        const at = await $.clock.now().catch(() => Date.now())
+        await update($, stamps, all => (all[summary.key] ? all : { ...all, [summary.key]: { n: Object.keys(all).length + 1, at } }))
+      }
       if (reply && summary) {
         const tasks: Sprawa[] = reply.parts
           .filter(part => part.kind === 'todo')
@@ -461,6 +488,29 @@ export const register: Register = on => {
     }
 
     return done
+  })
+
+  // A compaction keeps what waits on Stefan: the summarizer is told the open tasks
+  // and questions of the latest answer, so their numbers survive the summary.
+  on('session.compact', async ($, e, next) => {
+    if (e.agentId !== undefined || e.trigger === 'precompute') return next(e)
+    const answer = await read($, last)
+    if (!answer) return next(e)
+    const mine = (await read($, sprawy)).filter(one => one.id.startsWith(`${answer.key}:`))
+    const ticked = await read($, doneTasks)
+    const tasks = mine.filter(one => one.kind === 'todo')
+    const lines = [
+      ...tasks.map((t, i) => `${i + 1}. ${plainOf(t.text)}${ticked.includes(t.id) ? ' (odhaczone)' : ''}`),
+      ...mine.filter(one => one.kind === 'question').map(q => `Pytanie ${plainOf(q.text)} (opcje: ${q.letters.join(', ')})`),
+    ]
+    if (lines.length === 0) return next(e)
+    const note = [
+      'Zachowaj w streszczeniu dosłownie, jako osobną sekcję „Czeka na Stefana (z ostatniej odpowiedzi)”, z tymi samymi numerami:',
+      `Ostatnia odpowiedź: „${answer.headline}”.`,
+      ...lines,
+      'Stefan odpowiada numerami zadań („1 zrobiłem”) i nazwami opcji („1A”), więc numeracja nie może się zmienić.',
+    ].join('\n')
+    return next({ ...e, instructions: e.instructions ? `${e.instructions}\n\n${note}` : note })
   })
 
   // Typing "1" after an answer offers its buttons' names ("1A", "1B") and
@@ -579,6 +629,14 @@ export const register: Register = on => {
       .reduce((n, part) => n + part.body.split(/\r?\n/).filter(l => l.trim() !== '').length, 0) > FOLD_LINES
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
+    const stale = await read($, staleTasks)
+    // An answer recorded earlier, with a newer one after it: its tasks may be out of date,
+    // so its frame says so and dims them. A message still streaming has no record yet.
+    const isOlder = !isLatest && (await read($, sprawy)).some(one => one.id.startsWith(`${key}:`))
+    // The bar names the answer and the moment it was finished, so two answers are never confused.
+    const stamp = (await read($, stamps))[key]
+    const now = await $.clock.now().catch(() => Date.now())
+    const barText = stamp ? `Odpowiedź ${stamp.n} · ${stampText(stamp.at, isLatest ? undefined : now)}` : isLatest ? 'Nowa odpowiedź' : 'Odpowiedź'
     const isOpen = (await read($, openTexts)).includes(key)
     const tint = await tintOf($)
     const ink = inkOf(tint)
@@ -598,13 +656,12 @@ export const register: Register = on => {
           {/* A light bar marks where the latest answer starts; older ones get a faint line. */}
           {isLatest ? (
             <Box backgroundColor="inactive" paddingX={1} flexDirection="row" gap={1}>
-              {icon(els, e.surface, 'player-play', ink.text, '▶')}
-              <Text color="inverseText" bold>Nowa odpowiedź</Text>
+              <Text color="inverseText" bold>{barText}</Text>
+              {stamp ? <Text color="inverseText">najnowsza</Text> : null}
             </Box>
           ) : (
             <Box flexDirection="row" gap={1}>
-              {icon(els, e.surface, 'player-play', ink.grey, '▶')}
-              <Text dimColor>Odpowiedź</Text>
+              <Text dimColor>{barText}</Text>
             </Box>
           )}
           {/* Markdown, not Text: a link in the headline stays clickable. */}
@@ -688,16 +745,20 @@ export const register: Register = on => {
                       {icon(els, e.surface, 'list-check', ink.blue, '●')}
                       <Text bold>Do zrobienia przez Ciebie</Text>
                     </Box>
+                    {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne zadania są w najnowszej odpowiedzi niżej.</Text> : null}
                     {all.map((item, i) =>
                       item.isItem ? (
                         <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                          <Text>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
+                          <Text dimColor={isOlder}>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
                           {ticked.includes(`${key}:${i}`) ? (
-                            <Text dimColor strikethrough>{plainOf(item.text)}</Text>
+                            <Box flexDirection="row" gap={1}>
+                              <Text dimColor strikethrough>{plainOf(item.text)}</Text>
+                              {stale.includes(`${key}:${i}`) ? <Text dimColor>zastąpione</Text> : null}
+                            </Box>
                           ) : (
                             <Box flexDirection="column">
                               {/* Markdown, not Text: a link in the task's head stays clickable. */}
-                              <Markdown text={`**${taskOf(item.text).what}**`} />
+                              <Markdown text={`**${taskOf(item.text).what}**`} dimColor={isOlder} />
                               {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor /> : null}
                             </Box>
                           )}

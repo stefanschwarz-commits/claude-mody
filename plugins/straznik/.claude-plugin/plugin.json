@@ -1,0 +1,8 @@
+{
+  "name": "straznik",
+  "version": "0.1.0",
+  "description": "Twarda blokada rzeczy nieodwracalnych: wysyłka wiadomości jako Stefan i trwałe usuwanie zatrzymują się w okienku, które może zatwierdzić tylko człowiek; gdzie nikt nie może odpowiedzieć, są odmawiane.",
+  "author": {
+    "name": "Stefan Schwarz"
+  }
+}

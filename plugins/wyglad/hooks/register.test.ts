@@ -61,9 +61,8 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
   const filled = setup(on)
   for (const surface of ['terminal', 'desktop', 'mobile'] as const) {
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
-    // The ▶ marker is an icon where the surface draws SVG, the glyph on the terminal.
-    expect(await ui.find(surface === 'terminal' ? { type: 'Text', text: '▶' } : { type: 'Svg' })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /[Oo]dpowiedź$/ })).toBeDefined()
+    // The bar names the answer and when it was finished, to the second; no ▶ marker any more.
+    expect(await ui.find({ type: 'Text', text: /^(Nowa )?[Oo]dpowiedź/ })).toBeDefined()
     expect(bolds(await ui.find({ type: 'Box' }))).toContain('Mod działa i jest gotowy do testu.')
     expect(await ui.find({ type: 'Text', text: 'Do zrobienia przez Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()

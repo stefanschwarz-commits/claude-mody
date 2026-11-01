@@ -23,6 +23,11 @@
       "name": "komputer",
       "source": "./plugins/komputer",
       "description": "Tytuł każdej sesji na komputerze zaczyna się od „💻 ”; dopisuje znaczek, gdy go brakuje."
+    },
+    {
+      "name": "straznik",
+      "source": "./plugins/straznik",
+      "description": "Twarda blokada: wysyłka wiadomości jako Stefan i trwałe usuwanie czekają na kliknięcie Stefana w okienku."
     }
   ],
   "description": "Mody do Claude Code Stefana Schwarza"
