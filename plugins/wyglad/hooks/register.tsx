@@ -775,14 +775,18 @@ export const register: Register = on => {
                     return (
                       <Box key={`${key}-todo-${n}`} flexDirection="column" borderStyle="round" borderColor={isOlder || isTicked ? ink.grey : 'suggestion'} backgroundColor={isTicked ? undefined : tint?.blue} paddingX={1} gap={1}>
                         {isTicked ? (
-                          <Box flexDirection="row" gap={1}>
+                          <Box flexDirection="row" alignItems="flex-start" gap={1}>
+                            {icon(els, e.surface, 'square-check', ink.grey, '☑')}
                             <Text dimColor strikethrough>{`Zadanie ${n}: ${plainOf(item.text)}`}</Text>
                             {stale.includes(`${key}:${i}`) ? <Text dimColor>zastąpione</Text> : null}
                           </Box>
                         ) : (
                           <Box flexDirection="column" gap={1}>
                             {/* Markdown, not Text: a link in the task's head stays clickable. The why is plain, not grey: it is the task. */}
-                            <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} dimColor={isOlder} />
+                            <Box flexDirection="row" alignItems="flex-start" gap={1}>
+                              {icon(els, e.surface, 'square', isOlder ? ink.grey : ink.blue, '☐')}
+                              <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} dimColor={isOlder} />
+                            </Box>
                             {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor={isOlder} /> : null}
                           </Box>
                         )}
@@ -819,6 +823,7 @@ export const register: Register = on => {
               if (choice) {
                 return (
                   <Box key={`${key}-q${q.number}`} flexDirection="row" alignItems="flex-start" borderStyle="round" borderColor={ink.grey} paddingX={1} gap={1}>
+                    {icon(els, e.surface, 'message-question', ink.grey, '●')}
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
                     <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
                   </Box>
@@ -826,7 +831,10 @@ export const register: Register = on => {
               }
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={isOlder ? ink.grey : ink.sand} backgroundColor={isOlder ? undefined : tint?.sand} paddingX={1} gap={1}>
-                  <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor={isOlder} />
+                  <Box flexDirection="row" alignItems="flex-start" gap={1}>
+                    {icon(els, e.surface, 'message-question', isOlder ? ink.grey : ink.sand, '●')}
+                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor={isOlder} />
+                  </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor={isOlder} /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
