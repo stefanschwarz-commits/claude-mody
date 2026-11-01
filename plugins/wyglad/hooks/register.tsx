@@ -908,6 +908,12 @@ ${part.body}` : part.body
                   ) : (
                     <Text wrap="truncate-end">{plainOf(gist(part))}</Text>
                   )}
+                  {/* The button sits inside the frame it opens, so it is clear what it shows. */}
+                  {isLongFold ? (
+                    <Box>
+                      <Button key={`more-${key}-${i}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
+                    </Box>
+                  ) : null}
                 </Box>
                 {(!isLongFold || full ? all.filter(isFence) : []).map((piece, j) => (
                   <Markdown key={`fence${i}-${j}`} text={'text' in piece ? piece.text : ''} />
@@ -915,11 +921,6 @@ ${part.body}` : part.body
                 </Box>
               )
             })}
-            {isLongFold ? (
-              <Box>
-                <Button key={`more-${key}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, isFull, value => !value)} />
-              </Box>
-            ) : null}
           </Box>
         ) : null}
       </Box>
