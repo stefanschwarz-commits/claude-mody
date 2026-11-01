@@ -4,7 +4,8 @@
 // Anything Markdown must draw (lists, tables, headings, links, code) stays Markdown.
 
 // A marked run is a word (a short bold: the marker) or a sentence (a long bold: bold and underlined).
-export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence' }
+// A run with `href` is a link ([label](https://…)), drawn as a Link inside the sentence.
+export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence'; href?: string }
 export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[]; isBullet?: boolean }
 
 const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
@@ -12,9 +13,22 @@ const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
 function isProse(paragraph: string): boolean {
   const lines = paragraph.split('\n')
   if (lines.some(line => NOT_PROSE.test(line))) return false
-  // A link or inline code needs Markdown; a Text span cannot draw them.
-  if (/\]\(|`/.test(paragraph)) return false
+  // Inline code needs Markdown; a Text span cannot draw it. A link can be a Link inside the Text.
+  if (/`/.test(paragraph)) return false
   return true
+}
+
+// "[label](https://…)" runs of a text, the rest plain; a link that is not http(s) stays text.
+function linkRunsOf(text: string, isMark: boolean, kind?: 'word' | 'sentence'): Run[] {
+  const out: Run[] = []
+  let i = 0
+  for (const m of text.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)) {
+    if (m.index > i) out.push({ text: text.slice(i, m.index), isMark, kind })
+    out.push(/^https?:\/\//.test(m[2]) ? { text: m[1], isMark, kind, href: m[2] } : { text: m[1], isMark, kind })
+    i = m.index + m[0].length
+  }
+  if (i < text.length) out.push({ text: text.slice(i), isMark, kind })
+  return out
 }
 
 // A sentence ends at . ! ? followed by a space, or at the end of the text.
@@ -30,12 +44,12 @@ export function runsOf(paragraph: string): Run[] {
   const out: Run[] = []
   let i = 0
   for (const m of flat.matchAll(/\*\*([^*]+)\*\*/g)) {
-    if (m.index > i) out.push({ text: flat.slice(i, m.index), isMark: false })
-    const words = m[1].trim().split(/\s+/).length
-    out.push({ text: m[1], isMark: true, kind: words <= WORD_LIMIT ? 'word' : 'sentence' })
+    if (m.index > i) out.push(...linkRunsOf(flat.slice(i, m.index), false))
+    const words = m[1].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim().split(/\s+/).length
+    out.push(...linkRunsOf(m[1], true, words <= WORD_LIMIT ? 'word' : 'sentence'))
     i = m.index + m[0].length
   }
-  if (i < flat.length) out.push({ text: flat.slice(i), isMark: false })
+  if (i < flat.length) out.push(...linkRunsOf(flat.slice(i), false))
   return out
 }
 
@@ -82,7 +96,7 @@ export function markedSentencesOf(runs: Run[]): string[] {
 
 // The first sentence of a text, for a paragraph that marks nothing.
 export function firstSentenceOf(text: string): string {
-  const flat = text.replace(/\*\*/g, '').replace(/\n/g, ' ').trim()
+  const flat = text.replace(/\*\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\n/g, ' ').trim()
   const end = SENTENCE_END.exec(flat)
   SENTENCE_END.lastIndex = 0
   return end ? flat.slice(0, end.index + 1) : flat
@@ -100,7 +114,7 @@ function bulletsOf(paragraph: string): string[] | undefined {
     else if (/^\s+\S/.test(line) && items.length > 0) items[items.length - 1] += ` ${line.trim()}`
     else return undefined
   }
-  if (items.some(item => /\]\(|`/.test(item) || NOT_PROSE.test(item))) return undefined
+  if (items.some(item => /`/.test(item) || NOT_PROSE.test(item))) return undefined
   return items
 }
 

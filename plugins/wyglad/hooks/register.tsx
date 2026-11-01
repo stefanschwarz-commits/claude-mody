@@ -28,9 +28,12 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
   return <Text>{glyph}</Text>
 }
 
-// One marked run: a word gets the marker (background), a sentence is bold and underlined.
-function emphasis(els: unknown, run: { text: string; kind?: 'word' | 'sentence' }, mark: string | undefined, key: string): unknown {
-  const { Text } = els as Drawers & { Text: (props: { key?: string; backgroundColor?: string; bold?: boolean; underline?: boolean; dimColor?: boolean; children?: unknown }) => unknown }
+// One run of a sentence: a link is a Link; a marked word gets the marker (background);
+// a marked sentence is bold and underlined; anything else is its text.
+function emphasis(els: unknown, run: { text: string; isMark?: boolean; kind?: 'word' | 'sentence'; href?: string }, mark: string | undefined, key: string): unknown {
+  const { Text, Link } = els as Drawers & { Text: (props: { key?: string; backgroundColor?: string; bold?: boolean; underline?: boolean; dimColor?: boolean; children?: unknown }) => unknown; Link?: (props: { key?: string; href: string; label?: string }) => unknown }
+  if (run.href && Link) return <Link key={key} href={run.href} label={run.text} />
+  if (!run.isMark) return run.text
   return run.kind === 'word' ? (
     <Text key={key} backgroundColor={mark} dimColor={false}>{run.text}</Text>
   ) : (
@@ -46,7 +49,7 @@ function marked(els: unknown, text: string, mark: string | undefined, isDim: boo
   if (blocks.length !== 1 || blocks[0].kind !== 'para' || !hasMarks(blocks)) return <Markdown key={key} text={text} dimColor={isDim} />
   return (
     <Text key={key} dimColor={isDim}>
-      {blocks[0].runs.map((run, j) => (run.isMark ? emphasis(els, run, mark, `r${j}`) : run.text))}
+      {blocks[0].runs.map((run, j) => emphasis(els, run, mark, `r${j}`))}
     </Text>
   )
 }
@@ -733,6 +736,11 @@ export const register: Register = on => {
           {/* The headline and the explanation are the answer's main content, so they stand in a
               frame of their own, the strongest on the page; the lists below are only what to do. */}
           <Box flexDirection="column" borderStyle="round" borderColor={ink.text} paddingX={1} gap={1}>
+          {/* Named like every other frame (Stefan's 5B): what this part is. */}
+          <Box flexDirection="row" gap={1}>
+            {icon(els, e.surface, 'player-play', ink.text, '▶')}
+            <Text bold>Co się zmieniło</Text>
+          </Box>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
           <Markdown text={`**${reply.headline}**`} />
         {(() => {
@@ -758,7 +766,7 @@ export const register: Register = on => {
                     // One marked sentence per line, as plain text with its own emphasis inside.
                     <Box key={`m${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
                       <Text dimColor>·</Text>
-                      <Text>{sentence.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}</Text>
+                      <Text>{sentence.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
                     </Box>
                   ))
                 : blocks.map((block, i) =>
@@ -769,7 +777,7 @@ export const register: Register = on => {
                     ) : (
                       <Box key={`b${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
                         {block.isBullet ? <Text>•</Text> : null}
-                        <Text>{block.runs.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}</Text>
+                        <Text>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
                       </Box>
                     ),
                   )}

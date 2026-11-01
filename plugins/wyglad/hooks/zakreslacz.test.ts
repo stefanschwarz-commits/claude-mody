@@ -43,8 +43,15 @@ function spans(root: Node): { text: string; bg?: unknown }[] {
 
 test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i tabela zostają Markdown', () => {
   const blocks = blocksOf(['Zdanie z **ważną** częścią.', '', 'Link [x](https://x.pl) i **bold**.', '', '- lista **a**', '', '| a | b |', '|---|---|', '', 'Bez pogrubienia.'].join('\n'))
-  // The bullet item is prose of its own now (a dot in front); the link paragraph and the table stay Markdown.
-  expect(blocks.map(b => b.kind)).toEqual(['para', 'md', 'para', 'md', 'para'])
+  // The bullet item is prose of its own (a dot in front); a link is a run of the sentence; the table stays Markdown.
+  expect(blocks.map(b => b.kind)).toEqual(['para', 'para', 'para', 'md', 'para'])
+  expect(blocks[1].kind === 'para' ? blocks[1].runs : []).toEqual([
+    { text: 'Link ', isMark: false },
+    { text: 'x', isMark: false, href: 'https://x.pl' },
+    { text: ' i ', isMark: false },
+    { text: 'bold', isMark: true, kind: 'word' },
+    { text: '.', isMark: false },
+  ])
   // A short bold is a word (the marker); the short view still reads the whole sentence.
   expect(blocks[0].kind === 'para' ? blocks[0].runs : []).toEqual([
     { text: 'Zdanie z ', isMark: false },
@@ -52,7 +59,7 @@ test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i ta
     { text: ' częścią.', isMark: false },
   ])
   // A paragraph without a bold gives the short view its first sentence.
-  expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'lista a', 'Bez pogrubienia.'])
+  expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'Link x i bold.', 'lista a', 'Bez pogrubienia.'])
   // A long bold is a sentence: bold and underlined, as written.
   const two = blocksOf('Pierwsze zdanie jest zwykłe. **Drugie ma więcej niż trzy słowa i jest ważne.** Trzecie jest zwykłe.')
   expect(two[0].kind === 'para' ? two[0].runs : []).toEqual([
@@ -71,7 +78,9 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   const mark = all.find(s => s.text === 'ramki rysują się po restarcie')
   expect(mark).toBeDefined()
   expect(mark?.bg).toBeUndefined()
-  expect(await ui.find({ type: 'Markdown', props: { text: /dokumentu/ } })).toBeDefined()
+  // The paragraph with a link keeps its emphasis: the link is a Link inside the sentence.
+  expect(await ui.find({ type: 'Link' })).toBeDefined()
+  expect(all.find(s => s.text === 'pogrubienie')?.bg).toBe('#3a3720')
   const only = await ui.find({ type: 'Button', text: 'Tylko wyróżnione' })
   expect(only).toBeDefined()
   await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
@@ -80,7 +89,8 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   expect(after.some(s => s.text.startsWith('Pierwszy akapit mówi, że') && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'ramki rysują się po restarcie' && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
-  expect(after.some(s => s.text.includes('Drugi akapit'))).toBe(false)
+  // The link paragraph marks a word, so its sentence is in the short view too.
+  expect(after.some(s => s.text.startsWith('Drugi akapit'))).toBe(true)
   expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
 })
 

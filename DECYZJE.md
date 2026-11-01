@@ -234,3 +234,9 @@ Stefan: „przycisk »Tylko wyróżnione« bardzo źle działa… Zobacz, co si�
 ## wyglad 0.33.3: wyjaśnienie w punktach (2026-11-01)
 Stefan: „w tym wyjaśnieniu… byłyby fajne punkty, może nie numery, ale właśnie punkty.” Reguła: wyjaśnienie w punktach „- ”, każdy od pogrubionego zdania (co się zmieniło) i jednego lub dwóch zdań, co to znaczy. Mod: płaska lista punktów w wyjaśnieniu jest rozbijana na bloki prozy (kropka z przodu), więc marker i podkreślenie działają w punktach; punkt bez wyróżnienia i listy z linkami lub kodem zostają w Markdown. Poprawiony też test skrótu z 0.33.2, który został wydany z jednym nieprzechodzącym testem (błąd w łańcuchu poleceń; nauczka: test przed commitem ma zatrzymać łańcuch).
 
+## wyglad 0.33.4: link w zdaniu nie odbiera wyróżnień (2026-11-01)
+Zrzut Stefana (sesja poczty): akapit z dwoma linkami miał pogrubienie bez podkreślenia i bez markera, bo akapit z linkiem szedł w całości do Markdown. Link w zdaniu jest teraz rysowany jako element Link wewnątrz zdania, więc marker i podkreślenie działają też w akapitach z linkami; link w pogrubieniu zostaje klikalny (bez tła). Akapit z kodem w odwrotnych apostrofach nadal idzie do Markdown. Ściany tekstu na tym zrzucie to pisanie sprzed reguły punktów (0.33.3), nie mod.
+
+## wyglad 0.34.0: ramka wyjaśnienia nazywa się „Co się zmieniło” (2026-11-01)
+Stefan wybrał 5B: ramka z nagłówkiem i wyjaśnieniem ma nad nagłówkiem nazwę „Co się zmieniło” z ikoną, w tej samej formie co pozostałe ramki (nazwa z ikoną w środku ramki). Wydane razem z 0.33.4 (linki w zdaniu).
+
