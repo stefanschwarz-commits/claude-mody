@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { bolds } from './drzewo'
+import { bolds, markdowns } from './drzewo'
 import { optionsOf, splitQuestions, splitReply, tableOf, tipOf } from './split'
 
 const REPLY = [
@@ -517,3 +517,16 @@ test('zadanie bez myślnika: pogrubione tylko pierwsze zdanie, reszta szara', as
   expect(heads).toContain('Usuń starą kartę (minuta)')
   expect(heads.some(h => h.startsWith('Usuń starą kartę (minuta). Na otwartej'))).toBe(false)
 })
+
+test('pogrubienie urwane w środku zdania: szara linia nie zaczyna się od przecinka', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Spójne.**', '', '---', '', '🟢 **Zrobione**', '1. **Ustawienia są zgodne**, a WhatsApp łączy się na każdym koncie. Sprawdziłem trzy razy.', '2. **Spis kont opisuje nowy obieg**, bez doręczycieli.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  const heads = bolds(await ui.find({ type: 'Box' }))
+  expect(heads).toContain('Ustawienia są zgodne, a WhatsApp łączy się na każdym koncie.')
+  expect(heads).toContain('Spis kont opisuje nowy obieg, bez doręczycieli.')
+  const md = markdowns(await ui.find({ type: 'Box' }))
+  expect(md).toContain('Sprawdziłem trzy razy.')
+  expect(md.some(t => t.startsWith(','))).toBe(false)
+})
+

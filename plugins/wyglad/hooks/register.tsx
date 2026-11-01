@@ -257,7 +257,12 @@ function pieces(body: string): Piece[] {
     }
     const bold = /^\*\*(.+?)\*\*\s*(.*)$/.exec(point[2])
     if (bold) {
-      out.push({ n: point[1], lead: bold[1], rest: bold[2], subs: [] })
+      // A bold that stops mid-sentence ("**…wersją**, a WhatsApp…") keeps its sentence whole in the
+      // lead, so no grey line ever opens with a comma.
+      const open = /^[,;:–-]/.test(bold[2]) ? /^(.*?[.!?])(?:\s+(\S.*))?$/.exec(bold[2]) : null
+      if (open) out.push({ n: point[1], lead: `${bold[1]}${open[1]}`, rest: open[2] ?? '', subs: [] })
+      else if (/^[,;:–-]/.test(bold[2])) out.push({ n: point[1], lead: `${bold[1]}${bold[2]}`, rest: '', subs: [] })
+      else out.push({ n: point[1], lead: bold[1], rest: bold[2], subs: [] })
       continue
     }
     const cut = /^(.*?[.:!?])\s+(\S.*)$/.exec(point[2])
