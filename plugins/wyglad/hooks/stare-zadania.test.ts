@@ -107,3 +107,35 @@ test('odhacz z fragmentem, którego nie ma: odpowiedź mówi „brak takiego zad
   const out = await $.tool.call({ tool: 'mcp__wyglad__odhacz', tekst: 'nic takiego', stan: 'nieaktualne' } as never)
   expect(String((out as { result?: string }).result)).toContain('brak takiego zadania')
 })
+
+// Questions are numbered on through the conversation: the second answer's first
+// question is "Pytanie 2", its buttons "2A"/"2B", and "2B" typed back is explained
+// to the model as Pytanie 1 of its latest answer.
+const ASK = (head: string) => [`▶ **${head}**`, '', '---', '', '🔵 **Pytania do Ciebie**', '', '**1. Co wybrać?**', '- **A)** To – plus: nic; minus: nic.', '- **B)** Tamto – plus: nic; minus: nic.', '➜ Polecam 1B.'].join('\n')
+
+test('pytania numerowane narastająco w rozmowie, przyciski i wskazówka też', async ($, on) => {
+  setup(on)
+  await complete($, ASK('Pierwsza sprawa.'), 'a')
+  await complete($, ASK('Druga sprawa.'), 'b')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Druga sprawa.'), isFirstOfReply: true } as never })
+  const all = texts((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(all).toContain('**Pytanie 2: Co wybrać?**')
+  expect(all).toContain('2B ★')
+  expect(all).toContain('**➜ Polecam 2B.**')
+  expect(await ui.find({ type: 'Button', text: 'Wybierz 2A' })).toBeDefined()
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  expect(texts((await pane.find({ type: 'Box' })) as unknown as Node)).toContain('2. Co wybrać?')
+})
+
+test('„2B” w wiadomości Stefana: model dostaje, że to Pytanie 1 ostatniej odpowiedzi, opcja B', async ($, on) => {
+  setup(on)
+  let context: string[] | undefined
+  on('prompt.submit', ($, e) => {
+    context = e.context as string[] | undefined
+    return { text: e.text } as never
+  })
+  await complete($, ASK('Pierwsza sprawa.'), 'a')
+  await complete($, ASK('Druga sprawa.'), 'b')
+  await $.prompt.submit({ text: '2B' } as never)
+  expect((context ?? []).join('\n')).toContain('2B: Pytanie 1 z Twojej ostatniej odpowiedzi')
+})

@@ -164,3 +164,12 @@ Dalsze decyzje Stefana z tej samej rozmowy:
 
 ## wyglad 0.27.1 (2026-11-01)
 Tylko numer wersji: dwa wydania tego dnia miały ten sam numer 0.27.0, więc instalator nie pobrał drugiego (stare ramki, pasek z czasem, kompresja). Nauczka: każdy commit z kodem moda podbija wersję.
+
+## wyglad 0.28.0: zadania i pytania rozdzielone, pytania numerowane narastająco (2026-11-01)
+Zgłoszenie sesji „💻 Migracja NGO na konto Elmi”, słowa Stefana: „Należy odróżnić zadanie od pytania… zadania i pytania powinny mieć różne kolory.” Obie ramki były niebieskie i obie zaczynały od 1, Stefan odpowiadał o zadaniu, gdy chodziło o pytanie. Stefan wybrał wariant A i doprecyzował nazwy („Zadanie jeden, Zadanie dwa, adekwatnie do Pytanie jeden”):
+- ramka zadań nazywa się „Zadania dla Ciebie”, zostaje niebieska, numery rysowane jako „Zadanie 1”, „Zadanie 2”; stary nagłówek „Do zrobienia przez Ciebie” nadal rozpoznawany;
+- karty pytań są fioletowe (nowy odcień `violet` w Ink i tint), tytuł „Pytanie N”;
+- na prośbę Stefana („mam już wiele pytań oznaczonych numerem jeden”) pytania numerowane narastająco w całej rozmowie: mod pamięta w `stamps` liczbę pytań poprzednich odpowiedzi (`qBase`) i rysuje „Pytanie 7”, opcje „7A/7B”, przyciski „Wybierz 7B”, wskazówkę „Polecam 7B”; Claude nadal pisze od 1 w każdej odpowiedzi, a gdy Stefan napisze „7B”, prompt.submit dokłada notatkę „7B: Pytanie 1 z Twojej ostatniej odpowiedzi, opcja B”. Panel „Moje sprawy” i streszczenie przy kompresji używają numerów narastających. Zadania zostają numerowane od 1 w każdej odpowiedzi (skrót „1 zrobiłem” bez zmian).
+- Reguły poza repozytorium poprawione w tej samej odpowiedzi: `~/.claude/rules/wyglad-uklad-odpowiedzi.md` (nagłówki 🔵 Zadania dla Ciebie / 🟣 Pytania do Ciebie, opis numeracji) i `format-zadania-i-pytania.md` (nazwa ramki).
+Testy w `hooks/stare-zadania.test.ts` (numeracja, notatka „2B”) i poprawione asercje „Zadanie N” w starszych testach.
+

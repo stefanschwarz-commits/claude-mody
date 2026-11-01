@@ -64,7 +64,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     // The bar names the answer and when it was finished, to the second; no ▶ marker any more.
     expect(await ui.find({ type: 'Text', text: /^(Nowa )?[Oo]dpowiedź/ })).toBeDefined()
     expect(bolds(await ui.find({ type: 'Box' }))).toContain('Mod działa i jest gotowy do testu.')
-    expect(await ui.find({ type: 'Text', text: 'Do zrobienia przez Ciebie' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Zadania dla Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()
@@ -171,7 +171,7 @@ test('odhaczone zadanie się skreśla, a pasek liczy tylko pozostałe', async ($
   expect(toasts).toEqual(['Gotowe. Potrzebuję od Ciebie: 2 zadania'])
   const answer = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   // Tasks are numbered, so Stefan can say "zrobiłem 1"; what to do reads bold, why reads faint.
-  expect(await answer.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await answer.find({ type: 'Text', text: 'Zadanie 2' })).toBeDefined()
   expect(bolds(await answer.find({ type: 'Box' }))).toContain('Zmień hasło (5 min)')
   expect(await answer.find({ type: 'Markdown', props: { text: 'po to' } })).toBeDefined()
   expect(await answer.find({ type: 'Button', text: '☐' })).toBeUndefined()
@@ -235,7 +235,7 @@ test('nagłówki z kolorowymi kropkami (wersja 6 instrukcji) są rozpoznawane', 
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Markdown', props: { text: /Strona działa/ } })).toBeDefined()
   expect(await ui.find({ type: 'Markdown', props: { text: /Hasło wygasło/ } })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: '1.' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Zadanie 1' })).toBeDefined()
 })
 
 test('gwiazdka także przy „Polecam 2B” z numerem', () => {
@@ -409,7 +409,7 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   const boxes: string[] = []
   const md: string[] = []
   const walk = (n: Node) => {
-    if (n.type === 'Text' && /^\d+\.$/.test(n.children?.join('') ?? '')) boxes.push('n')
+    if (n.type === 'Text' && /^Zadanie \d+$/.test(n.children?.join('') ?? '')) boxes.push('n')
     if (n.type === 'Markdown' && n.props?.text) md.push(n.props.text)
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
@@ -496,7 +496,7 @@ test('„**Zadanie 1:**” z instrukcji v7 nie dubluje numeru w ramce zadań', a
 1. **Zadanie 1:** Załóż projekt (2 minuty) – po co
 2. **Zadanie 2:** Odpowiedz Ligii (5 minut) – prosiła`
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
-  expect(await ui.find({ type: 'Text', text: '2.' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Zadanie 2' })).toBeDefined()
   const heads = bolds(await ui.find({ type: 'Box' }))
   expect(heads).toContain('Załóż projekt (2 minuty)')
   expect(heads).not.toContain('Zadanie 1: Załóż projekt (2 minuty)')

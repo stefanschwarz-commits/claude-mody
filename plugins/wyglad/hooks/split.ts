@@ -13,7 +13,7 @@ const KINDS: readonly [Kind, RegExp][] = [
   ['done', new RegExp(`${LEAD}zrobione`, 'iu')],
   ['failed', new RegExp(`${LEAD}(nie udało się|problem)`, 'iu')],
   ['open', new RegExp(`${LEAD}niewyjaśnion`, 'iu')],
-  ['todo', new RegExp(`${LEAD}do zrobienia`, 'iu')],
+  ['todo', new RegExp(`${LEAD}(do zrobienia|zadani[ae] dla)`, 'iu')],
   ['questions', new RegExp(`${LEAD}pytani`, 'iu')],
   ['info', new RegExp(`${LEAD}dla informacji`, 'iu')],
 ]

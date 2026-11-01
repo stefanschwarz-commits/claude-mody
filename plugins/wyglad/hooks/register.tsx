@@ -7,9 +7,9 @@ import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 
 // Ink colours for the icons, light or dark as the theme is.
-type Ink = { green: string; red: string; orange: string; blue: string; grey: string; text: string }
-const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', grey: '#8a8984', text: '#e8e6e3' }
-const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', grey: '#6b6a66', text: '#222222' }
+type Ink = { green: string; red: string; orange: string; blue: string; violet: string; grey: string; text: string }
+const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', violet: '#9b7bd6', grey: '#8a8984', text: '#e8e6e3' }
+const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', violet: '#6a3fb5', grey: '#6b6a66', text: '#222222' }
 
 // An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
 type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
@@ -318,6 +318,11 @@ async function placeOf($: Parameters<typeof read>[0]): Promise<string> {
 // The Polish word for what the turn is doing, drawn in the working row.
 const DOING: Record<string, string> = { thinking: 'Myślę', requesting: 'Pytam model', 'tool-use': 'Pracuję', 'tool-input': 'Pracuję', responding: 'Piszę odpowiedź' }
 
+// "1B" → "B": the letter of an option id, whatever number it carries.
+function letterOfId(id: string): string {
+  return id.replace(/^\d+/, '')
+}
+
 function count(n: number, one: string, few: string, many: string): string {
   const word = n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many
   return `${n} ${word}`
@@ -333,7 +338,7 @@ export const register: Register = on => {
     // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
     await $.tool.register({
       name: 'odhacz',
-      description: 'Odhacza zadania w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Do zrobienia przez Ciebie” ostatniej odpowiedzi. Gdy dajesz Stefanowi nowe zadanie zamiast wcześniejszego (nowy kod logowania, nowy link, zmieniony krok), wywołaj z `tekst` = fragment treści starego zadania i `stan` = nieaktualne, żeby stare zadanie znikło z panelu i było skreślone jako zastąpione.',
+      description: 'Odhacza zadania w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Zadania dla Ciebie” ostatniej odpowiedzi. Gdy dajesz Stefanowi nowe zadanie zamiast wcześniejszego (nowy kod logowania, nowy link, zmieniony krok), wywołaj z `tekst` = fragment treści starego zadania i `stan` = nieaktualne, żeby stare zadanie znikło z panelu i było skreślone jako zastąpione.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -374,8 +379,16 @@ export const register: Register = on => {
   on('prompt.submit', async ($, e, next) => {
     if (e.text.length > 400) return next(e)
     const tasks = await tasksOfLast($)
-    if (tasks.length === 0) return next(e)
     const notes: string[] = []
+    // "7B": the running number of a question of the latest answer, which the model knows as "Pytanie 1".
+    const answer = await read($, last)
+    const stamp = answer ? (await read($, stamps))[answer.key] : undefined
+    if (answer && stamp && stamp.questions > 0) {
+      for (const m of e.text.matchAll(/\b(\d+)\s*([A-Z])\b/g)) {
+        const n = Number(m[1])
+        if (n > stamp.qBase && n <= stamp.qBase + stamp.questions) notes.push(`${m[1]}${m[2]}: Pytanie ${n - stamp.qBase} z Twojej ostatniej odpowiedzi (u Stefana numerowane narastająco jako ${n}), opcja ${m[2]}.`)
+      }
+    }
     for (const m of e.text.matchAll(SAID)) {
       const stan = /zrobi|gotowe|załatw/i.test(m[2]) ? 'zrobione' : 'odpada'
       for (const n of m[1].split(/\D+/).filter(Boolean).map(Number)) {
@@ -384,7 +397,7 @@ export const register: Register = on => {
       }
     }
     if (notes.length === 0) return next(e)
-    const note = [`Numery w wiadomości Stefana odnoszą się do ramki „Do zrobienia przez Ciebie” z Twojej ostatniej odpowiedzi:`, ...notes, 'Odhacz je narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
+    const note = [`Numery w wiadomości Stefana odnoszą się do Twojej ostatniej odpowiedzi (zadania z ramki „Zadania dla Ciebie”, pytania numerowane narastająco w całej rozmowie):`, ...notes, 'Zadania odhacz narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
     return next({ ...e, context: [...(e.context ?? []), note] })
   })
 
@@ -458,17 +471,19 @@ export const register: Register = on => {
       await update($, last, () => summary)
       if (summary) {
         const at = await $.clock.now().catch(() => Date.now())
-        await update($, stamps, all => (all[summary.key] ? all : { ...all, [summary.key]: { n: Object.keys(all).length + 1, at } }))
+        await update($, stamps, all => (all[summary.key] ? all : { ...all, [summary.key]: { n: Object.keys(all).length + 1, at, qBase: Object.values(all).reduce((sum, s) => sum + (s.questions ?? 0), 0), questions: summary.questions } }))
       }
       if (reply && summary) {
         const tasks: Sprawa[] = reply.parts
           .filter(part => part.kind === 'todo')
           .flatMap(part => itemsOf(part.body))
           .flatMap((item, i) => (item.isItem ? [{ id: `${summary.key}:${i}`, kind: 'todo' as const, text: item.text.replace(/[*_`]/g, ''), letters: [] }] : []))
+        // Questions are numbered on through the conversation ("Pytanie 7"), so no two share a number.
+        const qBase = (await read($, stamps))[summary.key]?.qBase ?? 0
         const asks: Sprawa[] = reply.parts
           .filter(part => part.kind === 'questions')
           .flatMap(part => splitQuestions(part.body))
-          .map(q => ({ id: `${summary.key}:q${q.number}`, kind: 'question' as const, text: `${q.number}. ${q.text.split(`\n\n`)[0].replace(/\*\*/g, '')}`, letters: lettersOf(q).map(l => `${q.number}${l}`), options: optionsOf(q) }))
+          .map(q => ({ id: `${summary.key}:q${q.number}`, kind: 'question' as const, text: `${qBase + Number(q.number)}. ${q.text.split(`\n\n`)[0].replace(/\*\*/g, '')}`, letters: lettersOf(q).map(l => `${qBase + Number(q.number)}${l}`), options: optionsOf(q).map(o => ({ ...o, id: `${qBase + Number(q.number)}${letterOfId(o.id)}` })) }))
         await update($, sprawy, list => [
           ...list.filter(one => one.kind === 'todo' && !tasks.some(t => t.id === one.id)),
           ...tasks,
@@ -743,13 +758,13 @@ export const register: Register = on => {
                   <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
                     <Box flexDirection="row" gap={1}>
                       {icon(els, e.surface, 'list-check', ink.blue, '●')}
-                      <Text bold>Do zrobienia przez Ciebie</Text>
+                      <Text bold>Zadania dla Ciebie</Text>
                     </Box>
                     {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne zadania są w najnowszej odpowiedzi niżej.</Text> : null}
                     {all.map((item, i) =>
                       item.isItem ? (
                         <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                          <Text dimColor={isOlder}>{`${all.slice(0, i + 1).filter(one => one.isItem).length}.`}</Text>
+                          <Text dimColor={isOlder} bold>{`Zadanie ${all.slice(0, i + 1).filter(one => one.isItem).length}`}</Text>
                           {ticked.includes(`${key}:${i}`) ? (
                             <Box flexDirection="row" gap={1}>
                               <Text dimColor strikethrough>{plainOf(item.text)}</Text>
@@ -791,28 +806,31 @@ export const register: Register = on => {
             {questions.map((q, i) => {
               // A decision card: the question, its options, the advice and the buttons in one frame.
               const [title, ...why] = q.text.split('\n\n')
+              // The number runs on through the conversation once the answer is recorded.
+              const g = (stamp?.qBase ?? 0) + Number(q.number)
+              const named = (id: string) => `${g}${letterOfId(id)}`
               return (
-                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
+                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={ink.violet} backgroundColor={tint?.violet} paddingX={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
-                    {icon(els, e.surface, 'message-question', ink.blue, '●')}
-                    <Markdown text={`**Pytanie ${q.number}: ${title.replace(/\*\*/g, '')}**`} />
+                    {icon(els, e.surface, 'message-question', ink.violet, '●')}
+                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
                     <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                      <Text bold>{`${option.id}${option.isBest ? ' ★' : ''}`}</Text>
+                      <Text bold>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
                       <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
                     </Box>
                   ))}
-                  {q.tip ? <Markdown text={`**${tipOf(q)}**`} /> : null}
+                  {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} /> : null}
                   {optionsOf(q).length > 0 ? (
                     <Box flexDirection="row" flexWrap="wrap" gap={2}>
                       {optionsOf(q).map(option => (
                         <Button
                           key={`b${i}-${option.id}`}
-                          label={`Wybierz ${option.id}${option.isBest ? ' ★' : ''}`}
-                          onPress={fill(option.id)}
+                          label={`Wybierz ${named(option.id)}${option.isBest ? ' ★' : ''}`}
+                          onPress={fill(named(option.id))}
                         />
                       ))}
                     </Box>
