@@ -3,7 +3,8 @@
 // (a highlighted span), and "Tylko wyróżnione" can show those runs alone.
 // Anything Markdown must draw (lists, tables, headings, links, code) stays Markdown.
 
-export type Run = { text: string; isMark: boolean }
+// A marked run is a word (a short bold: the marker) or a sentence (a long bold: bold and underlined).
+export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence' }
 export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[] }
 
 const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
@@ -19,41 +20,41 @@ function isProse(paragraph: string): boolean {
 // A sentence ends at . ! ? followed by a space, or at the end of the text.
 const SENTENCE_END = /[.!?](?=\s|$)/g
 
-// The marker covers the whole sentence a bold stands in: two bold words alone say
-// nothing when read by themselves (Stefan, 2026-11-01), a sentence does.
+// A short bold (up to three words) is a word to mark with the marker; a longer one
+// is a sentence to set bold and underlined (Stefan, 2026-11-01: the marker for a word
+// or fragment that matters, bold and underline for whole sentences).
+const WORD_LIMIT = 3
+
 export function runsOf(paragraph: string): Run[] {
   const flat = paragraph.replace(/\n/g, ' ')
-  // Where each bold run sits once the ** are gone.
-  const bolds: [number, number][] = []
-  let text = ''
+  const out: Run[] = []
   let i = 0
   for (const m of flat.matchAll(/\*\*([^*]+)\*\*/g)) {
-    text += flat.slice(i, m.index)
-    bolds.push([text.length, text.length + m[1].length])
-    text += m[1]
+    if (m.index > i) out.push({ text: flat.slice(i, m.index), isMark: false })
+    const words = m[1].trim().split(/\s+/).length
+    out.push({ text: m[1], isMark: true, kind: words <= WORD_LIMIT ? 'word' : 'sentence' })
     i = m.index + m[0].length
   }
-  text += flat.slice(i)
-  // Sentence bounds: [start, end) for each sentence of the text.
+  if (i < flat.length) out.push({ text: flat.slice(i), isMark: false })
+  return out
+}
+
+// The sentences of a paragraph that hold any mark, whole: what the short view reads.
+export function markedSentencesOf(runs: Run[]): string[] {
+  let text = ''
+  const marks: [number, number][] = []
+  for (const run of runs) {
+    if (run.isMark) marks.push([text.length, text.length + run.text.length])
+    text += run.text
+  }
   const ends = [...text.matchAll(SENTENCE_END)].map(m => m.index + 1)
   if (ends.length === 0 || ends[ends.length - 1] < text.length) ends.push(text.length)
-  const sentences: [number, number][] = []
+  const out: string[] = []
   let start = 0
   for (const end of ends) {
-    sentences.push([start, end])
+    if (marks.some(([ms, me]) => ms < end && me > start)) out.push(text.slice(start, end).trim())
     start = end
   }
-  const marked = sentences.filter(([s, e]) => bolds.some(([bs, be]) => bs < e && be > s))
-  const out: Run[] = []
-  let at = 0
-  for (const [s, e] of marked) {
-    // Leading spaces stay unmarked, so the marker starts at the first letter.
-    const lead = text.slice(s, e).match(/^\s*/)?.[0].length ?? 0
-    if (s + lead > at) out.push({ text: text.slice(at, s + lead), isMark: false })
-    out.push({ text: text.slice(s + lead, e), isMark: true })
-    at = e
-  }
-  if (at < text.length) out.push({ text: text.slice(at), isMark: false })
   return out
 }
 
@@ -100,7 +101,7 @@ export function blocksOf(text: string): Block[] {
 export function marksOf(blocks: Block[]): string[] {
   return blocks.flatMap(block => {
     if (block.kind !== 'para') return []
-    const marks = block.runs.filter(run => run.isMark).map(run => run.text.trim())
+    const marks = markedSentencesOf(block.runs)
     return marks.length > 0 ? marks : [firstSentenceOf(block.runs.map(run => run.text).join(''))]
   })
 }

@@ -28,6 +28,16 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
   return <Text>{glyph}</Text>
 }
 
+// One marked run: a word gets the marker (background), a sentence is bold and underlined.
+function emphasis(els: unknown, run: { text: string; kind?: 'word' | 'sentence' }, mark: string | undefined, key: string): unknown {
+  const { Text } = els as Drawers & { Text: (props: { key?: string; backgroundColor?: string; bold?: boolean; underline?: boolean; dimColor?: boolean; children?: unknown }) => unknown }
+  return run.kind === 'word' ? (
+    <Text key={key} backgroundColor={mark} dimColor={false}>{run.text}</Text>
+  ) : (
+    <Text key={key} bold underline dimColor={false}>{run.text}</Text>
+  )
+}
+
 // A text with its bold runs drawn as a marker, wherever it stands: a task's why, a question's
 // why or option, a summary point's grey rest. Markdown keeps anything a span cannot draw.
 function marked(els: unknown, text: string, mark: string | undefined, isDim: boolean, key?: string): unknown {
@@ -36,7 +46,7 @@ function marked(els: unknown, text: string, mark: string | undefined, isDim: boo
   if (blocks.length !== 1 || blocks[0].kind !== 'para' || !hasMarks(blocks)) return <Markdown key={key} text={text} dimColor={isDim} />
   return (
     <Text key={key} dimColor={isDim}>
-      {blocks[0].runs.map((run, j) => (run.isMark ? <Text key={`r${j}`} backgroundColor={mark} dimColor={false}>{run.text}</Text> : run.text))}
+      {blocks[0].runs.map((run, j) => (run.isMark ? emphasis(els, run, mark, `r${j}`) : run.text))}
     </Text>
   )
 }
@@ -757,7 +767,7 @@ export const register: Register = on => {
                       <Markdown key={`b${i}`} text={block.text} />
                     ) : (
                       <Text key={`b${i}`}>
-                        {block.runs.map((run, j) => (run.isMark ? <Text key={`r${j}`} backgroundColor={tint?.mark}>{run.text}</Text> : run.text))}
+                        {block.runs.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}
                       </Text>
                     ),
                   )}
