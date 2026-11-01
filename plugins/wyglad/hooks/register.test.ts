@@ -547,3 +547,16 @@ test('zwinięta ramka: pogrubione wyniki wszystkich punktów zostają, „Pokaż
   expect(await ui.find({ type: 'Text', text: 'Dla informacji' })).toBeDefined()
 })
 
+test('odpowiedź bez ▶, ale ze znanymi sekcjami: pierwsza linia jest nagłówkiem i ramki są rysowane', async ($, on) => {
+  setup(on)
+  const reply = ['Mam już pełny obraz. Podsumowuję przegląd.', '', '🟢 **Zrobione**', '', '**Usunięte hasło aplikacji.** Nikt nie ominie drugiego czynnika.', '', '🟠 **Niewyjaśnione**', '', 'Strona „Bezpieczne linki” wczytała się pusta.'].join('\n')
+  const parsed = splitReply(reply)
+  expect(parsed?.headline).toBe('Mam już pełny obraz. Podsumowuję przegląd.')
+  expect(parsed?.parts.map(p => p.kind)).toEqual(['done', 'open'])
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Niewyjaśnione' })).toBeDefined()
+  // Plain prose without sections stays the engine's own drawing.
+  expect(splitReply('Zwykłe zdanie.\n\nDrugie zdanie bez sekcji.')).toBeUndefined()
+})
+

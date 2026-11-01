@@ -200,3 +200,6 @@ Stefan doprecyzował: „każde pytanie i każde zadanie było przedstawione jak
 - Reguła: linków nie brać w cudzysłów (chip linku w aplikacji odstaje od cudzysłowu).
 Testy dopasowane do „Zadanie N: …” w pogrubionym początku.
 
+## wyglad 0.30.1: brak ▶ nie wyłącza ramek, gdy sekcje są znane (2026-11-01)
+Stefan (zrzut sesji „Microsoft Cloud Admin przegląd”): „Dlaczego ta sesja ignoruje nasze mody?” Odpowiedź miała kolorowe nagłówki sekcji, ale zaczynała się od „Mam już pełny obraz…” zamiast od linii ▶, a mod rysował tylko po ▶. Teraz, gdy w odpowiedzi jest choć jeden znany nagłówek sekcji, a nie ma ▶, pierwsza niepusta linia staje się nagłówkiem i ramki są rysowane; zwykła proza bez sekcji nadal zostaje rysunkiem aplikacji. Test w register.test.ts.
+

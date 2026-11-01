@@ -58,10 +58,17 @@ function isHeaderOnly(line: string): boolean {
 // with or without `---` rules between them.
 export function splitReply(text: string): Reply | undefined {
   const lines = text.split(/\r?\n/)
-  const at = lines.findIndex(line => line.trimStart().startsWith('▶'))
-  if (at < 0) return undefined
+  let at = lines.findIndex(line => line.trimStart().startsWith('▶'))
+  // No ▶, but the known sections are there: the answer was written in Stefan's form and
+  // only the mark was dropped, so its first line is the headline and the frames are drawn.
+  if (at < 0) {
+    const hasSections = lines.some(line => kindOf(line) !== 'plain' && isHeaderOnly(line))
+    const first = lines.findIndex(line => line.trim() !== '')
+    if (!hasSections || first < 0 || (kindOf(lines[first]) !== 'plain' && isHeaderOnly(lines[first]))) return undefined
+    at = first
+  }
 
-  const headline = lines[at].trim().replace(/^▶\s*/, '').replace(/\*\*/g, '')
+  const headline = lines[at].trim().replace(/^▶\s*/, '').replace(/^#+\s*/, '').replace(/\*\*/g, '')
   const rest = [...lines.slice(0, at), ...lines.slice(at + 1)].join('\n')
   const parts: Part[] = []
 
