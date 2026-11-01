@@ -173,3 +173,10 @@ test('nazwa pliku z pełną ścieżką jest odnośnikiem wszędzie: w zdaniu, w 
   expect(md).toContain('**Plan zapisany w [plan.md](file:///C:/Projekty/plan.md).**')
 })
 
+test('ścieżka ze spacjami („OneDrive - ELMI”) też jest plikiem w zdaniu', async ($, on) => {
+  setup(on)
+  const blocks = blocksOf('Tekst czeka jako [plan.md](C:\\Users\\Stefan\\OneDrive - ELMI\\Instrukcje Claude\\plan.md) i **jest gotowy**.')
+  expect(blocks[0].kind === 'para' ? blocks[0].runs.find(r => r.path)?.path : undefined).toBe('C:/Users/Stefan/OneDrive - ELMI/Instrukcje Claude/plan.md')
+  expect(blocks[0].kind === 'para' ? blocks[0].runs.map(r => r.text).join('') : '').toBe('Tekst czeka jako plan.md i jest gotowy.')
+})
+

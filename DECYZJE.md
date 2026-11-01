@@ -255,3 +255,6 @@ Stefan zapytał, ile z modów da się przenieść do Cowork; odpowiedź: tylko s
 ## wyglad 0.35.1: „Otwórz” i „Pokaż w folderze” przez Windows (2026-11-01)
 Stefan: „Ten przycisk »Pokaż w folderze« nie działa. Możesz go zmienić albo usunąć.” Przycisk wołał narzędzie aplikacji (reveal_path) z moda i nic się nie działo. Teraz przy pliku są dwa przyciski uruchamiane przez Windows z moda (process.run, jak dźwięk w modzie „dźwięk”): „Otwórz” (cmd /c start, domyślny program) i „Pokaż w folderze” (explorer.exe /select). Ścieżki względne działają względem folderu sesji.
 
+## wyglad 0.35.2: ścieżki ze spacjami (2026-11-01)
+Zrzut Stefana: odnośnik do pliku w „OneDrive - ELMI\Instrukcje Claude” rysował się jako goły, pocięty tekst, bo wzorce odnośników nie dopuszczały spacji w adresie. Wszystkie wzorce `[nazwa](adres)` w modzie przyjmują teraz spacje; w adresie file: spacje są kodowane. Stefan: „Dalej wyświetlasz mi linki jako zwykły tekst.”
+

@@ -43,7 +43,7 @@ export function filesOf(block: Block): { label: string; path: string }[] {
   if (block.kind === 'para') {
     for (const run of block.runs) if (run.path) add(run.text, run.path)
   } else {
-    for (const m of block.text.matchAll(/\[([^\]]+)\]\((file:\/\/[^)\s]+)\)/gi)) add(m[1], pathOf(m[2]))
+    for (const m of block.text.matchAll(/\[([^\]]+)\]\((file:\/\/[^)]+)\)/gi)) add(m[1], pathOf(m[2]))
   }
   return out
 }
@@ -51,7 +51,7 @@ export function filesOf(block: Block): { label: string; path: string }[] {
 // "[label](…)" links of a Markdown text with their targets rewritten as URLs the surface
 // opens (a file path becomes file:///…), so a file's name is a link wherever it stands.
 export function fileLinksOf(text: string): string {
-  return text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label: string, target: string) => {
+  return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label: string, target: string) => {
     const href = hrefOf(target)
     return href ? `[${label}](${href})` : m
   })
@@ -61,7 +61,7 @@ export function fileLinksOf(text: string): string {
 function linkRunsOf(text: string, isMark: boolean, kind?: 'word' | 'sentence'): Run[] {
   const out: Run[] = []
   let i = 0
-  for (const m of text.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)) {
+  for (const m of text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
     if (m.index > i) out.push({ text: text.slice(i, m.index), isMark, kind })
     const href = hrefOf(m[2])
     if (href && /^file:/i.test(href)) out.push({ text: m[1], isMark, kind, path: pathOf(href) })

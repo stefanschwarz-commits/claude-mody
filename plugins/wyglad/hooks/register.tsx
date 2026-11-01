@@ -143,7 +143,7 @@ function gist(part: Part): string {
 // "[plan.pdf](plan.pdf)", "[Plan](C:\Projekty\plan.pdf)": a link to a file on this
 // computer, not a web address. Returns its label and path.
 export function fileOf(text: string): { label: string; path: string } | undefined {
-  const link = /^\s*\**\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\**\s*[.;,]?\s*$/.exec(text)
+  const link = /^\s*\**\s*\[([^\]]+)\]\(([^)]+)\)\s*\**\s*[.;,]?\s*$/.exec(text)
   if (!link) return undefined
   const path = link[2]
   if (/^(https?|mailto|ftp):/i.test(path)) return undefined
