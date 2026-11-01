@@ -873,7 +873,7 @@ export const register: Register = on => {
                               <Box key={`k${k}`} flexDirection="row" alignItems="flex-start" gap={1}>
                                 {/* The label never wraps: it keeps its width, the step text takes the rest. */}
                                 <Box flexShrink={0}>
-                                  <Text bold>{`Krok ${n}${String.fromCharCode(97 + k)}:`}</Text>
+                                  <Text bold>{`K${n}${String.fromCharCode(65 + k)}`}</Text>
                                 </Box>
                                 <Box flexGrow={1} flexShrink={1}>{marked(els, step, tint?.mark, false)}</Box>
                               </Box>

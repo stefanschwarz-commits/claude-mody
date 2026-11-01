@@ -576,8 +576,8 @@ test('jedno zadanie z krokami: ramka „Zadanie 1” i w niej „Krok 1a”, „
   const heads = bolds(await ui.find({ type: 'Box' }))
   expect(heads).toContain('Zadanie 1: Usuń wpis „WhatsApp ELMI”')
   expect(heads.some(h => h.startsWith('Zadanie 2'))).toBe(false)
-  expect(await ui.find({ type: 'Text', text: 'Krok 1a:' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: 'Krok 1c:' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'K1A' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'K1C' })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: 'Remove' })).toBeDefined()
 })
 

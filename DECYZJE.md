@@ -243,3 +243,6 @@ Stefan wybrał 5B: ramka z nagłówkiem i wyjaśnieniem ma nad nagłówkiem nazw
 ## wyglad 0.34.1: etykieta kroku w jednej linii (2026-11-01)
 Zrzut Stefana: przy długim tekście kroku etykieta „Krok 1b:” łamała się na „Krok” / „1b:”. Etykieta nie kurczy się już (flexShrink 0), a tekst kroku zajmuje resztę szerokości.
 
+## wyglad 0.34.2: kroki jako „K1A”, „K1B” (2026-11-01)
+Stefan: „Może zamiast »krok jeden« pisać »K1« i »B« dużymi literami? Wiadomo, o co chodzi.” Etykieta kroku to teraz „K1A”, „K1B”, „K1C”: krócej, więcej miejsca na tekst, a litera K odróżnia krok od opcji pytania „1B”. Reguły poprawione.
+
