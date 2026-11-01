@@ -530,3 +530,20 @@ test('pogrubienie urwane w środku zdania: szara linia nie zaczyna się od przec
   expect(md.some(t => t.startsWith(','))).toBe(false)
 })
 
+test('zwinięta ramka: pogrubione wyniki wszystkich punktów zostają, „Pokaż szczegóły” dokłada wyjaśnienia', async ($, on) => {
+  setup(on)
+  const points = Array.from({ length: 12 }, (_, k) => `${k + 1}. **Wynik ${k + 1}.** Wyjaśnienie ${k + 1}, dla kogoś spoza wątku.\n   - podpunkt ${k + 1}`)
+  const reply = ['▶ **Długie.**', '', '---', '', '🟢 **Zrobione**', ...points, '', '---', '', '⚪ **Dla informacji**', '- drobiazg'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  const folded = markdowns(await ui.find({ type: 'Box' }))
+  expect(folded).toContain('**Wynik 1.**')
+  expect(folded).toContain('**Wynik 12.**')
+  expect(folded.some(t => t.startsWith('Wyjaśnienie'))).toBe(false)
+  expect(await ui.find({ type: 'Button', text: 'Pokaż szczegóły' })).toBeDefined()
+  const more = (await ui.find({ type: 'Button', text: 'Pokaż szczegóły' })) as { key?: string } | undefined
+  await ui.press({ key: more?.key ?? '' })
+  const open = markdowns(await ui.find({ type: 'Box' }))
+  expect(open).toContain('Wyjaśnienie 3, dla kogoś spoza wątku.')
+  expect(await ui.find({ type: 'Button', text: 'Zwiń szczegóły' })).toBeDefined()
+})
+
