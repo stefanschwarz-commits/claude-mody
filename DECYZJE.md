@@ -173,3 +173,6 @@ Zgłoszenie sesji „💻 Migracja NGO na konto Elmi”, słowa Stefana: „Nale
 - Reguły poza repozytorium poprawione w tej samej odpowiedzi: `~/.claude/rules/wyglad-uklad-odpowiedzi.md` (nagłówki 🔵 Zadania dla Ciebie / 🟣 Pytania do Ciebie, opis numeracji) i `format-zadania-i-pytania.md` (nazwa ramki).
 Testy w `hooks/stare-zadania.test.ts` (numeracja, notatka „2B”) i poprawione asercje „Zadanie N” w starszych testach.
 
+## wyglad 0.28.1: ramka „Pytania do Ciebie” tej samej formy co zadań, żółta zamiast fioletu (2026-11-01)
+Stefan: „Jeśli chcesz utworzyć sekcję pod tytułem »Zadania dla Ciebie«, dodaj również odpowiednik: »Pytania do Ciebie«. Zadania i pytania to dwie formy Twojej interakcji ze mną. Powinny być podobne pod względem formy graficznej, ale mieć inny kolor.” oraz „zamiast fioletowego koloru wolałbym żółty lub pomarańczowy”. Pomarańczowy jest zajęty przez „Niewyjaśnione” (decyzja z 2026-10-19), więc pytania są żółte (`yellow` w Ink i tint, w obu motywach). Osobne karty pytań zastąpione jedną żółtą ramką z tytułem „Pytania do Ciebie” i blokami „Pytanie N” w środku, tak jak ramka zadań ma tytuł i wiersze „Zadanie N”. Reguła układu odpowiedzi: nagłówek pytań 🟡.
+

@@ -65,6 +65,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     expect(await ui.find({ type: 'Text', text: /^(Nowa )?[Oo]dpowiedź/ })).toBeDefined()
     expect(bolds(await ui.find({ type: 'Box' }))).toContain('Mod działa i jest gotowy do testu.')
     expect(await ui.find({ type: 'Text', text: 'Zadania dla Ciebie' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'Pytania do Ciebie' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()

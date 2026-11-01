@@ -7,9 +7,9 @@ import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 
 // Ink colours for the icons, light or dark as the theme is.
-type Ink = { green: string; red: string; orange: string; blue: string; violet: string; grey: string; text: string }
-const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', violet: '#9b7bd6', grey: '#8a8984', text: '#e8e6e3' }
-const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', violet: '#6a3fb5', grey: '#6b6a66', text: '#222222' }
+type Ink = { green: string; red: string; orange: string; blue: string; yellow: string; grey: string; text: string }
+const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', yellow: '#d4b106', grey: '#8a8984', text: '#e8e6e3' }
+const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', yellow: '#8a6d00', grey: '#6b6a66', text: '#222222' }
 
 // An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
 type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
@@ -266,10 +266,10 @@ function pieces(body: string): Piece[] {
 
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; violet: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; yellow: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', violet: '#F3EEFB' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', violet: '#221A30' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', yellow: '#FBF6DC' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', yellow: '#2A2610' }
   } catch {
     return undefined
   }
@@ -802,19 +802,23 @@ export const register: Register = on => {
                 </Box>
               )
             })() : null}
-            <Box flexDirection="column" gap={2}>
+            {/* Questions mirror the task frame: one yellow frame titled "Pytania do Ciebie",
+                each question a block inside it, as each task is a row in the blue frame. */}
+            {questions.length > 0 ? (
+            <Box key={`${key}-questions`} flexDirection="column" borderStyle="round" borderColor={ink.yellow} backgroundColor={tint?.yellow} paddingX={1} gap={1}>
+              <Box flexDirection="row" gap={1}>
+                {icon(els, e.surface, 'message-question', ink.yellow, '●')}
+                <Text bold>Pytania do Ciebie</Text>
+              </Box>
             {questions.map((q, i) => {
-              // A decision card: the question, its options, the advice and the buttons in one frame.
+              // A decision block: the question, its options, the advice and the buttons.
               const [title, ...why] = q.text.split('\n\n')
               // The number runs on through the conversation once the answer is recorded.
               const g = (stamp?.qBase ?? 0) + Number(q.number)
               const named = (id: string) => `${g}${letterOfId(id)}`
               return (
-                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={ink.violet} backgroundColor={tint?.violet} paddingX={1} gap={1}>
-                  <Box flexDirection="row" gap={1}>
-                    {icon(els, e.surface, 'message-question', ink.violet, '●')}
-                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
-                  </Box>
+                <Box key={`${key}-q${q.number}`} flexDirection="column" gap={1}>
+                  <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
@@ -839,6 +843,7 @@ export const register: Register = on => {
               )
             })}
             </Box>
+            ) : null}
           </Box>
         ) : null}
         {folded.length > 0 ? (
