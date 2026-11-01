@@ -258,3 +258,6 @@ Stefan: „Ten przycisk »Pokaż w folderze« nie działa. Możesz go zmienić a
 ## wyglad 0.35.2: ścieżki ze spacjami (2026-11-01)
 Zrzut Stefana: odnośnik do pliku w „OneDrive - ELMI\Instrukcje Claude” rysował się jako goły, pocięty tekst, bo wzorce odnośników nie dopuszczały spacji w adresie. Wszystkie wzorce `[nazwa](adres)` w modzie przyjmują teraz spacje; w adresie file: spacje są kodowane. Stefan: „Dalej wyświetlasz mi linki jako zwykły tekst.”
 
+## Skill „uklad-odpowiedzi” dla konta claude.ai (2026-11-01, decyzja Stefana 2A)
+Stefan wybrał 2A: reguła układu odpowiedzi ma być skillem w jego koncie claude.ai, żeby Cowork, czat i sesje na komputerze czytały jedną wersję. W repozytorium powstał `skills/uklad-odpowiedzi/SKILL.md` (część A: z nakładką = treść reguły `wyglad-uklad-odpowiedzi.md`; część B: bez nakładki = tekst dla Cowork i czatu). Wgranie do konta robi Claude wbudowaną przeglądarką po osobnym „tak” Stefana (zmiana w jego koncie). Potem do zrobienia: reguła na komputerze ma wskazywać skill jako źródło, a sesja „Mody” przy każdej zmianie reguły odświeża SKILL.md i wgrywa go ponownie.
+
