@@ -184,8 +184,11 @@ function taskOf(text: string): { what: string; why: string } {
   return { what: unbold(raw.slice(0, at.index)), why: why.charAt(0).toLocaleUpperCase('pl') + why.slice(1) }
 }
 
-function itemsOf(body: string): { isItem: boolean; text: string }[] {
-  const out: { isItem: boolean; text: string }[] = []
+// A task's steps: indented "a) …", "b) …" (or "-") lines under it, drawn as "Krok 1a", "Krok 1b".
+type Item = { isItem: boolean; text: string; steps?: string[] }
+
+function itemsOf(body: string): Item[] {
+  const out: Item[] = []
   let inFence = false
   for (const line of body.split(/\r?\n/)) {
     const prev = out[out.length - 1]
@@ -200,6 +203,12 @@ function itemsOf(body: string): { isItem: boolean; text: string }[] {
       continue
     }
     if (line.trim() === '') continue
+    // One task, several actions: an indented "a)" / "b)" / "-" line is a step of the task above.
+    const step = /^\s{2,}(?:[a-z][.)]|[-*])\s+(.*)$/.exec(line)
+    if (step && prev?.isItem) {
+      prev.steps = [...(prev.steps ?? []), step[1]]
+      continue
+    }
     const item = /^\s*(\d+\.|[-*])\s+(.*)$/.exec(line)
     // A link to a file on this computer is not a task: it is drawn below the frame.
     if (item && fileOf(item[2])) out.push({ isItem: false, text: item[2] })
@@ -834,6 +843,12 @@ export const register: Register = on => {
                               <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} />
                             </Box>
                             {taskOf(item.text).why ? marked(els, taskOf(item.text).why, tint?.mark, false) : null}
+                            {(item.steps ?? []).map((step, k) => (
+                              <Box key={`k${k}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                                <Text bold>{`Krok ${n}${String.fromCharCode(97 + k)}:`}</Text>
+                                {marked(els, step, tint?.mark, false)}
+                              </Box>
+                            ))}
                           </Box>
                         )}
                       </Box>

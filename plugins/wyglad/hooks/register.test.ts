@@ -569,3 +569,15 @@ test('wyjaśnienie zadania spod myślnika zaczyna się wielką literą', async (
   expect(md).toContain('**Zadanie 1: Zamknij i otwórz aplikację**')
 })
 
+test('jedno zadanie z krokami: ramka „Zadanie 1” i w niej „Krok 1a”, „Krok 1b”', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Konektor.**', '', '---', '', '🔵 **Zadania dla Ciebie**', '', '1. Usuń wpis „WhatsApp ELMI” – usuwasz tylko wpis ze złą nazwą, Twój WhatsApp zostaje nietknięty.', '   a) W przeglądarce wbudowanej kliknij trzy kropki obok przycisku „Disconnect”.', '   b) Wybierz **Remove** i potwierdź.', '   c) Napisz mi „usunięte”.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  const heads = bolds(await ui.find({ type: 'Box' }))
+  expect(heads).toContain('Zadanie 1: Usuń wpis „WhatsApp ELMI”')
+  expect(heads.some(h => h.startsWith('Zadanie 2'))).toBe(false)
+  expect(await ui.find({ type: 'Text', text: 'Krok 1a:' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Krok 1c:' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Remove' })).toBeDefined()
+})
+
