@@ -43,7 +43,8 @@ function spans(root: Node): { text: string; bg?: unknown }[] {
 
 test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i tabela zostają Markdown', () => {
   const blocks = blocksOf(['Zdanie z **ważną** częścią.', '', 'Link [x](https://x.pl) i **bold**.', '', '- lista **a**', '', '| a | b |', '|---|---|', '', 'Bez pogrubienia.'].join('\n'))
-  expect(blocks.map(b => b.kind)).toEqual(['para', 'md', 'para'])
+  // The bullet item is prose of its own now (a dot in front); the link paragraph and the table stay Markdown.
+  expect(blocks.map(b => b.kind)).toEqual(['para', 'md', 'para', 'md', 'para'])
   // A short bold is a word (the marker); the short view still reads the whole sentence.
   expect(blocks[0].kind === 'para' ? blocks[0].runs : []).toEqual([
     { text: 'Zdanie z ', isMark: false },
@@ -51,7 +52,7 @@ test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i ta
     { text: ' częścią.', isMark: false },
   ])
   // A paragraph without a bold gives the short view its first sentence.
-  expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'Bez pogrubienia.'])
+  expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'lista a', 'Bez pogrubienia.'])
   // A long bold is a sentence: bold and underlined, as written.
   const two = blocksOf('Pierwsze zdanie jest zwykłe. **Drugie ma więcej niż trzy słowa i jest ważne.** Trzecie jest zwykłe.')
   expect(two[0].kind === 'para' ? two[0].runs : []).toEqual([
@@ -76,11 +77,21 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
   const after = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // The short view: the sentence as plain text, its emphasis inside, no background on the sentence.
-  expect(after.some(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.' && s.bg === undefined)).toBe(true)
+  expect(after.some(s => s.text.startsWith('Pierwszy akapit mówi, że') && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'ramki rysują się po restarcie' && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
   expect(after.some(s => s.text.includes('Drugi akapit'))).toBe(false)
   expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
+})
+
+test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Punkty.**', '', '- **Pierwsza rzecz jest zrobiona i działa.** Szczegół pierwszy.', '- Druga rzecz z **jednym słowem** w środku.', '- Trzecia bez wyróżnienia.', '', '---', '', '🟢 **Zrobione**', '- **Gotowe.** Tak.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(all.filter(s => s.text === '•').length).toBe(2)
+  expect(all.find(s => s.text === 'jednym słowem')?.bg).toBe('#3a3720')
+  expect(all.some(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.' && s.bg === undefined)).toBe(true)
 })
 
 test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', async ($, on) => {

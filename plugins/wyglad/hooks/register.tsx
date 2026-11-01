@@ -767,9 +767,10 @@ export const register: Register = on => {
                     ) : block.kind === 'md' ? (
                       <Markdown key={`b${i}`} text={block.text} />
                     ) : (
-                      <Text key={`b${i}`}>
-                        {block.runs.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}
-                      </Text>
+                      <Box key={`b${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                        {block.isBullet ? <Text>•</Text> : null}
+                        <Text>{block.runs.map((run, j) => (run.isMark ? emphasis(els, run, tint?.mark, `r${j}`) : run.text))}</Text>
+                      </Box>
                     ),
                   )}
               {hasMarks(blocks) ? (

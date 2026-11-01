@@ -231,3 +231,6 @@ Stefan: „Żółte podkreślenie jest przydatne, gdy zaznaczasz słowo lub frag
 ## wyglad 0.33.2: skrót bez żółtego tła (2026-11-01)
 Stefan: „przycisk »Tylko wyróżnione« bardzo źle działa… Zobacz, co się dzieje, jak go naciśniesz.” Skrót rysował każde zdanie na żółtym tle markera, czyli to, co Stefan właśnie wykluczył dla zdań. Teraz skrót to lista zdań z wyróżnieniem (po jednym w linii, z kropką), zwykłym tekstem, z zachowanymi wyróżnieniami w środku (marker na słowie, podkreślenie zdania), a akapit bez wyróżnienia daje pierwsze zdanie. Jeśli po tej zmianie skrót nadal nie spełnia roli, do rozważenia usunięcie przycisku.
 
+## wyglad 0.33.3: wyjaśnienie w punktach (2026-11-01)
+Stefan: „w tym wyjaśnieniu… byłyby fajne punkty, może nie numery, ale właśnie punkty.” Reguła: wyjaśnienie w punktach „- ”, każdy od pogrubionego zdania (co się zmieniło) i jednego lub dwóch zdań, co to znaczy. Mod: płaska lista punktów w wyjaśnieniu jest rozbijana na bloki prozy (kropka z przodu), więc marker i podkreślenie działają w punktach; punkt bez wyróżnienia i listy z linkami lub kodem zostają w Markdown. Poprawiony też test skrótu z 0.33.2, który został wydany z jednym nieprzechodzącym testem (błąd w łańcuchu poleceń; nauczka: test przed commitem ma zatrzymać łańcuch).
+

@@ -5,7 +5,7 @@
 
 // A marked run is a word (a short bold: the marker) or a sentence (a long bold: bold and underlined).
 export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence' }
-export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[] }
+export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[]; isBullet?: boolean }
 
 const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
 
@@ -88,6 +88,22 @@ export function firstSentenceOf(text: string): string {
   return end ? flat.slice(0, end.index + 1) : flat
 }
 
+// A paragraph that is a flat bullet list of prose items ("- …" lines, continuation lines
+// indented): its items; undefined when it is anything else.
+function bulletsOf(paragraph: string): string[] | undefined {
+  const lines = paragraph.split('\n')
+  if (!/^[-*•]\s+/.test(lines[0])) return undefined
+  const items: string[] = []
+  for (const line of lines) {
+    const item = /^[-*•]\s+(.*)$/.exec(line)
+    if (item) items.push(item[1])
+    else if (/^\s+\S/.test(line) && items.length > 0) items[items.length - 1] += ` ${line.trim()}`
+    else return undefined
+  }
+  if (items.some(item => /\]\(|`/.test(item) || NOT_PROSE.test(item))) return undefined
+  return items
+}
+
 // Paragraphs are separated by blank lines; a fenced block is one paragraph however long.
 export function blocksOf(text: string): Block[] {
   const paragraphs: string[] = []
@@ -107,7 +123,11 @@ export function blocksOf(text: string): Block[] {
   // Neighbouring Markdown paragraphs are joined back, so a list keeps its spacing.
   const out: Block[] = []
   for (const paragraph of paragraphs) {
-    if (isProse(paragraph)) {
+    const bullets = bulletsOf(paragraph)
+    if (bullets) {
+      // A plain bullet list: each item a prose block of its own, with its emphasis drawn.
+      for (const item of bullets) out.push({ kind: 'para', runs: runsOf(item), isBullet: true })
+    } else if (isProse(paragraph)) {
       out.push({ kind: 'para', runs: runsOf(paragraph) })
     } else {
       const last = out[out.length - 1]
