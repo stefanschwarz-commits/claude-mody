@@ -560,3 +560,12 @@ test('odpowiedź bez ▶, ale ze znanymi sekcjami: pierwsza linia jest nagłówk
   expect(splitReply('Zwykłe zdanie.\n\nDrugie zdanie bez sekcji.')).toBeUndefined()
 })
 
+test('wyjaśnienie zadania spod myślnika zaczyna się wielką literą', async ($, on) => {
+  setup(on)
+  const reply = ['▶ **Restart.**', '', '---', '', '🔵 **Zadania dla Ciebie**', '', '1. Zamknij i otwórz aplikację – nowa wersja jest zainstalowana, ale aplikacja wczytuje mody przy starcie.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  const md = markdowns(await ui.find({ type: 'Box' }))
+  expect(md).toContain('Nowa wersja jest zainstalowana, ale aplikacja wczytuje mody przy starcie.')
+  expect(md).toContain('**Zadanie 1: Zamknij i otwórz aplikację**')
+})
+

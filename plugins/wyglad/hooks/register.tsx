@@ -161,7 +161,9 @@ function taskOf(text: string): { what: string; why: string } {
     if (!stop) return { what: plain, why: '' }
     return { what: plain.slice(0, stop.index), why: plain.slice(stop.index + stop[0].length) }
   }
-  return { what: plain.slice(0, at.index), why: plain.slice(at.index + at[0].length) }
+  // The why after the dash is a sentence of its own in the frame, so it opens with a capital.
+  const why = plain.slice(at.index + at[0].length)
+  return { what: plain.slice(0, at.index), why: why.charAt(0).toLocaleUpperCase('pl') + why.slice(1) }
 }
 
 function itemsOf(body: string): { isItem: boolean; text: string }[] {

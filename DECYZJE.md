@@ -206,3 +206,6 @@ Stefan (zrzut sesji „Microsoft Cloud Admin przegląd”): „Dlaczego ta sesja
 ## wyglad 0.30.2: ikony przy zadaniach i pytaniach, koniec „(minuta)” w zadaniach (2026-11-01)
 Stefan (zrzut): „dodaj przed nimi ładną ikonkę… »Zrobione« ma już przyjemne »I«, a »zadanie jeden« go nie mają”; „Nie rozumiem, co oznacza »minuta«… »Nowe ramki ładują się przy starcie« to nie wyjaśnia nic.” Mod: ikona kwadratu (Tabler square) przed „Zadanie N”, kwadrat z ptaszkiem przy odhaczonym, dymek z pytajnikiem przed „Pytanie N”. Reguły (`wyglad-uklad-odpowiedzi.md`, `format-zadania-i-pytania.md`): zadanie bez szacunku czasu w nawiasie, po myślniku jedno lub dwa pełne zdania dla kogoś spoza wątku (co to znaczy, po co, co się stanie bez tego). Uwaga Stefana, że „to, co piszesz na początku… to kluczowe”, prowadzi do zakreślacza w wyjaśnieniu (decyzja 1B z tego dnia), następnego w kolejce.
 
+## wyglad 0.30.3: wyjaśnienie zadania wielką literą (2026-11-01)
+Stefan (zrzut „krzywej” ramki zadania): wyjaśnienie spod myślnika zaczynało się małą literą („nowa wersja wyglądu…”), bo w tekście odpowiedzi stoi po myślniku. Mod zaczyna je teraz wielką literą, bo w ramce jest osobnym zdaniem. Claude przestaje też dopisywać „Dla Ciebie:” przed zdaniem wyjaśnienia (sam dopisek, nie reguła).
+
