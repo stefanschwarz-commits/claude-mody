@@ -68,3 +68,36 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   expect(after.some(s => s.text.includes('a reszta to szczegóły'))).toBe(false)
   expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
 })
+
+test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', async ($, on) => {
+  setup(on)
+  const reply = [
+    '▶ **Wszędzie.**',
+    '',
+    '---',
+    '',
+    '🔵 **Zadania dla Ciebie**',
+    '',
+    '1. Zrestartuj aplikację – bez tego **stary wygląd zostaje**, bo mody wczytują się przy starcie.',
+    '',
+    '---',
+    '',
+    '🟤 **Pytania do Ciebie**',
+    '',
+    '**1. Który wariant?**',
+    'Dlaczego to ważne: **od tego zależy telefon**, nie komputer.',
+    '- **A)** Pierwszy – plus: **krótko**; minus: nic.',
+    '- **B)** Drugi – plus: nic; minus: nic.',
+    '➜ Polecam 1A.',
+    '',
+    '---',
+    '',
+    '🟢 **Zrobione**',
+    '- **Wydane.** Dla Ciebie **nic do zrobienia** poza restartem.',
+  ].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
+  const missing = ['stary wygląd zostaje', 'od tego zależy telefon', 'krótko', 'nic do zrobienia'].filter(text => all.find(s => s.text === text)?.bg !== '#4a4420')
+  expect(missing).toEqual([])
+})
+

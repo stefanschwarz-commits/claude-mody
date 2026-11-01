@@ -28,6 +28,19 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
   return <Text>{glyph}</Text>
 }
 
+// A text with its bold runs drawn as a marker, wherever it stands: a task's why, a question's
+// why or option, a summary point's grey rest. Markdown keeps anything a span cannot draw.
+function marked(els: unknown, text: string, mark: string | undefined, isDim: boolean, key?: string): unknown {
+  const { Text, Markdown } = els as Drawers & { Markdown: (props: { text: string; dimColor?: boolean; key?: string }) => unknown }
+  const blocks = blocksOf(text)
+  if (blocks.length !== 1 || blocks[0].kind !== 'para') return <Markdown key={key} text={text} dimColor={isDim} />
+  return (
+    <Text key={key} dimColor={isDim}>
+      {blocks[0].runs.map((run, j) => (run.isMark ? <Text key={`r${j}`} backgroundColor={mark} dimColor={false}>{run.text}</Text> : run.text))}
+    </Text>
+  )
+}
+
 const OFF = 'off'
 
 const last = atom({ plugin: 'wyglad', key: 'last' } as const, null)
@@ -155,18 +168,20 @@ function plainOf(text: string): string {
 }
 
 function taskOf(text: string): { what: string; why: string } {
-  // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws.
-  const plain = text.replace(/\*\*/g, '').replace(/^Zadanie\s+\d+:\s*/i, '')
-  const at = /\s[–—-]\s/.exec(plain)
+  // "**Zadanie 1:** …" (instruction v7) would double the number the frame draws. The what loses
+  // its bold (it is drawn bold whole); the why keeps it, so a bold run there becomes a marker.
+  const raw = text.replace(/^\*\*Zadanie\s+\d+:\*\*\s*/i, '').replace(/^Zadanie\s+\d+:\s*/i, '')
+  const unbold = (part: string) => part.replace(/\*\*/g, '')
+  const at = /\s[–—-]\s/.exec(raw)
   if (!at) {
     // No dash: "Usuń starą kartę (minuta). Na otwartej karcie …" – the first sentence is what to do.
-    const stop = /[.!?]\s+(?=\S)/.exec(plain)
-    if (!stop) return { what: plain, why: '' }
-    return { what: plain.slice(0, stop.index), why: plain.slice(stop.index + stop[0].length) }
+    const stop = /[.!?]\s+(?=\S)/.exec(raw)
+    if (!stop) return { what: unbold(raw), why: '' }
+    return { what: unbold(raw.slice(0, stop.index)), why: raw.slice(stop.index + stop[0].length) }
   }
   // The why after the dash is a sentence of its own in the frame, so it opens with a capital.
-  const why = plain.slice(at.index + at[0].length)
-  return { what: plain.slice(0, at.index), why: why.charAt(0).toLocaleUpperCase('pl') + why.slice(1) }
+  const why = raw.slice(at.index + at[0].length)
+  return { what: unbold(raw.slice(0, at.index)), why: why.charAt(0).toLocaleUpperCase('pl') + why.slice(1) }
 }
 
 function itemsOf(body: string): { isItem: boolean; text: string }[] {
@@ -818,7 +833,7 @@ export const register: Register = on => {
                               {icon(els, e.surface, 'square', ink.blue, '☐')}
                               <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} />
                             </Box>
-                            {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} /> : null}
+                            {taskOf(item.text).why ? marked(els, taskOf(item.text).why, tint?.mark, false) : null}
                           </Box>
                         )}
                       </Box>
@@ -866,12 +881,12 @@ export const register: Register = on => {
                     {icon(els, e.surface, 'message-question', ink.sand, '●')}
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
-                  {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
+                  {why.length > 0 ? marked(els, why.join('\n\n'), tint?.mark, true) : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
                     <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
                       <Text bold>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
-                      <Markdown text={option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim()} />
+                      {marked(els, option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim(), tint?.mark, false)}
                     </Box>
                   ))}
                   {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} /> : null}
@@ -919,10 +934,8 @@ ${part.body}` : part.body
                           <Text>{`${piece.n}.`}</Text>
                           <Box flexDirection="column">
                             <Markdown text={`**${piece.lead}**`} />
-                            {piece.rest ? <Markdown text={piece.rest} dimColor /> : null}
-                            {piece.subs.map((sub, k) => (
-                              <Markdown key={`sub${i}-${j}-${k}`} text={sub} dimColor />
-                            ))}
+                            {piece.rest ? marked(els, piece.rest, tint?.mark, true) : null}
+                            {piece.subs.map((sub, k) => marked(els, sub, tint?.mark, true, `sub${i}-${j}-${k}`))}
                           </Box>
                         </Box>
                       ) : (
