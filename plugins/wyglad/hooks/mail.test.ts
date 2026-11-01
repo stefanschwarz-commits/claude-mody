@@ -52,7 +52,7 @@ for (const surface of ['terminal', 'desktop'] as const) {
     expect(await ui.find({ type: 'Text', text: 'RE: Google Cloud – konto Google na Twój adres' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'Cześć Aniu,' })).toBeDefined()
     expect(await ui.find({ type: 'Button', text: 'Kopiuj treść' })).toBeDefined()
-    expect(bolds(await ui.find({ type: 'Box' }))).toContain('Usuń starą kartę (minuta)')
+    expect(bolds(await ui.find({ type: 'Box' }))).toContain('Zadanie 1: Usuń starą kartę (minuta)')
   })
 }
 

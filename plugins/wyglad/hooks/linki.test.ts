@@ -55,7 +55,7 @@ test('linki w pogrubionych początkach są rysowane przez Markdown, nie jako go�
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
   expect(md).toContain('**Dokument gotowy: [Strona główna](https://claude.ai/artifact/xyz)**')
-  expect(md).toContain('**Otwórz [dokument](https://claude.ai/artifact/abc) i kliknij Share (2 minuty)**')
+  expect(md).toContain('**Zadanie 1: Otwórz [dokument](https://claude.ai/artifact/abc) i kliknij Share (2 minuty)**')
   expect(md).toContain('**Pytanie 1: Zostawić [stary wpis](https://example.org/wpis)?**')
   expect(md).toContain('**Opublikowałem [politykę](https://example.org/polityka).**')
   expect(texts.some(t => t.includes('](http'))).toBe(false)

@@ -42,11 +42,11 @@ test('starsza ramka zadań mówi, że aktualne zadania są niżej, i przygasza s
   const older = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: FIRST, isFirstOfReply: true } as never })
   const oldTexts = texts((await older.find({ type: 'Box' })) as unknown as Node)
   expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(true)
-  expect(oldTexts).toContain('dim:**Wejdź na stronę i wpisz kod C57H2PBE7 (minuta)**')
+  expect(oldTexts).toContain('dim:**Zadanie 1: Wejdź na stronę i wpisz kod C57H2PBE7 (minuta)**')
   const latest = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: SECOND, isFirstOfReply: true } as never })
   const newTexts = texts((await latest.find({ type: 'Box' })) as unknown as Node)
   expect(newTexts.some(t => t.startsWith('Starsza odpowiedź'))).toBe(false)
-  expect(newTexts).toContain('**Wejdź na stronę i wpisz kod CZLZPGDFZ (minuta)**')
+  expect(newTexts).toContain('**Zadanie 1: Wejdź na stronę i wpisz kod CZLZPGDFZ (minuta)**')
 })
 
 test('odpowiedź, która jeszcze nie ma wpisu w sprawach, nie jest „starsza”', async ($, on) => {
@@ -147,7 +147,7 @@ test('odpowiedziane pytanie traci przyciski i pokazuje wybór; pytania starszej 
   await complete($, ASK('Druga sprawa.'), 'b')
   const older = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Pierwsza sprawa.'), isFirstOfReply: true } as never })
   const oldTexts = texts((await older.find({ type: 'Box' })) as unknown as Node)
-  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź: aktualne pytania'))).toBe(true)
+  expect(oldTexts.some(t => t.startsWith('Starsza odpowiedź: aktualne zadania i pytania'))).toBe(true)
   expect(await older.find({ type: 'Button', text: 'Wybierz 1A' })).toBeUndefined()
   await $.prompt.submit({ text: '2B' } as never)
   const latest = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: ASK('Druga sprawa.'), isFirstOfReply: true } as never })

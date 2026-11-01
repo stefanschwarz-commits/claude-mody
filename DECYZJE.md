@@ -193,3 +193,10 @@ Stefan (zrzut ramki Zrobione z przyciskiem pod spodem): „Czy »Pokaż szczegó
 ## wyglad 0.29.1: osobny przycisk na każdą ramkę podsumowania (2026-11-01)
 Stefan (zrzut): „Oba przyciski działają jak jeden… te dwie ramki powinny być oddzielne i każda powinna mieć własny, niezależny przycisk. Natomiast jeden przycisk zwija obie ramki, tak że szarej w ogóle nie widać.” Stan otwarcia jest teraz na ramkę (`openFrames`, id „klucz odpowiedzi-numer ramki”) zamiast jednego `isFull` na odpowiedź, a ramka „Dla informacji” przy zwinięciu zostaje widoczna (zwinięta), zamiast znikać.
 
+## wyglad 0.30.0: osobna ramka na każde zadanie i pytanie, bez tytułów sekcji, pytania piaskowe (2026-11-01)
+Stefan doprecyzował: „każde pytanie i każde zadanie było przedstawione jako oddzielna tabela – nie jako jedna tabela zagnieżdżona w drugiej… Nie musisz tworzyć katalogu typu »zadania dla ciebie«, »pytania do ciebie«… zadania i pytania miały identyczną estetykę, logikę i treść… nie ma dwukropka, nie ma przerwy. Treść zadań nie powinna być szara… białą czcionką.” Oraz o kolorze: „Morski kolor nadal mi się nie podoba. Szukaj dalej przyjemnych barw, które są słabo widoczne i nie utrudniają czytania.”
+- Każde zadanie: własna niebieska ramka „**Zadanie N: co zrobić (ile czasu)**” i pod spodem uzasadnienie zwykłą (nie szarą) czcionką; odhaczone: szary obrys, przekreślone. Każde pytanie: własna ramka tej samej formy „**Pytanie N: …**”. Wspólne tytuły „Zadania dla Ciebie” / „Pytania do Ciebie” nie są rysowane (w tekście odpowiedzi nagłówki zostają, bo po nich mod rozpoznaje sekcje). Linia „Starsza odpowiedź…” raz, nad ramkami.
+- Kolor pytań: piaskowy, stonowany (`sand`: ciemny motyw tło #262320, obrys #b8ad98; jasny tło #F6F3EC, obrys #8a7f6a), żeby ramka była ledwo widoczna i nie przeszkadzała w czytaniu. Do oceny Stefana; w regule nagłówek pytań 🟤.
+- Reguła: linków nie brać w cudzysłów (chip linku w aplikacji odstaje od cudzysłowu).
+Testy dopasowane do „Zadanie N: …” w pogrubionym początku.
+

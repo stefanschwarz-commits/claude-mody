@@ -7,9 +7,9 @@ import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 
 // Ink colours for the icons, light or dark as the theme is.
-type Ink = { green: string; red: string; orange: string; blue: string; teal: string; grey: string; text: string }
-const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', teal: '#3cc1b5', grey: '#8a8984', text: '#e8e6e3' }
-const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', teal: '#0f7f78', grey: '#6b6a66', text: '#222222' }
+type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
+const INK_DARK: Ink = { green: '#4caf50', red: '#e5484d', orange: '#e8a33d', blue: '#4a8fe0', sand: '#b8ad98', grey: '#8a8984', text: '#e8e6e3' }
+const INK_LIGHT: Ink = { green: '#2e7d32', red: '#c62828', orange: '#b26a00', blue: '#1e5fb3', sand: '#8a7f6a', grey: '#6b6a66', text: '#222222' }
 
 // An icon (Tabler outline) where the surface draws SVG; the old text glyph on the terminal.
 type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; height?: number }) => unknown; Text: (props: { dimColor?: boolean; bold?: boolean; color?: string; children?: unknown }) => unknown }
@@ -274,10 +274,10 @@ function pieces(body: string): Piece[] {
 
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; teal: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; sand: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', teal: '#E4F5F3' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', teal: '#122A2A' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', sand: '#F6F3EC' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', sand: '#262320' }
   } catch {
     return undefined
   }
@@ -760,42 +760,35 @@ export const register: Register = on => {
         ))}
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
-            {/* Every frame carries its own title inside, so it is clear what it holds. */}
+            {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne zadania i pytania są w najnowszej odpowiedzi niżej.</Text> : null}
             {todos.length > 0 ? (() => {
-              // The frame holds the tasks and their sentence; a fenced block (text to copy)
-              // is drawn below it as a plain code box, so the frame never swallows a paste.
+              // Each task is its own frame, in the same form as a question: "Zadanie 1: what", then why.
+              // A fenced block (text to copy) and a file row are drawn below the frames.
               const all = todos.flatMap(part => itemsOf(part.body))
               const isFence = (text: string) => text.startsWith('```')
               return (
-                <Box flexDirection="column" gap={1}>
-                  <Box key={`${key}-todo`} flexDirection="column" borderStyle="round" borderColor="suggestion" backgroundColor={tint?.blue} paddingX={1} gap={1}>
-                    <Box flexDirection="row" gap={1}>
-                      {icon(els, e.surface, 'list-check', ink.blue, '●')}
-                      <Text bold>Zadania dla Ciebie</Text>
-                    </Box>
-                    {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne zadania są w najnowszej odpowiedzi niżej.</Text> : null}
-                    {all.map((item, i) =>
-                      item.isItem ? (
-                        <Box key={`d${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                          <Text dimColor={isOlder} bold>{`Zadanie ${all.slice(0, i + 1).filter(one => one.isItem).length}`}</Text>
-                          {ticked.includes(`${key}:${i}`) ? (
-                            <Box flexDirection="row" gap={1}>
-                              <Text dimColor strikethrough>{plainOf(item.text)}</Text>
-                              {stale.includes(`${key}:${i}`) ? <Text dimColor>zastąpione</Text> : null}
-                            </Box>
-                          ) : (
-                            <Box flexDirection="column">
-                              {/* Markdown, not Text: a link in the task's head stays clickable. */}
-                              <Markdown text={`**${taskOf(item.text).what}**`} dimColor={isOlder} />
-                              {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor /> : null}
-                            </Box>
-                          )}
-                        </Box>
-                      ) : isFence(item.text) || fileOf(item.text) ? null : (
-                        <Markdown key={`d${i}`} text={item.text} />
-                      ),
-                    )}
-                  </Box>
+                <Box key={`${key}-todo`} flexDirection="column" gap={1}>
+                  {all.map((item, i) => {
+                    if (!item.isItem) return isFence(item.text) || fileOf(item.text) ? null : <Markdown key={`d${i}`} text={item.text} />
+                    const n = all.slice(0, i + 1).filter(one => one.isItem).length
+                    const isTicked = ticked.includes(`${key}:${i}`)
+                    return (
+                      <Box key={`${key}-todo-${n}`} flexDirection="column" borderStyle="round" borderColor={isOlder || isTicked ? ink.grey : 'suggestion'} backgroundColor={isTicked ? undefined : tint?.blue} paddingX={1} gap={1}>
+                        {isTicked ? (
+                          <Box flexDirection="row" gap={1}>
+                            <Text dimColor strikethrough>{`Zadanie ${n}: ${plainOf(item.text)}`}</Text>
+                            {stale.includes(`${key}:${i}`) ? <Text dimColor>zastąpione</Text> : null}
+                          </Box>
+                        ) : (
+                          <Box flexDirection="column" gap={1}>
+                            {/* Markdown, not Text: a link in the task's head stays clickable. The why is plain, not grey: it is the task. */}
+                            <Markdown text={`**Zadanie ${n}: ${taskOf(item.text).what}**`} dimColor={isOlder} />
+                            {taskOf(item.text).why ? <Markdown text={taskOf(item.text).why} dimColor={isOlder} /> : null}
+                          </Box>
+                        )}
+                      </Box>
+                    )
+                  })}
                   {all.filter(item => !item.isItem && isFence(item.text)).map((item, i) => (
                     <Markdown key={`fence${i}`} text={item.text} />
                   ))}
@@ -815,17 +808,8 @@ export const register: Register = on => {
                 </Box>
               )
             })() : null}
-            {/* Questions mirror the task frame: one yellow frame titled "Pytania do Ciebie",
-                each question a block inside it, as each task is a row in the blue frame. */}
-            {questions.length > 0 ? (
-            <Box key={`${key}-questions`} flexDirection="column" borderStyle="round" borderColor={ink.teal} backgroundColor={tint?.teal} paddingX={1} gap={1}>
-              <Box flexDirection="row" gap={1}>
-                {icon(els, e.surface, 'message-question', ink.teal, '●')}
-                <Text bold>Pytania do Ciebie</Text>
-              </Box>
-              {isOlder ? <Text dimColor italic>Starsza odpowiedź: aktualne pytania są w najnowszej odpowiedzi niżej.</Text> : null}
+            {/* Each question is its own frame, in the same form as a task: "Pytanie 7: title", why, options, advice, buttons. */}
             {questions.map((q, i) => {
-              // A decision block: the question, its options, the advice and the buttons.
               const [title, ...why] = q.text.split('\n\n')
               // The number runs on through the conversation once the answer is recorded.
               const g = (stamp?.qBase ?? 0) + Number(q.number)
@@ -841,9 +825,9 @@ export const register: Register = on => {
                 )
               }
               return (
-                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={isOlder ? ink.grey : ink.teal} paddingX={1} gap={1}>
+                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={isOlder ? ink.grey : ink.sand} backgroundColor={isOlder ? undefined : tint?.sand} paddingX={1} gap={1}>
                   <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor={isOlder} />
-                  {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor /> : null}
+                  {why.length > 0 ? <Markdown text={why.join('\n\n')} dimColor={isOlder} /> : null}
                   {/* One option per line, named as its button; the star marks the advice. */}
                   {optionsOf(q).map(option => (
                     <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
@@ -866,8 +850,6 @@ export const register: Register = on => {
                 </Box>
               )
             })}
-            </Box>
-            ) : null}
           </Box>
         ) : null}
         {folded.length > 0 ? (
