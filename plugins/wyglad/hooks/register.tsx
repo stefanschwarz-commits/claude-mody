@@ -871,8 +871,11 @@ export const register: Register = on => {
                             {taskOf(item.text).why ? marked(els, taskOf(item.text).why, tint?.mark, false) : null}
                             {(item.steps ?? []).map((step, k) => (
                               <Box key={`k${k}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                                <Text bold>{`Krok ${n}${String.fromCharCode(97 + k)}:`}</Text>
-                                {marked(els, step, tint?.mark, false)}
+                                {/* The label never wraps: it keeps its width, the step text takes the rest. */}
+                                <Box flexShrink={0}>
+                                  <Text bold>{`Krok ${n}${String.fromCharCode(97 + k)}:`}</Text>
+                                </Box>
+                                <Box flexGrow={1} flexShrink={1}>{marked(els, step, tint?.mark, false)}</Box>
                               </Box>
                             ))}
                           </Box>

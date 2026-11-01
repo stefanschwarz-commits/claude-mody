@@ -240,3 +240,6 @@ Zrzut Stefana (sesja poczty): akapit z dwoma linkami miał pogrubienie bez podkr
 ## wyglad 0.34.0: ramka wyjaśnienia nazywa się „Co się zmieniło” (2026-11-01)
 Stefan wybrał 5B: ramka z nagłówkiem i wyjaśnieniem ma nad nagłówkiem nazwę „Co się zmieniło” z ikoną, w tej samej formie co pozostałe ramki (nazwa z ikoną w środku ramki). Wydane razem z 0.33.4 (linki w zdaniu).
 
+## wyglad 0.34.1: etykieta kroku w jednej linii (2026-11-01)
+Zrzut Stefana: przy długim tekście kroku etykieta „Krok 1b:” łamała się na „Krok” / „1b:”. Etykieta nie kurczy się już (flexShrink 0), a tekst kroku zajmuje resztę szerokości.
+
