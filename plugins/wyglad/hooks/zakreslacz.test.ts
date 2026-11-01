@@ -62,7 +62,7 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   const mark = all.find(s => s.text === 'Pierwszy akapit mówi, że ramki rysują się po restarcie, a reszta to szczegóły.')
   expect(mark).toBeDefined()
-  expect(mark?.bg).toBe('#4a4420')
+  expect(mark?.bg).toBe('#3a3720')
   expect(await ui.find({ type: 'Markdown', props: { text: /dokumentu/ } })).toBeDefined()
   const only = await ui.find({ type: 'Button', text: 'Tylko wyróżnione' })
   expect(only).toBeDefined()
@@ -101,7 +101,7 @@ test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', 
   ].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  const missing = ['Bez tego stary wygląd zostaje, bo mody wczytują się przy starcie.', 'Dlaczego to ważne: od tego zależy telefon, nie komputer.', 'Pierwszy – plus: krótko; minus: nic.', 'Dla Ciebie nic do zrobienia poza restartem.'].filter(text => all.find(s => s.text === text)?.bg !== '#4a4420')
+  const missing = ['Bez tego stary wygląd zostaje, bo mody wczytują się przy starcie.', 'Dlaczego to ważne: od tego zależy telefon, nie komputer.', 'Pierwszy – plus: krótko; minus: nic.', 'Dla Ciebie nic do zrobienia poza restartem.'].filter(text => all.find(s => s.text === text)?.bg !== '#3a3720')
   expect(missing).toEqual([])
 })
 

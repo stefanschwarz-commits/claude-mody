@@ -306,7 +306,7 @@ function pieces(body: string): Piece[] {
 async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; sand: string; mark: string } | undefined> {
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
-    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', sand: '#F6F3EC', mark: '#FFF0A6' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', sand: '#262320', mark: '#4a4420' }
+    return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', sand: '#F6F3EC', mark: '#FFF0A6' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', sand: '#262320', mark: '#3a3720' }
   } catch {
     return undefined
   }
@@ -720,9 +720,11 @@ export const register: Register = on => {
               <Text dimColor>{barText}</Text>
             </Box>
           )}
+          {/* The headline and the explanation are the answer's main content, so they stand in a
+              frame of their own, the strongest on the page; the lists below are only what to do. */}
+          <Box flexDirection="column" borderStyle="round" borderColor={ink.text} paddingX={1} gap={1}>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
           <Markdown text={`**${reply.headline}**`} />
-        </Box>
         {(() => {
           // A long explanation shows its first lines until opened.
           const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')
@@ -780,6 +782,8 @@ export const register: Register = on => {
             </Box>
           )
         })()}
+          </Box>
+        </Box>
         {/* A mail draft reads like a sheet of paper: who and what on top, then only the text to send. */}
         {mailsOf(plain.map(part => part.body).join('\n\n')).mails.map((mail, i) => (
           <Box key={`${key}-mail${i}`} flexDirection="column" borderStyle="round" borderColor={PAPER.edge} backgroundColor={PAPER.sheet} paddingX={1} gap={1}>
