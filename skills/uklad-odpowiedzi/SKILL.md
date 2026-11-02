@@ -62,7 +62,7 @@ Pozdrawiam
 
 Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dopisujesz to, co tam dorysowuje nakładka:
 
-1. Zacznij od osobnej, pogrubionej linii „**━━━━ 📍 data · godzina ━━━━**” (decyzja Stefana 2026-11-01: czyta odpowiedź od tej linii w dół, oddziela ona odpowiedź od tekstu roboczego; w Claude Code z nakładką tej linii nie ma, bo pasek „Odpowiedź N · data, godzina” rysuje mod), a dopiero pod nią linia `▶ ` z jednym zdaniem: co się stało.
+1. Zacznij od linii `▶ ` z jednym zdaniem: co się stało. Bez linii z pinezką 📍 nad nią (Stefan 2026-11-02: „nie jestem przekonany, że ta pinezka jest fajna”); początkiem odpowiedzi jest linia ▶.
 2. Potem sekcja **Co się zmieniło**: wyjaśnienie w punktach „- ”, każdy punkt o jednej rzeczy, zaczęty od pogrubionego
    zdania (co się zmieniło), a po nim jedno lub dwa zdania, co to znaczy dla Stefana, pełnymi zdaniami, bez skrótów
    i nazw plików. To główna treść odpowiedzi. Pogrubienie całego zdania = najważniejsze zdanie akapitu; pogrubienie
