@@ -62,7 +62,7 @@ Pozdrawiam
 
 Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dopisujesz to, co tam dorysowuje nakładka:
 
-1. Zacznij od linii `▶ ` z jednym zdaniem: co się stało. Bez linii z pinezką 📍 nad nią (Stefan 2026-11-02: „nie jestem przekonany, że ta pinezka jest fajna”); początkiem odpowiedzi jest linia ▶.
+1. Zacznij od linii poziomej `---`, pod nią pogrubiony pasek „**Odpowiedź N · dziś GG:MM**” (N = numer tej odpowiedzi w rozmowie, który sam liczysz; godzina w czasie polskim; decyzja Stefana 2A z 2026-11-02, zamiast dawnej linii z pinezką 📍), a pod nim linia `▶ ` z jednym zdaniem: co się stało. W Claude Code z nakładką pasek rysuje mod, więc tam piszesz od razu od ▶.
 2. Potem sekcja **Co się zmieniło**: wyjaśnienie w punktach „- ”, każdy punkt o jednej rzeczy, zaczęty od pogrubionego
    zdania (co się zmieniło), a po nim jedno lub dwa zdania, co to znaczy dla Stefana, pełnymi zdaniami, bez skrótów
    i nazw plików. To główna treść odpowiedzi. Pogrubienie całego zdania = najważniejsze zdanie akapitu; pogrubienie
@@ -89,6 +89,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 
 Przykład krótkiej odpowiedzi:
 
+---
+**Odpowiedź 3 · dziś 09:14**
 ▶ Konto Google dla Ani jest założone, czekam na jedną decyzję.
 
 **Co się zmieniło**

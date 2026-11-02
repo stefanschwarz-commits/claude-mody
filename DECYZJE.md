@@ -273,3 +273,6 @@ Wgrany wbudowaną przeglądarką po przełączeniu organizacji (menu „Stefan �
 ## Linia 📍 wycofana; instrukcje w wersji 13 (2026-11-02)
 Sesja „Instrukcje dla Claude” przekazała decyzję Stefana (1A u niej): jedno pole instrukcji z pełnymi zasadami, bez odsyłania do umiejętności; wersja 13 bez linii z pinezką 📍 (Stefan: „nie jestem przekonany, że ta pinezka jest fajna”), początkiem odpowiedzi w czacie jest linia ▶. Część B skilla `uklad-odpowiedzi` i plik wzorcowy w folderze instrukcji poprawione (linia 📍 usunięta). Ponowne wgranie skilla na trzy konta czeka na „tak” Stefana w sesji Mody, bo to zmiana w jego koncie, a decyzja padła w innej sesji. W Claude Code bez zmian.
 
+## Początek odpowiedzi w czacie i Cowork: linia pozioma i pasek „Odpowiedź N · dziś GG:MM” (2026-11-02, decyzja Stefana 2A)
+Stefan: „Znajdź coś fajniejszego od tej pinezki.” Z trzech wariantów (pasek jak w modzie / cytat / duży nagłówek) wybrał A: linia pozioma `---`, pod nią pogrubiony pasek „Odpowiedź N · dziś GG:MM” (numer liczony przez Claude w rozmowie), pod nim linia ▶. To ten sam znak co pasek rysowany przez mod w Claude Code. Część B skilla i plik wzorcowy poprawione; skill wgrany ponownie na trzy konta; sesja „Instrukcje dla Claude” powiadomiona (do wersji 14 instrukcji).
+
