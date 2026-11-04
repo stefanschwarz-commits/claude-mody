@@ -28,15 +28,23 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
   return <Text>{glyph}</Text>
 }
 
-// One run of a sentence: a link is a Link; a marked word and a marked sentence both get
-// the marker (background), like a highlighter on paper, no underline (Stefan's 3A of
-// 2026-11-04: the underlined sentences read as a wall of lines); anything else is its text.
-// In the short view ("Tylko wyróżnione") a sentence stands alone, so it is plain there.
+// One run of a sentence: a link is a Link; a marked word or sentence is bold in the full
+// text color, while the rest of a block that holds a marked sentence is drawn dim (Stefan's
+// 4A of 2026-11-04: a background looked dirty on the dark theme; the white-on-grey of the
+// summary frames reads well on both themes). In the short view a sentence stands alone,
+// so it is plain there.
 function emphasis(els: unknown, run: { text: string; isMark?: boolean; kind?: 'word' | 'sentence'; href?: string }, mark: string | undefined, key: string, isShort = false): unknown {
   const { Text, Link } = els as Drawers & { Text: (props: { key?: string; backgroundColor?: string; bold?: boolean; underline?: boolean; dimColor?: boolean; children?: unknown }) => unknown; Link?: (props: { key?: string; href: string; label?: string }) => unknown }
+  void mark
   if (run.href && Link) return <Link key={key} href={run.href} label={run.text} />
   if (!run.isMark || (isShort && run.kind === 'sentence')) return run.text
-  return <Text key={key} backgroundColor={mark} dimColor={false}>{run.text}</Text>
+  return <Text key={key} bold dimColor={false}>{run.text}</Text>
+}
+
+// Whether a block's rest is drawn dim: only beside a marked sentence, so a point with a
+// single marked word keeps its full color.
+function hasSentence(runs: { isMark: boolean; kind?: 'word' | 'sentence' }[]): boolean {
+  return runs.some(run => run.isMark && run.kind === 'sentence')
 }
 
 // A text with its bold runs drawn as a marker, wherever it stands: a task's why, a question's
@@ -800,7 +808,7 @@ export const register: Register = on => {
                       ) : (
                         <Box flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet && (block.level ?? 1) > 1 ? 2 : 0}>
                           {block.isBullet ? <Text>{(block.level ?? 1) > 1 ? '◦' : '•'}</Text> : null}
-                          <Text>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
+                          <Text dimColor={hasSentence(block.runs)}>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
                         </Box>
                       )}
                       {/* A file named in the block: a row with a button that shows it in its folder,

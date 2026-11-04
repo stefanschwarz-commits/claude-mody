@@ -31,10 +31,10 @@ function setup(on: On) {
   on('config.list', () => ({ value: [{ key: 'theme', value: 'dark' }] }) as never)
 }
 
-function spans(root: Node): { text: string; bg?: unknown }[] {
-  const out: { text: string; bg?: unknown }[] = []
+function spans(root: Node): { text: string; bg?: unknown; bold?: boolean; dim?: boolean }[] {
+  const out: { text: string; bg?: unknown; bold?: boolean; dim?: boolean }[] = []
   const walk = (n: Node) => {
-    if (n.type === 'Text') out.push({ text: (n.children ?? []).filter(c => typeof c === 'string').join(''), bg: n.props?.backgroundColor })
+    if (n.type === 'Text') out.push({ text: (n.children ?? []).filter(c => typeof c === 'string').join(''), bg: n.props?.backgroundColor, bold: n.props?.bold === true, dim: n.props?.dimColor === true })
     n.children?.forEach(c => typeof c === 'object' && walk(c))
   }
   walk(root)
@@ -74,13 +74,18 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   setup(on)
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  // "ramki rysują się po restarcie" is four words: a sentence, highlighted like a word (3A, 2026-11-04).
+  // "ramki rysują się po restarcie" is four words: a sentence, bold in full color, no background
+  // (Stefan's 4A of 2026-11-04); the rest of its block is dim.
   const mark = all.find(s => s.text === 'ramki rysują się po restarcie')
   expect(mark).toBeDefined()
-  expect(mark?.bg).toBe('#3a3720')
+  expect(mark?.bg).toBeUndefined()
+  expect(mark?.bold).toBe(true)
+  expect(all.some(s => s.text.startsWith('Pierwszy akapit mówi, że') && s.dim)).toBe(true)
   // The paragraph with a link keeps its emphasis: the link is a Link inside the sentence.
   expect(await ui.find({ type: 'Link' })).toBeDefined()
-  expect(all.find(s => s.text === 'pogrubienie')?.bg).toBe('#3a3720')
+  expect(all.find(s => s.text === 'pogrubienie')?.bold).toBe(true)
+  // A block with only a marked word keeps its full color.
+  expect(all.some(s => s.text.startsWith('Drugi akapit') && s.dim)).toBe(false)
   const only = await ui.find({ type: 'Button', text: 'Tylko wyróżnione' })
   expect(only).toBeDefined()
   await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
@@ -102,8 +107,8 @@ test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem'
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // Every point gets its dot, the one without a bold too (it used to go to Markdown dotless).
   expect(all.filter(s => s.text === '•').length).toBe(3)
-  expect(all.find(s => s.text === 'jednym słowem')?.bg).toBe('#3a3720')
-  expect(all.find(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.')?.bg).toBe('#3a3720')
+  expect(all.find(s => s.text === 'jednym słowem')?.bold).toBe(true)
+  expect(all.find(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.')?.bold).toBe(true)
 })
 
 test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', async ($, on) => {
@@ -135,8 +140,7 @@ test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', 
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // Up to three bold words: the marker; "stary wygląd zostaje", "od tego zależy telefon" (four) is a sentence.
-  const missing = ['stary wygląd zostaje', 'krótko', 'nic do zrobienia'].filter(text => all.find(s => s.text === text)?.bg !== '#3a3720')
-  expect(all.find(s => s.text === 'od tego zależy telefon')?.bg).toBe('#3a3720')
+  const missing = ['stary wygląd zostaje', 'krótko', 'nic do zrobienia', 'od tego zależy telefon'].filter(text => all.find(s => s.text === text)?.bold !== true)
   expect(missing).toEqual([])
 })
 
