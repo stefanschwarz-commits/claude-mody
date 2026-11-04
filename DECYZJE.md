@@ -288,3 +288,6 @@ Po wydaniu 0.37.0 Stefan: „Jest gorzej, a nie lepiej. To zakreślanie w ogóle
 
 ## Skill „uklad-odpowiedzi” wgrany ponownie na trzy konta (2026-11-04, decyzje Stefana 7A i 8A)
 7A: wyróżnienie z pierwszej próbki (zdanie białe, reszta szara) zostaje. 8A: skill z zasadą tabeli i nowym opisem wyróżnień wgrany wbudowaną przeglądarką: Personal v4, ELMI v4, ATERIMA SERVICES v3. Zawartość SKILL.md podana stronie przez DataTransfer; w jednej karcie zapis base64 w sessionStorage przetrwał przełączenia kont, więc wystarczyło podać go raz.
+
+## wyglad 0.39.0: tekst wyjaśnienia znów na pełną szerokość (2026-11-04, decyzja Stefana 1A)
+Stefan w Centrum Dowodzenia: „Poszerz ramkę z powrotem do pełnej szerokości, bo to jest pierwsza rzecz, którą zmienił.” Potwierdził w sesji Mody (1A). Ograniczenie do 84 komórek (0.37.0) zdjęte; podpunkty, wyróżnienie bez tła i zasada tabeli zostają. Reguła i skill poprawione (skill na kontach ma jeszcze zdanie o 84 komórkach; różnica nie zmienia sposobu pisania, do wgrania przy następnej zmianie).

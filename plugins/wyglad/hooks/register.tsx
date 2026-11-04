@@ -93,9 +93,6 @@ const finalText = atom({ plugin: 'wyglad', key: 'finalText' } as const, null as 
 const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
-// The widest the explanation's text goes, in cells: research puts the readable measure at
-// 50–75 characters, WCAG 1.4.8 at most 80; the frame's padding and the bullet take the rest.
-const MEASURE = 84
 const SHORT = 12
 // …and folds at all only above this many lines.
 const LONG = 40
@@ -768,11 +765,9 @@ export const register: Register = on => {
             {icon(els, e.surface, 'player-play', ink.text, '▶')}
             <Text bold>Co się zmieniło</Text>
           </Box>
-          {/* The text keeps a readable measure (Stefan's 2A of 2026-11-04): at most MEASURE
-              cells wide, however wide the window; a narrower window shrinks it (a row parent
-              lets the width give). The frame itself stays as wide as the others. */}
-          <Box flexDirection="row">
-          <Box flexDirection="column" width={MEASURE} flexShrink={1} gap={1}>
+          {/* The text takes the frame's full width (Stefan's 1A of 2026-11-04, after one day
+              with a narrower measure: "poszerz ramkę z powrotem do pełnej szerokości"). */}
+          <Box flexDirection="column" gap={1}>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
           <Markdown text={`**${fileLinksOf(reply.headline)}**`} />
         {(() => {
@@ -847,7 +842,6 @@ export const register: Register = on => {
             </Box>
           )
         })()}
-          </Box>
           </Box>
           </Box>
         </Box>

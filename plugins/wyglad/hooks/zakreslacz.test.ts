@@ -204,16 +204,3 @@ test('podpunkty pod punktem wyjaśnienia są osobnymi, wciętymi punktami, nie j
   expect(all.filter(s => s.text === '◦').length).toBe(1)
   expect(all.some(s => s.text === 'Katarzyna wysłała trzy listy.')).toBe(true)
 })
-
-test('wyjaśnienie ma ograniczoną szerokość tekstu, a ramka zostaje pełna', async ($, on) => {
-  setup(on)
-  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
-  type B = { type: string; props?: { width?: number; flexShrink?: number }; children?: (B | string)[] }
-  const widths: number[] = []
-  const walk = (n: B) => {
-    if (n.type === 'Box' && typeof n.props?.width === 'number') widths.push(n.props.width)
-    n.children?.forEach(c => typeof c === 'object' && walk(c))
-  }
-  walk((await ui.find({ type: 'Box' })) as unknown as B)
-  expect(widths).toContain(84)
-})
