@@ -789,18 +789,18 @@ export const register: Register = on => {
                   ))
                 : blocks.map((block, i) => (
                     <Box key={`b${i}`} flexDirection="column">
-                      {block.kind === 'md' || !block.runs.some(run => run.isMark) ? (
+                      {block.kind === 'md' || (!block.runs.some(run => run.isMark) && !block.isBullet) ? (
                         <Markdown text={block.kind === 'md' ? block.text : fileLinksOf(block.runs.map(run => (run.href ? `[${run.text}](${run.href})` : run.path ? `[${run.text}](${run.path})` : run.text)).join(''))} />
                       ) : (
-                        <Box flexDirection="row" alignItems="flex-start" gap={1}>
-                          {block.isBullet ? <Text>•</Text> : null}
+                        <Box flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet && (block.level ?? 1) > 1 ? 2 : 0}>
+                          {block.isBullet ? <Text>{(block.level ?? 1) > 1 ? '◦' : '•'}</Text> : null}
                           <Text>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
                         </Box>
                       )}
                       {/* A file named in the block: a row with a button that shows it in its folder,
                           since the desktop opens no file link inline; on the phone a note. */}
                       {filesOf(block).map((file, k) => (
-                        <Box key={`f${i}-${k}`} flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet ? 2 : 0}>
+                        <Box key={`f${i}-${k}`} flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet ? ((block.level ?? 1) > 1 ? 4 : 2) : 0}>
                           {icon(els, e.surface, 'file', ink.grey, '·')}
                           <Text dimColor>{file.label}</Text>
                           {e.surface === 'mobile' ? (

@@ -99,7 +99,8 @@ test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem'
   const reply = ['▶ **Punkty.**', '', '- **Pierwsza rzecz jest zrobiona i działa.** Szczegół pierwszy.', '- Druga rzecz z **jednym słowem** w środku.', '- Trzecia bez wyróżnienia.', '', '---', '', '🟢 **Zrobione**', '- **Gotowe.** Tak.'].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  expect(all.filter(s => s.text === '•').length).toBe(2)
+  // Every point gets its dot, the one without a bold too (it used to go to Markdown dotless).
+  expect(all.filter(s => s.text === '•').length).toBe(3)
   expect(all.find(s => s.text === 'jednym słowem')?.bg).toBe('#3a3720')
   expect(all.some(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.' && s.bg === undefined)).toBe(true)
 })
@@ -180,3 +181,21 @@ test('ścieżka ze spacjami („OneDrive - ELMI”) też jest plikiem w zdaniu',
   expect(blocks[0].kind === 'para' ? blocks[0].runs.map(r => r.text).join('') : '').toBe('Tekst czeka jako plan.md i jest gotowy.')
 })
 
+
+test('podpunkty pod punktem wyjaśnienia są osobnymi, wciętymi punktami, nie jednym akapitem', async ($, on) => {
+  setup(on)
+  const blocks = blocksOf(['- **Reszta spraw leży w poczcie.**', '  - Katarzyna wysłała trzy listy.', '  - Pyta, czy ma czytać każde pismo.', '- Drugi punkt bez pogrubienia.'].join('\n'))
+  expect(blocks.map(b => (b.kind === 'para' ? `${b.level}:${b.runs.map(r => r.text).join('')}` : 'md'))).toEqual([
+    '1:Reszta spraw leży w poczcie.',
+    '2:Katarzyna wysłała trzy listy.',
+    '2:Pyta, czy ma czytać każde pismo.',
+    '1:Drugi punkt bez pogrubienia.',
+  ])
+  const reply = ['▶ **Podpunkty.**', '', '- **Reszta spraw leży w poczcie.**', '  - Katarzyna wysłała trzy listy.', '- Drugi punkt bez pogrubienia.', '', '---', '', '🟢 **Zrobione**', '- **Gotowe.** Tak.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
+  // A point gets its dot, a sub-point a hollow one; a point without a bold keeps its dot too.
+  expect(all.filter(s => s.text === '•').length).toBe(2)
+  expect(all.filter(s => s.text === '◦').length).toBe(1)
+  expect(all.some(s => s.text === 'Katarzyna wysłała trzy listy.')).toBe(true)
+})

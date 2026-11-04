@@ -8,7 +8,8 @@
 // A run with `path` names a file on this computer: drawn as its name, with a row below the
 // block that shows the file in its folder (the desktop opens only https: links inline).
 export type Run = { text: string; isMark: boolean; kind?: 'word' | 'sentence'; href?: string; path?: string }
-export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[]; isBullet?: boolean }
+// `level` is the item's depth in a bullet list: 1 for a point, 2 for a sub-point beneath it.
+export type Block = { kind: 'md'; text: string } | { kind: 'para'; runs: Run[]; isBullet?: boolean; level?: number }
 
 const NOT_PROSE = /^\s*(?:[-*+]\s|\d+[.)]\s|#|>|\||```|~~~)/
 
@@ -143,19 +144,21 @@ export function firstSentenceOf(text: string): string {
   return end ? flat.slice(0, end.index + 1) : flat
 }
 
-// A paragraph that is a flat bullet list of prose items ("- …" lines, continuation lines
-// indented): its items; undefined when it is anything else.
-function bulletsOf(paragraph: string): string[] | undefined {
+// A paragraph that is a bullet list of prose items ("- …" lines, continuation lines
+// indented, sub-points as indented "- …" lines): its items with their depth; undefined
+// when it is anything else. A sub-point is its own item, so it is never folded into
+// its parent's sentence (Stefan's report of 2026-11-04: sub-points ran together).
+function bulletsOf(paragraph: string): { text: string; level: number }[] | undefined {
   const lines = paragraph.split('\n')
   if (!/^[-*•]\s+/.test(lines[0])) return undefined
-  const items: string[] = []
+  const items: { text: string; level: number }[] = []
   for (const line of lines) {
-    const item = /^[-*•]\s+(.*)$/.exec(line)
-    if (item) items.push(item[1])
-    else if (/^\s+\S/.test(line) && items.length > 0) items[items.length - 1] += ` ${line.trim()}`
+    const item = /^(\s*)[-*•]\s+(.*)$/.exec(line)
+    if (item) items.push({ text: item[2], level: item[1].length === 0 ? 1 : 2 })
+    else if (/^\s+\S/.test(line) && items.length > 0) items[items.length - 1].text += ` ${line.trim()}`
     else return undefined
   }
-  if (items.some(item => /`/.test(item) || NOT_PROSE.test(item))) return undefined
+  if (items.some(item => /`/.test(item.text) || NOT_PROSE.test(item.text))) return undefined
   return items
 }
 
@@ -181,7 +184,7 @@ export function blocksOf(text: string): Block[] {
     const bullets = bulletsOf(paragraph)
     if (bullets) {
       // A plain bullet list: each item a prose block of its own, with its emphasis drawn.
-      for (const item of bullets) out.push({ kind: 'para', runs: runsOf(item), isBullet: true })
+      for (const item of bullets) out.push({ kind: 'para', runs: runsOf(item.text), isBullet: true, level: item.level })
     } else if (isProse(paragraph)) {
       out.push({ kind: 'para', runs: runsOf(paragraph) })
     } else {
