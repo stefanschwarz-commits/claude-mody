@@ -28,17 +28,15 @@ function icon(els: unknown, surface: string, name: string, color: string, glyph:
   return <Text>{glyph}</Text>
 }
 
-// One run of a sentence: a link is a Link; a marked word gets the marker (background);
-// a marked sentence is bold and underlined; anything else is its text.
-function emphasis(els: unknown, run: { text: string; isMark?: boolean; kind?: 'word' | 'sentence'; href?: string }, mark: string | undefined, key: string): unknown {
+// One run of a sentence: a link is a Link; a marked word and a marked sentence both get
+// the marker (background), like a highlighter on paper, no underline (Stefan's 3A of
+// 2026-11-04: the underlined sentences read as a wall of lines); anything else is its text.
+// In the short view ("Tylko wyróżnione") a sentence stands alone, so it is plain there.
+function emphasis(els: unknown, run: { text: string; isMark?: boolean; kind?: 'word' | 'sentence'; href?: string }, mark: string | undefined, key: string, isShort = false): unknown {
   const { Text, Link } = els as Drawers & { Text: (props: { key?: string; backgroundColor?: string; bold?: boolean; underline?: boolean; dimColor?: boolean; children?: unknown }) => unknown; Link?: (props: { key?: string; href: string; label?: string }) => unknown }
   if (run.href && Link) return <Link key={key} href={run.href} label={run.text} />
-  if (!run.isMark) return run.text
-  return run.kind === 'word' ? (
-    <Text key={key} backgroundColor={mark} dimColor={false}>{run.text}</Text>
-  ) : (
-    <Text key={key} bold underline dimColor={false}>{run.text}</Text>
-  )
+  if (!run.isMark || (isShort && run.kind === 'sentence')) return run.text
+  return <Text key={key} backgroundColor={mark} dimColor={false}>{run.text}</Text>
 }
 
 // A text with its bold runs drawn as a marker, wherever it stands: a task's why, a question's
@@ -87,6 +85,9 @@ const finalText = atom({ plugin: 'wyglad', key: 'finalText' } as const, null as 
 const PANE = 'sprawy'
 
 // A long explanation shows this many lines until opened.
+// The widest the explanation's text goes, in cells: research puts the readable measure at
+// 50–75 characters, WCAG 1.4.8 at most 80; the frame's padding and the bullet take the rest.
+const MEASURE = 84
 const SHORT = 12
 // …and folds at all only above this many lines.
 const LONG = 40
@@ -759,6 +760,11 @@ export const register: Register = on => {
             {icon(els, e.surface, 'player-play', ink.text, '▶')}
             <Text bold>Co się zmieniło</Text>
           </Box>
+          {/* The text keeps a readable measure (Stefan's 2A of 2026-11-04): at most MEASURE
+              cells wide, however wide the window; a narrower window shrinks it (a row parent
+              lets the width give). The frame itself stays as wide as the others. */}
+          <Box flexDirection="row">
+          <Box flexDirection="column" width={MEASURE} flexShrink={1} gap={1}>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
           <Markdown text={`**${fileLinksOf(reply.headline)}**`} />
         {(() => {
@@ -784,7 +790,7 @@ export const register: Register = on => {
                     // One marked sentence per line, as plain text with its own emphasis inside.
                     <Box key={`m${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
                       <Text dimColor>·</Text>
-                      <Text>{sentence.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
+                      <Text>{sentence.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`, true))}</Text>
                     </Box>
                   ))
                 : blocks.map((block, i) => (
@@ -833,6 +839,8 @@ export const register: Register = on => {
             </Box>
           )
         })()}
+          </Box>
+          </Box>
           </Box>
         </Box>
         {/* A mail draft reads like a sheet of paper: who and what on top, then only the text to send. */}

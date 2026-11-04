@@ -60,7 +60,7 @@ test('blocksOf: proza z pogrubieniem to akapit z zakreśleniem; link, lista i ta
   ])
   // A paragraph without a bold gives the short view its first sentence.
   expect(marksOf(blocks)).toEqual(['Zdanie z ważną częścią.', 'Link x i bold.', 'lista a', 'Bez pogrubienia.'])
-  // A long bold is a sentence: bold and underlined, as written.
+  // A long bold is a sentence: highlighted whole, as written.
   const two = blocksOf('Pierwsze zdanie jest zwykłe. **Drugie ma więcej niż trzy słowa i jest ważne.** Trzecie jest zwykłe.')
   expect(two[0].kind === 'para' ? two[0].runs : []).toEqual([
     { text: 'Pierwsze zdanie jest zwykłe. ', isMark: false },
@@ -74,10 +74,10 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   setup(on)
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  // "ramki rysują się po restarcie" is four words: a sentence, bold and underlined, no marker.
+  // "ramki rysują się po restarcie" is four words: a sentence, highlighted like a word (3A, 2026-11-04).
   const mark = all.find(s => s.text === 'ramki rysują się po restarcie')
   expect(mark).toBeDefined()
-  expect(mark?.bg).toBeUndefined()
+  expect(mark?.bg).toBe('#3a3720')
   // The paragraph with a link keeps its emphasis: the link is a Link inside the sentence.
   expect(await ui.find({ type: 'Link' })).toBeDefined()
   expect(all.find(s => s.text === 'pogrubienie')?.bg).toBe('#3a3720')
@@ -87,7 +87,8 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   const after = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // The short view: the sentence as plain text, its emphasis inside, no background on the sentence.
   expect(after.some(s => s.text.startsWith('Pierwszy akapit mówi, że') && s.bg === undefined)).toBe(true)
-  expect(after.some(s => s.text === 'ramki rysują się po restarcie' && s.bg === undefined)).toBe(true)
+  // The sentence is plain text in the short view: part of its line, no span of its own.
+  expect(after.some(s => s.text.includes('ramki rysują się po restarcie') && s.bg === undefined)).toBe(true)
   expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
   // The link paragraph marks a word, so its sentence is in the short view too.
   expect(after.some(s => s.text.startsWith('Drugi akapit'))).toBe(true)
@@ -102,7 +103,7 @@ test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem'
   // Every point gets its dot, the one without a bold too (it used to go to Markdown dotless).
   expect(all.filter(s => s.text === '•').length).toBe(3)
   expect(all.find(s => s.text === 'jednym słowem')?.bg).toBe('#3a3720')
-  expect(all.some(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.' && s.bg === undefined)).toBe(true)
+  expect(all.find(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.')?.bg).toBe('#3a3720')
 })
 
 test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', async ($, on) => {
@@ -135,7 +136,7 @@ test('zakreślenie działa też w zadaniu, w pytaniu i w punkcie podsumowania', 
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // Up to three bold words: the marker; "stary wygląd zostaje", "od tego zależy telefon" (four) is a sentence.
   const missing = ['stary wygląd zostaje', 'krótko', 'nic do zrobienia'].filter(text => all.find(s => s.text === text)?.bg !== '#3a3720')
-  expect(all.find(s => s.text === 'od tego zależy telefon')?.bg).toBeUndefined()
+  expect(all.find(s => s.text === 'od tego zależy telefon')?.bg).toBe('#3a3720')
   expect(missing).toEqual([])
 })
 
@@ -198,4 +199,17 @@ test('podpunkty pod punktem wyjaśnienia są osobnymi, wciętymi punktami, nie j
   expect(all.filter(s => s.text === '•').length).toBe(2)
   expect(all.filter(s => s.text === '◦').length).toBe(1)
   expect(all.some(s => s.text === 'Katarzyna wysłała trzy listy.')).toBe(true)
+})
+
+test('wyjaśnienie ma ograniczoną szerokość tekstu, a ramka zostaje pełna', async ($, on) => {
+  setup(on)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
+  type B = { type: string; props?: { width?: number; flexShrink?: number }; children?: (B | string)[] }
+  const widths: number[] = []
+  const walk = (n: B) => {
+    if (n.type === 'Box' && typeof n.props?.width === 'number') widths.push(n.props.width)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as B)
+  expect(widths).toContain(84)
 })
