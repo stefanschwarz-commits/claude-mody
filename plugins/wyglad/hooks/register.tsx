@@ -403,10 +403,12 @@ function count(n: number, one: string, few: string, many: string): string {
 }
 
 export const register: Register = on => {
+  // How often this session asked the mod to draw an answer, and on which screens (for "/wyglad stan").
+  const drawn: { count: number; surfaces: string[] } = { count: 0, surfaces: [] }
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'wyglad',
-      description: 'Wygląd odpowiedzi: /wyglad on albo /wyglad off',
+      description: 'Wygląd odpowiedzi: /wyglad on, /wyglad off albo /wyglad stan (czy mod rysuje w tej sesji)',
     })
     await $.command.register({ name: 'sprawy', description: 'Panel „Moje sprawy”: zadania do odhaczenia i pytania' })
     // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
@@ -533,6 +535,15 @@ export const register: Register = on => {
 
   on('command.run', { command: 'wyglad' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
+    // "/wyglad stan": did the app hand this session's answers to the mod to draw?
+    // Some sessions (e.g. ones run in the background) are shown by the app on its own.
+    if (arg === 'stan') {
+      const off = (await $.store.get(OFF)) === true
+      const seen = drawn.count === 0
+        ? 'Aplikacja w tej sesji jeszcze ani razu nie dała modowi odpowiedzi do narysowania. Ramek tu nie będzie: tę sesję aplikacja pokazuje sama, bez modów (tak bywa w sesjach w tle).'
+        : `Mod narysował w tej sesji ${count(drawn.count, 'odpowiedź', 'odpowiedzi', 'odpowiedzi')} (ekran: ${drawn.surfaces.join(', ')}).`
+      return { text: `Wygląd odpowiedzi ${off ? 'wyłączony (/wyglad on włącza)' : 'włączony'}. ${seen}` }
+    }
     const isOff = arg === 'off' ? true : arg === 'on' ? false : (await $.store.get(OFF)) !== true
     await $.store.set(OFF, isOff)
     await $.ui.invalidate('ui.render')
@@ -695,6 +706,8 @@ export const register: Register = on => {
 
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     const { text, isSummary } = e.props
+    drawn.count += 1
+    if (!drawn.surfaces.includes(e.surface)) drawn.surfaces.push(e.surface)
     if (isSummary || (await $.store.get(OFF)) === true) return next(e)
 
     const els = $.ui.resolve(e)
