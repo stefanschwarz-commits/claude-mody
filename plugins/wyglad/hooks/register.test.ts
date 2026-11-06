@@ -96,6 +96,16 @@ test('krótka odpowiedź końcowa bez ▶ nie zwija się do szarej linii', async
   expect(await note.find({ type: 'Text', text: '· Sprawdzam mod.' })).toBeDefined()
 })
 
+test('/wyglad stan mówi, czy aplikacja dała modowi coś do narysowania', async ($, on) => {
+  setup(on)
+  const before = await $.command.run({ command: 'wyglad', args: 'stan' } as never)
+  expect(before.text).toContain('ani razu')
+  await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(REPLY) })
+  const after = await $.command.run({ command: 'wyglad', args: 'stan' } as never)
+  expect(after.text).toContain('desktop')
+  expect(after.text).not.toContain('ani razu')
+})
+
 test('/wyglad off przywraca zwykły wygląd', async ($, on) => {
   setup(on)
   on('ui.render', () => ({ type: 'Text', props: {}, children: ['zwykły'] }) as never)

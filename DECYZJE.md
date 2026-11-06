@@ -291,3 +291,6 @@ Po wydaniu 0.37.0 Stefan: „Jest gorzej, a nie lepiej. To zakreślanie w ogóle
 
 ## wyglad 0.39.0: tekst wyjaśnienia znów na pełną szerokość (2026-11-04, decyzja Stefana 1A)
 Stefan w Centrum Dowodzenia: „Poszerz ramkę z powrotem do pełnej szerokości, bo to jest pierwsza rzecz, którą zmienił.” Potwierdził w sesji Mody (1A). Ograniczenie do 84 komórek (0.37.0) zdjęte; podpunkty, wyróżnienie bez tła i zasada tabeli zostają. Reguła i skill poprawione (skill na kontach ma jeszcze zdanie o 84 komórkach; różnica nie zmienia sposobu pisania, do wgrania przy następnej zmianie).
+
+## wyglad 0.40.0: /wyglad stan (2026-11-06)
+Zgłoszenie sesji „Ścianka JATA 2026 (Illustrator)”: Stefan nie widzi ramek w tej sesji, choć odpowiedzi mają ▶ i sekcje, mod jest włączony, a jego narzędzie odhacz działa. Sesja działa w tle (zadanie w tle, przez Remote Control). Mod jest więc załadowany, ale prawdopodobnie aplikacja pokazuje odpowiedzi takiej sesji sama, bez przekazania ich modowi do narysowania; zmiana w kodzie moda tego nie naprawi. Z sesji w chmurze nie da się tego sprawdzić na komputerze Stefana, więc doszło polecenie `/wyglad stan`: mówi, ile odpowiedzi aplikacja dała modowi do narysowania w tej sesji i na jakim ekranie. „Ani razu” potwierdza, że to ograniczenie aplikacji. Test dopisany.
