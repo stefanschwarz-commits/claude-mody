@@ -630,37 +630,9 @@ export const register: Register = on => {
     return word ? next({ ...e, props: { ...e.props, word } }) : next(e)
   })
 
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const below = await next(e)
-    const answer = await read($, last)
-    if (e.props.hasSurvey || e.props.isWorking || answer === null || (await $.store.get(OFF)) === true) return below
-
-    const els = $.ui.resolve(e)
-    const { Box, Text, Button } = els
-    const ink = inkOf(await tintOf($))
-    const ticked = (await read($, doneTasks)).filter(id => id.startsWith(`${answer.key}:`)).length
-    const needs = needsOf(Math.max(0, answer.todos - ticked), answer.questions)
-
-    return (
-      <Box flexDirection="column">
-        <Box flexDirection="row" gap={2}>
-          {needs || answer.isStructured ? (
-            <Box flexDirection="row" gap={1}>
-              {icon(els, e.surface, 'dot', needs ? ink.orange : ink.green, '●')}
-              <Text bold>{needs ? `Potrzebuję od Ciebie: ${needs}` : 'Nic od Ciebie nie potrzebuję'}</Text>
-            </Box>
-          ) : null}
-          <Button
-            key="jump"
-            label="↑ Początek odpowiedzi"
-            onPress={() => void $.ui.scroll({ to: { key: answer.key }, block: 'start' }).catch(() => undefined)}
-          />
-          <Button key="pane" label="Moje sprawy" onPress={() => void $.ui.open({ id: PANE, title: 'Moje sprawy' }).catch(() => undefined)} />
-        </Box>
-        {below}
-      </Box>
-    )
-  })
+  // The band above the prompt belongs to the "projekt" mod since 2026-11-07 (Stefan: the
+  // line with "Potrzebuję od Ciebie" and the two buttons "nie sprawdziła się w ogóle").
+  // The "Moje sprawy" pane stays, opened with /sprawy.
 
   // Work steps: a run of calls is one faint line, a single call too. Errors and
   // running calls keep the engine's own drawing, so nothing that matters hides.

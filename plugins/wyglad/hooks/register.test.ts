@@ -141,9 +141,9 @@ test('pasek nad polem: co jest potrzebne i przycisk do początku odpowiedzi', as
   on('ui.render', () => ({ type: 'Box', props: {}, children: [] }) as never)
   await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 't1' } as never)
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-  expect(await ui.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie i 1 pytanie' })).toBeDefined()
-  expect(await ui.find({ type: 'Button', key: 'jump' })).toBeDefined()
-  await ui.press({ key: 'jump' })
+  // The band above the prompt is the projekt mod's since 2026-11-07: nothing of wyglad there.
+  expect(await ui.find({ type: 'Text', text: /Potrzebuję od Ciebie/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Button', key: 'jump' })).toBeUndefined()
 })
 
 test('opcja polecana ma w tabeli jeden znak: ★, objaśniony w nagłówku', () => {
@@ -178,8 +178,8 @@ test('odhaczone zadanie się skreśla, a pasek liczy tylko pozostałe', async ($
   const tick = await pane.find({ type: 'Button', text: '☐' })
   expect(tick).toBeDefined()
   await pane.press({ key: tick!.key! })
-  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-  expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie' })).toBeDefined()
+  // One ticked: the pane shows one task left.
+  expect(await pane.find({ type: 'Button', text: '☐' })).toBeDefined()
 })
 
 test('kroki pracy: jedna szara linia, błąd zostaje widoczny', async ($, on) => {
@@ -326,7 +326,7 @@ test('odpowiedź pisana po swojemu: pasek nie twierdzi „Nic od Ciebie nie potr
   await $.turn.complete({ reason: 'answer', answer: free, durationMs: 1, isAborted: false, turnId: 'f' } as never)
   const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
   expect(await band.find({ type: 'Text', text: /Nic od Ciebie/ })).toBeUndefined()
-  expect(await band.find({ type: 'Button', text: 'Moje sprawy' })).toBeDefined()
+  expect(await band.find({ type: 'Button', text: 'Moje sprawy' })).toBeUndefined()
 })
 
 test('zwijanie nie zostawia samego nagłówka nad schowaną listą', async ($, on) => {
@@ -424,8 +424,8 @@ test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawy�
   }
   dig((await ui.find({ type: 'Box' })) as unknown as Framed, false)
   expect(inFrame.some(t => t.startsWith('```'))).toBe(false)
-  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-  expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 3 zadania' })).toBeDefined()
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  expect(((await pane.find({ type: 'Button', text: '☐' })) !== undefined)).toBe(true)
 })
 
 test('sekcje bez linii --- między nimi są rozpoznawane tak samo', () => {

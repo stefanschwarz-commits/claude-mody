@@ -36,8 +36,8 @@ test('fileOf poznaje link do pliku na komputerze, nie do strony', () => {
 test('linki do plików nie są zadaniami: licznik, panel i ramka', async ($, on) => {
   setup(on)
   await $.turn.complete({ reason: 'answer', answer: REPLY, durationMs: 1, isAborted: false, turnId: 'k' } as never)
-  const band = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-  expect(await band.find({ type: 'Text', text: 'Potrzebuję od Ciebie: 1 zadanie' })).toBeDefined()
+  const pane = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'Pane', requestId: 'sprawy', props: {} as never } as never)
+  expect(await pane.find({ type: 'Button', text: '☐' })).toBeDefined()
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: REPLY, isFirstOfReply: true } as never })
   expect(await ui.find({ type: 'Text', text: 'Zadanie 2' })).toBeUndefined()
   expect(await ui.find({ type: 'Text', text: 'plan-knx.pdf' })).toBeDefined()
