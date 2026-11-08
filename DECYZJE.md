@@ -306,3 +306,6 @@ W Cowork odnośnik `[manifest.html](C:\Users\StefanSCHWARZ(ELMI)\…\[ATERIMA] �
 
 ## Skill uklad-odpowiedzi: przyciski zawsze z pytaniem (2026-11-08, zrzut Stefana)
 Po wczytaniu nowej wersji wątek pokazał przyciski 1A/1B bez treści pytania. Punkt 13 części B: nad przyciskami zawsze „Pytanie N: …?” i „Dlaczego to ważne”.
+
+## Skill uklad-odpowiedzi: kolejność kafli i wczytywanie narzędzia do przycisków (2026-11-08, zrzut Stefana)
+Sesja po wczytaniu wersji pisała kafle pod ▶, bez linii nad paskiem i bez przycisków (nie wczytała schowanego narzędzia). Punkt 11: kolejność ---, pasek, kafle, ▶. Punkt 13: przed pytaniem wyszukać i wczytać narzędzie do wizualizacji.
