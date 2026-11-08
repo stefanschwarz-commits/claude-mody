@@ -71,8 +71,9 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    jednego słowa albo krótkiego fragmentu (do trzech słów) = słowo, które ma wpaść w oko. W akapicie najwyżej jedno
    wyróżnienie. Co najmniej trzy równoległe sprawy o tych samych cechach (kto, co, kiedy, stan) pisz tabelą z takimi
    kolumnami, a jedno pogrubione zdanie zostaw nad tabelą (decyzja Stefana 5A z 2026-11-04).
-   Pogrubiony początek punktu ma najwyżej 6 słów, bez nagłówka „Co się zmieniło”, i nie powtarza tego, co jest w „Zrobione”
-   (wzór przyjęty przez Stefana 2026-11-09: „**Cel sukcesu bez daty.** Cała kadra kierownicza na poziomie podążającego.”).
+   W czacie zamiast punktów i osobnej sekcji „Zrobione” jedna tabela (Stefan 2026-11-09: „co jest zrobione, a co się zmieniło?
+   nie wiem, co się różni”): kolumny „Nr | Co | Stan”, stan znakami ✓ zrobione, ✗ nie udało się, ⏳ czeka na Ciebie.
+   Komórka „Co” do 8 słów. Nagłówka „Co się zmieniło” i sekcji „Zrobione” w czacie nie piszesz.
 3. Sekcje tylko wtedy, gdy występują, w tej kolejności i z tymi nagłówkami: 🟢 **Zrobione**, 🔴 **Nie udało się**,
    🟠 **Niewyjaśnione**, 🔵 **Zadania dla Ciebie**, 🟤 **Pytania do Ciebie**, ⚪ **Dla informacji**; między sekcjami linia `---`.
 4. **Zadania dla Ciebie**: każde zadanie w osobnym akapicie zaczętym od „**Zadanie 1:** co zrobić”, a pod spodem jedno
@@ -121,7 +122,11 @@ Przykład krótkiej odpowiedzi:
 **Odpowiedź 3 · dziś 09:14**
 ### ▶ Konto Google dla Ani założone.
 
-- **Ania ma własne konto.** Każda zmiana ma teraz jej imię.
+| Nr | Co | Stan |
+| --- | --- | --- |
+| 1 | Konto Google na adres ELMI | ✓ |
+| 2 | Hasło tymczasowe dla Ani | ⏳ czeka na Ciebie |
+| 3 | Dostęp do folderu KPEU | ⏳ decyzja niżej |
 
 ---
 🔵 **Zadania dla Ciebie**

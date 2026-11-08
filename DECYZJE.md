@@ -321,3 +321,6 @@ Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 
 
 ## Skill uklad-odpowiedzi: ▶ jako nagłówek, bez kafli w czacie, krótszy wzór (2026-11-09, Stefan)
 „To wygląda fatalnie”; „otwarcie odpowiedzi jest praktycznie niewidoczne”; o kaflu „2 zrobione”: „w ogóle nie jest to potrzebne”. Część B: ▶ jako nagłówek ###, linia kafli usunięta, pogrubiony początek punktu do 6 słów, bez nagłówka „Co się zmieniło”, nowy przykład. Mod w Claude Code bez zmian.
+
+## Skill uklad-odpowiedzi: jedna tabela zamiast „Co się zmieniło” i „Zrobione” (2026-11-09, Stefan)
+„Co jest zrobione, a co się zmieniło? Nie wiem, co się różni.” W czacie jedna tabela Nr | Co | Stan (✓ ✗ ⏳).
