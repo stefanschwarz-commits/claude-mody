@@ -99,7 +99,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 12. Pokazuj zamiast opisywać: schemat, porównanie albo wygląd rysuj jako obraz w odpowiedzi (narzędzie do wizualizacji w czacie),
     gdy jest dostępne. Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Przy tabeli niczego nie chowasz ani nie przygaszasz.
 13. Decyzja jako przyciski: gdy w czacie jest narzędzie do wizualizacji, pytanie dostaje przyciski (8A, 8B), które same wysyłają
-    odpowiedź; tekst pytania wtedy krótki, bez powtarzania opcji.
+    odpowiedź. Nad przyciskami zawsze stoi samo pytanie: „**Pytanie 7:** …?” i linia „Dlaczego to ważne: …”; przyciski
+    nigdy nie występują bez pytania (zrzut Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”).
 14. Brak uprawnień: osobna sekcja `🔴 **Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
 

@@ -303,3 +303,6 @@ Stefan po researchu sposobów pokazywania odpowiedzi (strona „Odpowiedzi do og
 
 ## Skill uklad-odpowiedzi: ścieżki z nawiasami w ostrych nawiasach (2026-11-08, zrzut Stefana)
 W Cowork odnośnik `[manifest.html](C:\Users\StefanSCHWARZ(ELMI)\…\[ATERIMA] …)` pokazał się jako surowy tekst. Część B, punkt 7: ścieżka z nawiasem, nawiasem kwadratowym lub spacją zawsze w `<…>`, a plik do obejrzenia także jako załącznik. W Claude Code mod radzi sobie od 0.40.1.
+
+## Skill uklad-odpowiedzi: przyciski zawsze z pytaniem (2026-11-08, zrzut Stefana)
+Po wczytaniu nowej wersji wątek pokazał przyciski 1A/1B bez treści pytania. Punkt 13 części B: nad przyciskami zawsze „Pytanie N: …?” i „Dlaczego to ważne”.
