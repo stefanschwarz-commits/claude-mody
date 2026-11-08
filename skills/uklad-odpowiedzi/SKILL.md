@@ -65,17 +65,11 @@ Mało tekstu i pokazywanie (decyzja Stefana 2026-11-08: „nie chcę i nie jeste
 Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dopisujesz to, co tam dorysowuje nakładka:
 
 1. Zacznij od linii poziomej `---`, pod nią pogrubiony pasek „**Odpowiedź N · dziś GG:MM**” (N = numer tej odpowiedzi w rozmowie, który sam liczysz; godzina w czasie polskim; decyzja Stefana 2A z 2026-11-02, zamiast dawnej linii z pinezką 📍), a pod nim nagłówek `### ▶ ` z jednym zdaniem: co się stało (nagłówek, bo zwykła linia ▶ ginęła w tekście; Stefan 2026-11-09: „otwarcie odpowiedzi jest praktycznie niewidoczne”). W Claude Code z nakładką pasek rysuje mod, więc tam piszesz od razu od ▶.
-2. Potem sekcja **Co się zmieniło**: wyjaśnienie w punktach „- ”, każdy punkt o jednej rzeczy, zaczęty od pogrubionego
-   zdania (co się zmieniło), a po nim jedno lub dwa zdania, co to znaczy dla Stefana, pełnymi zdaniami, bez skrótów
-   i nazw plików. To główna treść odpowiedzi. Pogrubienie całego zdania = najważniejsze zdanie akapitu; pogrubienie
-   jednego słowa albo krótkiego fragmentu (do trzech słów) = słowo, które ma wpaść w oko. W akapicie najwyżej jedno
-   wyróżnienie. Co najmniej trzy równoległe sprawy o tych samych cechach (kto, co, kiedy, stan) pisz tabelą z takimi
-   kolumnami, a jedno pogrubione zdanie zostaw nad tabelą (decyzja Stefana 5A z 2026-11-04).
-   W czacie zamiast punktów i osobnej sekcji „Zrobione” jedna tabela (Stefan 2026-11-09: „co jest zrobione, a co się zmieniło?
-   nie wiem, co się różni”): kolumny „Nr | Co | Stan”, stan znakami ✓ zrobione, ✗ nie udało się, ⏳ czeka na Ciebie.
-   Komórka „Co” do 8 słów. Nagłówka „Co się zmieniło” i sekcji „Zrobione” w czacie nie piszesz.
-3. Sekcje tylko wtedy, gdy występują, w tej kolejności i z tymi nagłówkami: 🟢 **Zrobione**, 🔴 **Nie udało się**,
-   🟠 **Niewyjaśnione**, 🔵 **Zadania dla Ciebie**, 🟤 **Pytania do Ciebie**, ⚪ **Dla informacji**; między sekcjami linia `---`.
+2. Pod ▶ jedna tabela „Nr | Co | Stan” zamiast punktów „Co się zmieniło” i sekcji „Zrobione” (Stefan 2026-11-09: „coś się
+   zmieniło i zostało zrobione, nie wiem, czym się różni”). Stan znakami: ✓ zrobione, ✗ nie udało się, ⏳ czeka na Ciebie.
+   Komórka „Co” do 8 słów. Gdy jest tylko jedna rzecz, zamiast tabeli jedno zdanie pod ▶.
+3. Pod tabelą sekcje tylko wtedy, gdy występują, w tej kolejności: 🔴 **Brak uprawnień**, 🔵 **Zadania dla Ciebie**,
+   🟤 **Pytania do Ciebie**; między sekcjami linia `---`. Zrobione, nieudane i niewyjaśnione są w tabeli, nie w osobnych sekcjach.
 4. **Zadania dla Ciebie**: każde zadanie w osobnym akapicie zaczętym od „**Zadanie 1:** co zrobić”, a pod spodem jedno
    lub dwa zdania, co to znaczy, po co i co się stanie bez tego. Bez szacunku czasu w nawiasie. Jedno zadanie to jeden cel;
    kilka czynności po kolei do jednego celu to kroki w tym samym zadaniu, oznaczone „K1A”, „K1B”, „K1C” (K jak krok),
@@ -87,8 +81,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    następne to „**Pytanie 7:** …”), tak samo opcje: „**7A)** co się stanie – plus: …; minus: …”, każda opcja w osobnej linii,
    przed opcjami linia „Dlaczego to ważne: …”, na końcu „➜ Polecam 7B, bo …”. Stefan odpowiada „7B”. Decyzje zawsze tu,
    nigdy w zadaniach. Pusta linia po pytaniu, po „Dlaczego to ważne” i przed „➜ Polecam”; opcje jedna pod drugą.
-6. **Zrobione** i pozostałe podsumowania: punkty „- **wynik w jednym zdaniu.** Jedno lub dwa zdania, co to zmienia
-   dla Stefana i jaki problem rozwiązuje”, dla kogoś, kto nie śledził wątku.
+6. Bez osobnych sekcji podsumowań: wszystko, co zrobione lub nie, stoi w tabeli z punktu 2.
 7. Każdy plik i każdy adres jako odnośnik `[krótka nazwa](pełny adres lub ścieżka)`, nigdy sama nazwa ani goły adres.
    Plik, który Stefan ma gdzieś dołączyć, dołącz sam przy zadaniu.
    Ścieżkę z nawiasem, nawiasem kwadratowym albo spacją (np. `C:\Users\StefanSCHWARZ(ELMI)\…\[ATERIMA] …`) zawsze bierz
@@ -99,7 +92,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
 
 10. Mało tekstu, twarde limity (decyzja Stefana 14A z 2026-11-08, po zrzucie, na którym układ był nowy, a tekstu tyle co przedtem):
-    linia ▶ do 15 słów; punkt „Co się zmieniło” do 2 zdań; punkt podsumowania do 2 zdań; wyjaśnienie zadania 1 zdanie;
+    linia ▶ do 15 słów; komórka tabeli do 8 słów; wyjaśnienie zadania 1 zdanie;
     „Dlaczego to ważne” 1 zdanie; cała odpowiedź do 12 linii tekstu (tabela liczy się jako 1 linia). Co nie mieści się
     w limicie, zostaje w notatkach albo czeka, aż Stefan dopyta.
 11. Bez linii kafli w czacie (Stefan 2026-11-09 o „2 zrobione”: „w ogóle nie jest to potrzebne, nie przydaje mi się”). Co czeka na
