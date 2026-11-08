@@ -204,3 +204,23 @@ test('podpunkty pod punktem wyjaśnienia są osobnymi, wciętymi punktami, nie j
   expect(all.filter(s => s.text === '◦').length).toBe(1)
   expect(all.some(s => s.text === 'Katarzyna wysłała trzy listy.')).toBe(true)
 })
+
+test('ścieżka z nawiasem „(ELMI)” i spacjami, także zapisana jako file:/// z odwrotnymi ukośnikami, jest jednym odnośnikiem', async ($, on) => {
+  setup(on)
+  expect(hrefOf('C:\\Users\\StefanSCHWARZ(ELMI)\\OneDrive - Stefan Schwarz\\CV\\pas.png')).toBe('file:///C:/Users/StefanSCHWARZ%28ELMI%29/OneDrive%20-%20Stefan%20Schwarz/CV/pas.png')
+  expect(hrefOf('file:///C:/Users/StefanSCHWARZ(ELMI)\\OneDrive - Stefan Schwarz\\CV\\pas.png')).toBe('file:///C:/Users/StefanSCHWARZ%28ELMI%29/OneDrive%20-%20Stefan%20Schwarz/CV/pas.png')
+  expect(hrefOf('<C:\\Users\\Stefan (ELMI)\\a.md>')).toBe('file:///C:/Users/Stefan%20%28ELMI%29/a.md')
+  const line = 'Podglądy: [pas.png](file:///C:/Users/StefanSCHWARZ(ELMI)\\OneDrive - Stefan Schwarz\\CV\\pas.png) i [portret.png](C:\\Users\\StefanSCHWARZ(ELMI)\\OneDrive - Stefan Schwarz\\CV\\portret.png).'
+  const blocks = blocksOf(line)
+  expect(blocks[0].kind === 'para' ? blocks[0].runs.map(r => r.text).join('') : '').toBe('Podglądy: pas.png i portret.png.')
+  expect(blocks[0].kind === 'para' ? blocks[0].runs.filter(r => r.path).map(r => r.path) : []).toEqual([
+    'C:/Users/StefanSCHWARZ(ELMI)/OneDrive - Stefan Schwarz/CV/pas.png',
+    'C:/Users/StefanSCHWARZ(ELMI)/OneDrive - Stefan Schwarz/CV/portret.png',
+  ])
+  // Both files get their row with buttons under the paragraph; nothing raw is shown.
+  const reply = ['▶ **Dwa pliki.**', '', line, '', '---', '', '🟢 **Zrobione**', '- **Gotowe.** Tak.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(all.filter(s => s.text === 'pas.png' || s.text === 'portret.png').length).toBe(2)
+  expect(all.some(s => s.text.includes('file:///'))).toBe(false)
+})

@@ -5,7 +5,7 @@ import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
-import { blocksOf, fileLinksOf, filesOf, hasMarks, shortViewOf } from './zakreslacz'
+import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe, shortViewOf } from './zakreslacz'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -149,7 +149,7 @@ function gist(part: Part): string {
 // "[plan.pdf](plan.pdf)", "[Plan](C:\Projekty\plan.pdf)": a link to a file on this
 // computer, not a web address. Returns its label and path.
 export function fileOf(text: string): { label: string; path: string } | undefined {
-  const link = /^\s*\**\s*\[([^\]]+)\]\(([^)]+)\)\s*\**\s*[.;,]?\s*$/.exec(text)
+  const link = new RegExp(String.raw`^\s*\**\s*` + LINK + String.raw`\s*\**\s*[.;,]?\s*$`).exec(text)
   if (!link) return undefined
   const path = link[2]
   if (/^(https?|mailto|ftp):/i.test(path)) return undefined
@@ -183,7 +183,7 @@ export function mailsOf(text: string): { rest: string; mails: Mail[] } {
 // One-line places (the pane, a struck task, a folded gist) cannot draw a link, so
 // "[nazwa](adres)" becomes its name and the markers go; nothing raw is shown.
 function plainOf(text: string): string {
-  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_`]/g, '')
+  return text.replace(linkRe('g'), '$1').replace(/[*_`]/g, '')
 }
 
 function taskOf(text: string): { what: string; why: string } {

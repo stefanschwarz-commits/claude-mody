@@ -21,12 +21,35 @@ function isProse(paragraph: string): boolean {
   return true
 }
 
+// A Markdown link's target: "<…>" (any text), or text with balanced parentheses, so a
+// Windows path with "(ELMI)" in it is read whole (Stefan's screenshot of 2026-11-08: the
+// link broke at the first ")" and showed as raw text). Shared by every link pattern here.
+export const TARGET = String.raw`(?:<[^>\n]*>|(?:[^()\n]|\([^()\n]*\))+)`
+export const LINK = String.raw`\[([^\]\n]+)\]\((` + TARGET + String.raw`)\)`
+export function linkRe(flags = 'g'): RegExp {
+  return new RegExp(LINK, flags)
+}
+
+// A path as a file: URL the surface draws whole: forward slashes, and the characters that
+// break a Markdown link or a URL (space, parentheses, percent) encoded.
+function fileUrlOf(path: string): string {
+  const safe = path.replace(/\\/g, '/').replace(/[ ()%]/g, c => ({ ' ': '%20', '(': '%28', ')': '%29', '%': '%25' })[c] ?? c)
+  return safe.startsWith('/') ? `file://${safe}` : `file:///${safe}`
+}
+
 // A link target as a URL the surface opens: http(s) as written, a file on this computer
-// ("C:\Projekty\plan.md", "/home/x/plan.md", "file:///…") as a file: URL; anything else, none.
-export function hrefOf(target: string): string | undefined {
-  if (/^(https?|file):\/\//i.test(target)) return target
-  if (/^[A-Za-z]:[\\/]/.test(target)) return `file:///${target.replace(/\\/g, '/').replace(/ /g, '%20')}`
-  if (/^\/[^/]/.test(target)) return `file://${target.replace(/ /g, '%20')}`
+// ("C:\Projekty\plan.md", "/home/x/plan.md", "file:///…", "<C:\…>") as a file: URL; anything else, none.
+export function hrefOf(raw: string): string | undefined {
+  const target = raw.replace(/^<([\s\S]*)>$/, '$1').trim()
+  if (/^https?:\/\//i.test(target)) return target
+  if (/^file:\/\//i.test(target)) {
+    // A file: URL someone else wrote may hold backslashes, spaces or parentheses: rebuild it.
+    const rest = target.replace(/^file:\/\/\/?/i, '')
+    if (!/[ ()\\]/.test(rest)) return target
+    return fileUrlOf(rest.replace(/%20/g, ' '))
+  }
+  if (/^[A-Za-z]:[\\/]/.test(target)) return fileUrlOf(target)
+  if (/^\/[^/]/.test(target)) return fileUrlOf(target)
   return undefined
 }
 
@@ -44,7 +67,7 @@ export function filesOf(block: Block): { label: string; path: string }[] {
   if (block.kind === 'para') {
     for (const run of block.runs) if (run.path) add(run.text, run.path)
   } else {
-    for (const m of block.text.matchAll(/\[([^\]]+)\]\((file:\/\/[^)]+)\)/gi)) add(m[1], pathOf(m[2]))
+    for (const m of block.text.matchAll(linkRe('g'))) if (/^<?file:/i.test(m[2])) add(m[1], pathOf(hrefOf(m[2]) ?? m[2]))
   }
   return out
 }
@@ -52,7 +75,7 @@ export function filesOf(block: Block): { label: string; path: string }[] {
 // "[label](…)" links of a Markdown text with their targets rewritten as URLs the surface
 // opens (a file path becomes file:///…), so a file's name is a link wherever it stands.
 export function fileLinksOf(text: string): string {
-  return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label: string, target: string) => {
+  return text.replace(linkRe('g'), (m, label: string, target: string) => {
     const href = hrefOf(target)
     return href ? `[${label}](${href})` : m
   })
@@ -62,7 +85,7 @@ export function fileLinksOf(text: string): string {
 function linkRunsOf(text: string, isMark: boolean, kind?: 'word' | 'sentence'): Run[] {
   const out: Run[] = []
   let i = 0
-  for (const m of text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
+  for (const m of text.matchAll(linkRe('g'))) {
     if (m.index > i) out.push({ text: text.slice(i, m.index), isMark, kind })
     const href = hrefOf(m[2])
     if (href && /^file:/i.test(href)) out.push({ text: m[1], isMark, kind, path: pathOf(href) })
@@ -87,7 +110,7 @@ export function runsOf(paragraph: string): Run[] {
   let i = 0
   for (const m of flat.matchAll(/\*\*([^*]+)\*\*/g)) {
     if (m.index > i) out.push(...linkRunsOf(flat.slice(i, m.index), false))
-    const words = m[1].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim().split(/\s+/).length
+    const words = m[1].replace(linkRe('g'), '$1').trim().split(/\s+/).length
     out.push(...linkRunsOf(m[1], true, words <= WORD_LIMIT ? 'word' : 'sentence'))
     i = m.index + m[0].length
   }
@@ -138,7 +161,7 @@ export function markedSentencesOf(runs: Run[]): string[] {
 
 // The first sentence of a text, for a paragraph that marks nothing.
 export function firstSentenceOf(text: string): string {
-  const flat = text.replace(/\*\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\n/g, ' ').trim()
+  const flat = text.replace(/\*\*/g, '').replace(linkRe('g'), '$1').replace(/\n/g, ' ').trim()
   const end = SENTENCE_END.exec(flat)
   SENTENCE_END.lastIndex = 0
   return end ? flat.slice(0, end.index + 1) : flat
