@@ -312,3 +312,6 @@ Sesja po wczytaniu wersji pisała kafle pod ▶, bez linii nad paskiem i bez prz
 
 ## Skill uklad-odpowiedzi: pytanie w tym samym obrazie co przyciski (2026-11-08, zrzut Stefana)
 Obraz z przyciskami zawsze stoi nad odpowiedzią końcową, więc pytanie i „Dlaczego to ważne” idą do tego samego obrazu.
+
+## Skill uklad-odpowiedzi: twarde limity długości (2026-11-08, decyzja Stefana 14A)
+Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 części B dostał liczby: ▶ do 15 słów, punkt do 2 zdań, wyjaśnienie zadania 1 zdanie, odpowiedź do 12 linii.

@@ -93,7 +93,10 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    („Czekam na 7A albo 7B.”), bo tu nie ma dymka ani linii stanu, które by mu to pokazały.
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
 
-10. Mało tekstu (Stefan 2026-11-08): cała odpowiedź mieści się na ekranie telefonu; szczegóły dopiero, gdy Stefan dopyta.
+10. Mało tekstu, twarde limity (decyzja Stefana 14A z 2026-11-08, po zrzucie, na którym układ był nowy, a tekstu tyle co przedtem):
+    linia ▶ do 15 słów; punkt „Co się zmieniło” do 2 zdań; punkt podsumowania do 2 zdań; wyjaśnienie zadania 1 zdanie;
+    „Dlaczego to ważne” 1 zdanie; cała odpowiedź do 12 linii tekstu (tabela liczy się jako 1 linia). Co nie mieści się
+    w limicie, zostaje w notatkach albo czeka, aż Stefan dopyta.
 11. Kafle stanu: kolejność zawsze: linia `---`, pasek „Odpowiedź N”, linia kafli, dopiero potem `▶`. Linia kafli „🟢 **3** zrobione · 🔴 **1** nie udało się · 🟠 **1** czeka na Ciebie · 🟣 **1** pytanie”
     (tylko te, które są). W Claude Code kafle rysuje mod, więc tam tej linii nie piszesz.
 12. Pokazuj zamiast opisywać: schemat, porównanie albo wygląd rysuj jako obraz w odpowiedzi (narzędzie do wizualizacji w czacie),
