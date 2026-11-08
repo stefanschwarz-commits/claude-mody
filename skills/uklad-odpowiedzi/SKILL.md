@@ -86,6 +86,9 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    dla Stefana i jaki problem rozwiązuje”, dla kogoś, kto nie śledził wątku.
 7. Każdy plik i każdy adres jako odnośnik `[krótka nazwa](pełny adres lub ścieżka)`, nigdy sama nazwa ani goły adres.
    Plik, który Stefan ma gdzieś dołączyć, dołącz sam przy zadaniu.
+   Ścieżkę z nawiasem, nawiasem kwadratowym albo spacją (np. `C:\Users\StefanSCHWARZ(ELMI)\…\[ATERIMA] …`) zawsze bierz
+   w ostre nawiasy: `[manifest.html](<C:\…\manifest.html>)`; bez nich czat pokazuje surowy tekst zamiast odnośnika
+   (zrzut Stefana 2026-11-08). Plik, który Stefan ma obejrzeć, wyślij też jako załącznik, bo w czacie odnośnik do pliku na komputerze bywa nieklikalny.
 8. Gdy odpowiedź kończy się pytaniem albo zadaniem, ostatnie zdanie odpowiedzi mówi wprost, czego od Stefana potrzebujesz
    („Czekam na 7A albo 7B.”), bo tu nie ma dymka ani linii stanu, które by mu to pokazały.
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
