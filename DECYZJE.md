@@ -309,3 +309,6 @@ Po wczytaniu nowej wersji wątek pokazał przyciski 1A/1B bez treści pytania. P
 
 ## Skill uklad-odpowiedzi: kolejność kafli i wczytywanie narzędzia do przycisków (2026-11-08, zrzut Stefana)
 Sesja po wczytaniu wersji pisała kafle pod ▶, bez linii nad paskiem i bez przycisków (nie wczytała schowanego narzędzia). Punkt 11: kolejność ---, pasek, kafle, ▶. Punkt 13: przed pytaniem wyszukać i wczytać narzędzie do wizualizacji.
+
+## Skill uklad-odpowiedzi: pytanie w tym samym obrazie co przyciski (2026-11-08, zrzut Stefana)
+Obraz z przyciskami zawsze stoi nad odpowiedzią końcową, więc pytanie i „Dlaczego to ważne” idą do tego samego obrazu.
