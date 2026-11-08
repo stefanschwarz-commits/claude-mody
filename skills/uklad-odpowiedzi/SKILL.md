@@ -109,6 +109,7 @@ Przykład krótkiej odpowiedzi:
 
 ---
 **Odpowiedź 3 · dziś 09:14**
+🟠 **1** czeka na Ciebie · 🟣 **1** pytanie
 ▶ Konto Google dla Ani jest założone, czekam na jedną decyzję.
 
 **Co się zmieniło**
