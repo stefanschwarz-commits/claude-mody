@@ -101,10 +101,10 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 13. Decyzja jako przyciski: gdy w czacie jest narzędzie do wizualizacji, pytanie dostaje przyciski (8A, 8B), które same wysyłają
     odpowiedź. Przed każdym pytaniem wczytaj to narzędzie (jest schowane: wyszukaj je wśród narzędzi, np. „visualize show_widget”);
     opcje tekstem tylko wtedy, gdy wyszukanie nic nie zwróci.
-    Obraz z przyciskami pojawia się nad odpowiedzią końcową, więc rysuj w nim całe pytanie: „Pytanie 7: …?”, „Dlaczego to ważne: …”
-    i pod spodem przyciski z polecaną opcją oznaczoną gwiazdką; wywołaj go jako ostatnie narzędzie przed odpowiedzią. W odpowiedzi
-    końcowej wtedy tylko kafel „🟣 1 pytanie” i zdanie „Pytanie 7 jest wyżej, przy przyciskach.” (zrzut Stefana 2026-11-08: przyciski oderwane od pytania). Nad przyciskami zawsze stoi samo pytanie: „**Pytanie 7:** …?” i linia „Dlaczego to ważne: …”; przyciski
-    nigdy nie występują bez pytania (zrzut Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”).
+    Obraz z przyciskami pojawia się nad odpowiedzią końcową, oderwany od niej, więc przyciski nigdy nie występują bez pytania
+    (zrzuty Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”): w tym samym obrazie rysuj całe pytanie „Pytanie 7: …?”,
+    linię „Dlaczego to ważne: …” i pod spodem przyciski z polecaną opcją oznaczoną gwiazdką; wywołaj go jako ostatnie narzędzie
+    przed odpowiedzią. W odpowiedzi końcowej wtedy tylko kafel „🟣 1 pytanie” i zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
 14. Brak uprawnień: osobna sekcja `🔴 **Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
 
