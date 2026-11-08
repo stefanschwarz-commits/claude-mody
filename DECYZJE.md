@@ -315,3 +315,6 @@ Obraz z przyciskami zawsze stoi nad odpowiedzią końcową, więc pytanie i „D
 
 ## Skill uklad-odpowiedzi: twarde limity długości (2026-11-08, decyzja Stefana 14A)
 Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 części B dostał liczby: ▶ do 15 słów, punkt do 2 zdań, wyjaśnienie zadania 1 zdanie, odpowiedź do 12 linii.
+
+## Skill uklad-odpowiedzi: puste linie w zadaniach i pytaniach (2026-11-08, zrzut Stefana)
+„Tekst jest tak sklejony, że nie mam wyraźnie oznaczonych pytań”: punkty 4 i 5 części B wymagają pustych linii między tytułem, wyjaśnieniem i krokami; etykiety K1A pogrubione; przykład poprawiony.

@@ -77,11 +77,13 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    lub dwa zdania, co to znaczy, po co i co się stanie bez tego. Bez szacunku czasu w nawiasie. Jedno zadanie to jeden cel;
    kilka czynności po kolei do jednego celu to kroki w tym samym zadaniu, oznaczone „K1A”, „K1B”, „K1C” (K jak krok),
    nie osobne zadania. Stefan odpowiada „1 zrobiłem” na całe zadanie, nie na krok. Zadania numerujesz od 1 w każdej
-   odpowiedzi.
+   odpowiedzi. Nic nie sklejaj (zrzut Stefana 2026-11-08: „tekst jest tak sklejony, że nie mam wyraźnie oznaczonych”):
+   linia „**Zadanie 1:** co zrobić”, pusta linia, zdanie po co, pusta linia, każdy krok w osobnej linii z pogrubioną
+   etykietą „**K1A**”, a między dwoma zadaniami pusta linia.
 5. **Pytania do Ciebie**: pytania numerujesz narastająco w całej rozmowie (jeśli w rozmowie padło już sześć pytań,
    następne to „**Pytanie 7:** …”), tak samo opcje: „**7A)** co się stanie – plus: …; minus: …”, każda opcja w osobnej linii,
    przed opcjami linia „Dlaczego to ważne: …”, na końcu „➜ Polecam 7B, bo …”. Stefan odpowiada „7B”. Decyzje zawsze tu,
-   nigdy w zadaniach.
+   nigdy w zadaniach. Pusta linia po pytaniu, po „Dlaczego to ważne” i przed „➜ Polecam”; opcje jedna pod drugą.
 6. **Zrobione** i pozostałe podsumowania: punkty „- **wynik w jednym zdaniu.** Jedno lub dwa zdania, co to zmienia
    dla Stefana i jaki problem rozwiązuje”, dla kogoś, kto nie śledził wątku.
 7. Każdy plik i każdy adres jako odnośnik `[krótka nazwa](pełny adres lub ścieżka)`, nigdy sama nazwa ani goły adres.
@@ -126,17 +128,22 @@ Przykład krótkiej odpowiedzi:
 🔵 **Zadania dla Ciebie**
 
 **Zadanie 1:** Przekaż Ani hasło tymczasowe z pliku [haslo-ania.txt](C:\Projekty\konta\haslo-ania.txt)
+
 Bez tego nie zaloguje się po raz pierwszy, a konto po tygodniu samo się zablokuje.
-K1A Otwórz plik z odnośnika powyżej.
-K1B Prześlij hasło Ani na WhatsAppie, nie mailem.
+
+**K1A** Otwórz plik z odnośnika powyżej.
+**K1B** Prześlij hasło Ani na WhatsAppie, nie mailem.
 
 ---
 🟤 **Pytania do Ciebie**
 
 **Pytanie 7:** Czy Ania ma też dostęp do folderu KPEU?
+
 Dlaczego to ważne: bez niego nie zobaczy wniosków, nad którymi pracuje Marcin.
+
 **7A)** Tak, pełny dostęp – plus: pracuje od razu; minus: widzi też stare umowy.
 **7B)** Tylko do folderu wniosków – plus: widzi tylko swoje; minus: Marcin musi jej udostępniać resztę ręcznie.
+
 ➜ Polecam 7B, bo stare umowy nie są jej potrzebne.
 
 Czekam na 7A albo 7B i na „1 zrobiłem”.
