@@ -58,6 +58,8 @@ treść maila.
 Pozdrawiam
 ```
 
+Mało tekstu i pokazywanie (decyzja Stefana 2026-11-08: „nie chcę i nie jestem w stanie czytać takiej ilości tekstu”): pisz naprawdę mało, szczegóły dopiero, gdy Stefan dopyta; co da się pokazać (schemat, wygląd, porównanie), pokazuj zamiast opisywać. Mod (0.41.0) sam rysuje nad ramką kafle stanu (ile zrobione, nie udało się, czeka na Ciebie, pytania), a w punkcie wyjaśnienia pokazuje tylko pogrubione zdanie i chowa resztę za przyciskiem „›”, więc pierwsze zdanie punktu ma nieść całą treść. Gdy w odpowiedzi jest tabela, mod niczego nie chowa ani nie przygasza (Stefan: „nie proponuj mi ukrywać, przygaszać, kiedy mam tabelę”). Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Nigdy nie pogrubiaj początków słów („bionic reading”, Stefan go nie chce; badania nie pokazują korzyści). Brak uprawnień (Stefan 2026-11-08: „czasami tego nie widzę”): gdy coś się nie udało przez brak uprawnień, zgodę albo blokadę trybu uprawnień, daj to w osobnej sekcji `🔴 **Brak uprawnień**` (mod rysuje ją z kłódką): co dokładnie zostało zablokowane, a pod spodem zadanie z kliknięciami, którymi Stefan to zmieni (na przykład przełączenie trybu z automatycznego na ręczny); nigdy nie chowaj tego w „Nie udało się” ani w wyjaśnieniu.
+
 ## B. Bez nakładki
 
 Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dopisujesz to, co tam dorysowuje nakładka:
@@ -87,6 +89,16 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 8. Gdy odpowiedź kończy się pytaniem albo zadaniem, ostatnie zdanie odpowiedzi mówi wprost, czego od Stefana potrzebujesz
    („Czekam na 7A albo 7B.”), bo tu nie ma dymka ani linii stanu, które by mu to pokazały.
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
+
+10. Mało tekstu (Stefan 2026-11-08): cała odpowiedź mieści się na ekranie telefonu; szczegóły dopiero, gdy Stefan dopyta.
+11. Kafle stanu: pod paskiem „Odpowiedź N” jedna linia „🟢 **3** zrobione · 🔴 **1** nie udało się · 🟠 **1** czeka na Ciebie · 🟣 **1** pytanie”
+    (tylko te, które są). W Claude Code kafle rysuje mod, więc tam tej linii nie piszesz.
+12. Pokazuj zamiast opisywać: schemat, porównanie albo wygląd rysuj jako obraz w odpowiedzi (narzędzie do wizualizacji w czacie),
+    gdy jest dostępne. Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Przy tabeli niczego nie chowasz ani nie przygaszasz.
+13. Decyzja jako przyciski: gdy w czacie jest narzędzie do wizualizacji, pytanie dostaje przyciski (8A, 8B), które same wysyłają
+    odpowiedź; tekst pytania wtedy krótki, bez powtarzania opcji.
+14. Brak uprawnień: osobna sekcja `🔴 **Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
+15. Nigdy nie pogrubiaj początków słów.
 
 Przykład krótkiej odpowiedzi:
 

@@ -11,7 +11,7 @@ const LEAD = String.raw`^(#+\s*)?(\p{Extended_Pictographic}️?)?\s*\**\s*`
 const MARK = new RegExp(LEAD, 'u')
 const KINDS: readonly [Kind, RegExp][] = [
   ['done', new RegExp(`${LEAD}zrobione`, 'iu')],
-  ['failed', new RegExp(`${LEAD}(nie udało się|problem)`, 'iu')],
+  ['failed', new RegExp(`${LEAD}(nie udało się|problem|brak uprawnień)`, 'iu')],
   ['open', new RegExp(`${LEAD}niewyjaśnion`, 'iu')],
   ['todo', new RegExp(`${LEAD}(do zrobienia|zadani[ae] dla)`, 'iu')],
   ['questions', new RegExp(`${LEAD}pytani`, 'iu')],

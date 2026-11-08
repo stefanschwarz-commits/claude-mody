@@ -6,6 +6,7 @@ import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions,
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe, shortViewOf } from './zakreslacz'
+import { foldOf, hasTable, isPermission, tilesOf } from './skroty'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -86,6 +87,8 @@ function stampText(at: number, sameDayAs?: number): string {
 const openTexts = atom({ plugin: 'wyglad', key: 'openTexts' } as const, [] as string[])
 // Answers whose explanation shows only its marked runs ("Tylko wyróżnione"), by key.
 const onlyMarks = atom({ plugin: 'wyglad', key: 'onlyMarks' } as const, [] as string[])
+// Points of the explanation whose hidden rest Stefan opened (key of the answer + block).
+const openPoints = atom({ plugin: 'wyglad', key: 'openPoints' } as const, [] as string[])
 // Every task asked of Stefan in this session, and the questions of the latest answer.
 const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[])
 // The text of the latest final answer, so a short one without ▶ is not taken for a work note.
@@ -703,6 +706,9 @@ export const register: Register = on => {
     const barText = stamp ? `Odpowiedź ${stamp.n} · ${stampText(stamp.at, isLatest ? undefined : now)}` : isLatest ? 'Nowa odpowiedź' : 'Odpowiedź'
     const isOpen = (await read($, openTexts)).includes(key)
     const onlyMarked = await read($, onlyMarks)
+    const pointsOpen = await read($, openPoints)
+    // With a table in the answer nothing folds (Stefan 2026-11-08).
+    const canFold = !hasTable(text)
     const tint = await tintOf($)
     const ink = inkOf(tint)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
@@ -729,6 +735,27 @@ export const register: Register = on => {
               <Text dimColor>{barText}</Text>
             </Box>
           )}
+          {/* Status tiles: what is done, failed, waits for Stefan or asks him, seen before any reading. */}
+          {(() => {
+            const t = tilesOf(reply.parts, questions.length)
+            const all = [
+              { n: t.done, label: 'zrobione', color: ink.green },
+              { n: t.failed, label: 'nie udało się', color: ink.red },
+              { n: t.todo, label: 'czeka na Ciebie', color: ink.orange },
+              { n: t.questions, label: t.questions === 1 ? 'pytanie' : 'pytania', color: ink.sand },
+            ].filter(tile => tile.n > 0)
+            if (all.length === 0) return null
+            return (
+              <Box flexDirection="row" gap={1} flexWrap="wrap">
+                {all.map(tile => (
+                  <Box key={`${key}-tile-${tile.label}`} borderStyle="round" borderColor={tile.color} paddingX={1} flexDirection="row" gap={1}>
+                    <Text bold color={tile.color}>{String(tile.n)}</Text>
+                    <Text>{tile.label}</Text>
+                  </Box>
+                ))}
+              </Box>
+            )
+          })()}
           {/* The headline and the explanation are the answer's main content, so they stand in a
               frame of their own, the strongest on the page; the lists below are only what to do. */}
           <Box flexDirection="column" borderStyle="round" borderColor={ink.text} paddingX={1} gap={1}>
@@ -773,10 +800,26 @@ export const register: Register = on => {
                       {block.kind === 'md' || (!block.runs.some(run => run.isMark) && !block.isBullet) ? (
                         <Markdown text={block.kind === 'md' ? block.text : fileLinksOf(block.runs.map(run => (run.href ? `[${run.text}](${run.href})` : run.path ? `[${run.text}](${run.path})` : run.text)).join(''))} />
                       ) : (
-                        <Box flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet && (block.level ?? 1) > 1 ? 2 : 0}>
-                          {block.isBullet ? <Text>{(block.level ?? 1) > 1 ? '◦' : '•'}</Text> : null}
-                          <Text dimColor={hasSentence(block.runs)}>{block.runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
-                        </Box>
+                        (() => {
+                          // Each point shows its bold sentence; the rest opens on "›" (Stefan 2026-11-08).
+                          const pointKey = `${key}-b${i}`
+                          const fold = canFold && block.isBullet ? foldOf(block.runs) : undefined
+                          const isPointOpen = pointsOpen.includes(pointKey)
+                          const runs = fold && !isPointOpen ? fold.lead : block.runs
+                          return (
+                            <Box flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet && (block.level ?? 1) > 1 ? 2 : 0}>
+                              {block.isBullet ? <Text>{(block.level ?? 1) > 1 ? '◦' : '•'}</Text> : null}
+                              <Text dimColor={hasSentence(runs)}>{runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
+                              {fold ? (
+                                <Button
+                                  key={`point-${pointKey}`}
+                                  label={isPointOpen ? '‹' : '›'}
+                                  onPress={() => void update($, openPoints, list => (list.includes(pointKey) ? list.filter(x => x !== pointKey) : [...list, pointKey]))}
+                                />
+                              ) : null}
+                            </Box>
+                          )
+                        })()
                       )}
                       {/* A file named in the block: a row with a button that shows it in its folder,
                           since the desktop opens no file link inline; on the phone a note. */}
@@ -969,7 +1012,9 @@ export const register: Register = on => {
             {folded.map((part, i) => {
               // Each frame folds and opens on its own button.
               const full = opened.includes(`${key}-${i}`)
-              const look = SECTION[part.kind as keyof typeof SECTION] ?? SECTION.info
+              const base = SECTION[part.kind as keyof typeof SECTION] ?? SECTION.info
+              // A failure for want of a permission is named so: Stefan can change the permission himself.
+              const look = part.kind === 'failed' && isPermission(part.body) ? { ...base, title: 'Brak uprawnień', icon: 'lock' } : base
               const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
 
 ${part.body}` : part.body
