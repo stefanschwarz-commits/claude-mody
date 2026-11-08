@@ -64,13 +64,15 @@ Mało tekstu i pokazywanie (decyzja Stefana 2026-11-08: „nie chcę i nie jeste
 
 Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dopisujesz to, co tam dorysowuje nakładka:
 
-1. Zacznij od linii poziomej `---`, pod nią pogrubiony pasek „**Odpowiedź N · dziś GG:MM**” (N = numer tej odpowiedzi w rozmowie, który sam liczysz; godzina w czasie polskim; decyzja Stefana 2A z 2026-11-02, zamiast dawnej linii z pinezką 📍), a pod nim linia `▶ ` z jednym zdaniem: co się stało. W Claude Code z nakładką pasek rysuje mod, więc tam piszesz od razu od ▶.
+1. Zacznij od linii poziomej `---`, pod nią pogrubiony pasek „**Odpowiedź N · dziś GG:MM**” (N = numer tej odpowiedzi w rozmowie, który sam liczysz; godzina w czasie polskim; decyzja Stefana 2A z 2026-11-02, zamiast dawnej linii z pinezką 📍), a pod nim nagłówek `### ▶ ` z jednym zdaniem: co się stało (nagłówek, bo zwykła linia ▶ ginęła w tekście; Stefan 2026-11-09: „otwarcie odpowiedzi jest praktycznie niewidoczne”). W Claude Code z nakładką pasek rysuje mod, więc tam piszesz od razu od ▶.
 2. Potem sekcja **Co się zmieniło**: wyjaśnienie w punktach „- ”, każdy punkt o jednej rzeczy, zaczęty od pogrubionego
    zdania (co się zmieniło), a po nim jedno lub dwa zdania, co to znaczy dla Stefana, pełnymi zdaniami, bez skrótów
    i nazw plików. To główna treść odpowiedzi. Pogrubienie całego zdania = najważniejsze zdanie akapitu; pogrubienie
    jednego słowa albo krótkiego fragmentu (do trzech słów) = słowo, które ma wpaść w oko. W akapicie najwyżej jedno
    wyróżnienie. Co najmniej trzy równoległe sprawy o tych samych cechach (kto, co, kiedy, stan) pisz tabelą z takimi
    kolumnami, a jedno pogrubione zdanie zostaw nad tabelą (decyzja Stefana 5A z 2026-11-04).
+   Pogrubiony początek punktu ma najwyżej 6 słów, bez nagłówka „Co się zmieniło”, i nie powtarza tego, co jest w „Zrobione”
+   (wzór przyjęty przez Stefana 2026-11-09: „**Cel sukcesu bez daty.** Cała kadra kierownicza na poziomie podążającego.”).
 3. Sekcje tylko wtedy, gdy występują, w tej kolejności i z tymi nagłówkami: 🟢 **Zrobione**, 🔴 **Nie udało się**,
    🟠 **Niewyjaśnione**, 🔵 **Zadania dla Ciebie**, 🟤 **Pytania do Ciebie**, ⚪ **Dla informacji**; między sekcjami linia `---`.
 4. **Zadania dla Ciebie**: każde zadanie w osobnym akapicie zaczętym od „**Zadanie 1:** co zrobić”, a pod spodem jedno
@@ -99,8 +101,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     linia ▶ do 15 słów; punkt „Co się zmieniło” do 2 zdań; punkt podsumowania do 2 zdań; wyjaśnienie zadania 1 zdanie;
     „Dlaczego to ważne” 1 zdanie; cała odpowiedź do 12 linii tekstu (tabela liczy się jako 1 linia). Co nie mieści się
     w limicie, zostaje w notatkach albo czeka, aż Stefan dopyta.
-11. Kafle stanu: kolejność zawsze: linia `---`, pasek „Odpowiedź N”, linia kafli, dopiero potem `▶`. Linia kafli „🟢 **3** zrobione · 🔴 **1** nie udało się · 🟠 **1** czeka na Ciebie · 🟣 **1** pytanie”
-    (tylko te, które są). W Claude Code kafle rysuje mod, więc tam tej linii nie piszesz.
+11. Bez linii kafli w czacie (Stefan 2026-11-09 o „2 zrobione”: „w ogóle nie jest to potrzebne, nie przydaje mi się”). Co czeka na
+    Stefana, mówi ostatnie zdanie odpowiedzi.
 12. Pokazuj zamiast opisywać: schemat, porównanie albo wygląd rysuj jako obraz w odpowiedzi (narzędzie do wizualizacji w czacie),
     gdy jest dostępne. Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Przy tabeli niczego nie chowasz ani nie przygaszasz.
 13. Decyzja jako przyciski: gdy w czacie jest narzędzie do wizualizacji, pytanie dostaje przyciski (8A, 8B), które same wysyłają
@@ -109,7 +111,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     Obraz z przyciskami pojawia się nad odpowiedzią końcową, oderwany od niej, więc przyciski nigdy nie występują bez pytania
     (zrzuty Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”): w tym samym obrazie rysuj całe pytanie „Pytanie 7: …?”,
     linię „Dlaczego to ważne: …” i pod spodem przyciski z polecaną opcją oznaczoną gwiazdką; wywołaj go jako ostatnie narzędzie
-    przed odpowiedzią. W odpowiedzi końcowej wtedy tylko kafel „🟣 1 pytanie” i zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
+    przed odpowiedzią. W odpowiedzi końcowej wtedy tylko zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
 14. Brak uprawnień: osobna sekcja `🔴 **Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
 
@@ -117,12 +119,9 @@ Przykład krótkiej odpowiedzi:
 
 ---
 **Odpowiedź 3 · dziś 09:14**
-🟠 **1** czeka na Ciebie · 🟣 **1** pytanie
-▶ Konto Google dla Ani jest założone, czekam na jedną decyzję.
+### ▶ Konto Google dla Ani założone.
 
-**Co się zmieniło**
-- **Ania ma konto Google na swój adres ELMI.** Dotąd logowała się na wspólne konto, więc nikt nie wiedział, kto co zmienił;
-  teraz każda zmiana ma jej imię.
+- **Ania ma własne konto.** Każda zmiana ma teraz jej imię.
 
 ---
 🔵 **Zadania dla Ciebie**

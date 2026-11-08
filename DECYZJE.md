@@ -318,3 +318,6 @@ Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 
 
 ## Skill uklad-odpowiedzi: puste linie w zadaniach i pytaniach (2026-11-08, zrzut Stefana)
 „Tekst jest tak sklejony, że nie mam wyraźnie oznaczonych pytań”: punkty 4 i 5 części B wymagają pustych linii między tytułem, wyjaśnieniem i krokami; etykiety K1A pogrubione; przykład poprawiony.
+
+## Skill uklad-odpowiedzi: ▶ jako nagłówek, bez kafli w czacie, krótszy wzór (2026-11-09, Stefan)
+„To wygląda fatalnie”; „otwarcie odpowiedzi jest praktycznie niewidoczne”; o kaflu „2 zrobione”: „w ogóle nie jest to potrzebne”. Część B: ▶ jako nagłówek ###, linia kafli usunięta, pogrubiony początek punktu do 6 słów, bez nagłówka „Co się zmieniło”, nowy przykład. Mod w Claude Code bez zmian.
