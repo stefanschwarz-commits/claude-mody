@@ -327,3 +327,6 @@ Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 
 
 ## Skill uklad-odpowiedzi: wariant z nakładką tylko z narzędziem odhacz (2026-11-09, Stefan)
 Lokalna sesja Cowork czytała regułę z ~/.claude/rules i pisała w części A, choć modu tam nie ma. Teraz o wariancie decyduje tylko narzędzie `odhacz`. Do zrobienia na komputerze: skopiować SKILL.md do ~/.claude/rules/wyglad-uklad-odpowiedzi.md (sesja w chmurze nie ma dostępu do ~/.claude).
+
+## Skill „uklad-odpowiedzi” (treść z 0.41.0) wgrany na trzy konta (2026-11-09, „tak” Stefana)
+Wgrany wbudowaną przeglądarką z aktualnego `skills/uklad-odpowiedzi/SKILL.md`: Personal v12 (inne sesje wgrywały tam wersje pośrednie), ELMI v5, ATERIMA SERVICES v4. Treść identyczna na trzech kontach.
