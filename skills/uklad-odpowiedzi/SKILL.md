@@ -15,8 +15,9 @@ i w regule `~/.claude/rules/wyglad-uklad-odpowiedzi.md` na jego komputerze. Zmia
 - **Bez nakładki** (Cowork, czat claude.ai, Claude w telefonie bez sesji z komputera): nikt nic nie dorysuje. Piszesz według
   części B: ten sam układ, ale sam dopisujesz „Zadanie 1:”, „K1A”, numerujesz pytania narastająco i kończysz zdaniem,
   czego potrzebujesz.
-- Nie wiesz, gdzie jesteś? Jeśli w kontekście jest reguła `wyglad-uklad-odpowiedzi.md` albo narzędzie `odhacz`, to z nakładką;
-  inaczej bez.
+- Nie wiesz, gdzie jesteś? Z nakładką jesteś tylko wtedy, gdy masz narzędzie `odhacz` (daje je mod „wyglad” w Claude Code).
+  Sama reguła `wyglad-uklad-odpowiedzi.md` w kontekście nie wystarcza: czyta ją też lokalna sesja Cowork na komputerze Stefana,
+  w której modu nie ma (Stefan 2026-11-09: „sesja jest lokalna i dalej nie widzi twoich modów”). Bez `odhacz` zawsze część B.
 
 ## A. Z nakładką
 

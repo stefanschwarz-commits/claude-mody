@@ -324,3 +324,6 @@ Zrzut z sesji manifestu: nowy układ, ale punkty dalej po trzy zdania. Punkt 10 
 
 ## Skill uklad-odpowiedzi: jedna tabela zamiast „Co się zmieniło” i „Zrobione” (2026-11-09, Stefan)
 „Co jest zrobione, a co się zmieniło? Nie wiem, co się różni.” W czacie jedna tabela Nr | Co | Stan (✓ ✗ ⏳).
+
+## Skill uklad-odpowiedzi: wariant z nakładką tylko z narzędziem odhacz (2026-11-09, Stefan)
+Lokalna sesja Cowork czytała regułę z ~/.claude/rules i pisała w części A, choć modu tam nie ma. Teraz o wariancie decyduje tylko narzędzie `odhacz`. Do zrobienia na komputerze: skopiować SKILL.md do ~/.claude/rules/wyglad-uklad-odpowiedzi.md (sesja w chmurze nie ma dostępu do ~/.claude).
