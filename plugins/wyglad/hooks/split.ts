@@ -90,7 +90,19 @@ export function splitReply(text: string): Reply | undefined {
     const [head, ...tail] = body.split(/\r?\n/)
     const kind = isHeaderOnly(head) ? kindOf(head) : 'plain'
     if (kind === 'plain') {
-      parts.push({ kind, title: '', body })
+      // A question written inside the explanation, without its header ("Pytanie 1: …" with
+      // its options after it; Stefan's screenshot of 2026-11-11 from the ELMI session, which
+      // asked one question at a time and dropped the section): from that line on it is the
+      // questions part, so it gets its frame, buttons and number like any other question.
+      const bodyLines = body.split(/\r?\n/)
+      const q = bodyLines.findIndex(line => INLINE_QUESTION.test(line))
+      if (q >= 0) {
+        const before = bodyLines.slice(0, q).join('\n').trim()
+        if (before !== '') parts.push({ kind, title: '', body: before })
+        parts.push({ kind: 'questions', title: 'Pytania do Ciebie', body: bodyLines.slice(q).join('\n').trim() })
+      } else {
+        parts.push({ kind, title: '', body })
+      }
     } else {
       const title = head.replace(MARK, '').replace(/\*\*/g, '').replace(/:\s*$/, '').trim()
       parts.push({ kind, title, body: tail.join('\n').trim() })
@@ -100,15 +112,27 @@ export function splitReply(text: string): Reply | undefined {
   return { headline, parts }
 }
 
+// A line that opens a question where no header announced one: "Pytanie 1: …", also with
+// a dot or an emoji in front and in bold.
+const INLINE_QUESTION = /^(?:[^\p{L}\p{N}*]*)\**\s*Pytanie\s+\d+[.:]/iu
+
+// Options written one after another in a single line ("**1A)** … **1B)** … **1C)** …"),
+// each on its own line, so the frame draws a button per option.
+export function splitInlineOptions(line: string): string[] {
+  const starts = [...line.matchAll(/\*\*\d*[A-Z]\)\s*★?\s*\*\*/g)].map(m => m.index)
+  if (starts.length < 2) return [line]
+  return starts.map((at, i) => line.slice(at, starts[i + 1] ?? line.length).trim()).filter(Boolean)
+}
+
 // "**1. Pytanie?**", "Dlaczego…", "- **A)** …", "➜ Polecam …" per question.
 export function splitQuestions(body: string): Question[] {
   const out: Question[] = []
   let current: Question | undefined
-  for (const raw of body.split(/\r?\n/)) {
-    const line = raw.trim()
+  for (const raw of body.split(/\r?\n/).flatMap(l => splitInlineOptions(l.trim()))) {
+    const line = raw.trim().replace(/^[-*]\s+/, '')
     if (line === '') continue
     // "**1. Pytanie?**" or "**Pytanie 1: Pytanie?**" (the card adds "Pytanie N:" itself).
-    const start = /^(?:#+\s*)?\**\s*(?:Pytanie\s+)?(\d+)[.:]\s*\**\s*(.*?)\**\s*$/i.exec(line)
+    const start = /^(?:#+\s*)?(?:[^\p{L}\p{N}*]*)\**\s*(?:Pytanie\s+)?(\d+)[.:]\s*\**\s*(.*?)\**\s*$/iu.exec(line)
     if (start) {
       current = { number: start[1], text: `**${start[2]}**`, options: [], table: [], tip: '' }
       out.push(current)
@@ -118,8 +142,9 @@ export function splitQuestions(body: string): Question[] {
       current = { number: '1', text: '', options: [], table: [], tip: '' }
       out.push(current)
     }
-    // "- **1A) ★** text" and "- **1A) ★ Title.** text" (the bold runs into the text) both count.
-    if (/^[-*]\s+\*\*\d*[A-Z]\)\s*★?/.test(line)) current.options.push(line.replace(/^[-*]\s+/, ''))
+    // "- **1A) ★** text", "- **1A) ★ Title.** text" (the bold runs into the text) and a bare
+    // "**1A)** text" (no dash) all count.
+    if (/^\*\*\d*[A-Z]\)\s*★?/.test(line)) current.options.push(line)
     else if (line.startsWith('|')) current.table.push(line)
     else if (/^➜/.test(line)) current.tip = line
     else current.text += `${current.text ? '\n\n' : ''}${line}`

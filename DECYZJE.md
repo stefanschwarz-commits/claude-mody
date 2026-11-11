@@ -330,3 +330,6 @@ Lokalna sesja Cowork czytała regułę z ~/.claude/rules i pisała w części A,
 
 ## Skill „uklad-odpowiedzi” (treść z 0.41.0) wgrany na trzy konta (2026-11-09, „tak” Stefana)
 Wgrany wbudowaną przeglądarką z aktualnego `skills/uklad-odpowiedzi/SKILL.md`: Personal v12 (inne sesje wgrywały tam wersje pośrednie), ELMI v5, ATERIMA SERVICES v4. Treść identyczna na trzech kontach.
+
+## wyglad 0.41.1: pytanie wpisane w wyjaśnieniu dostaje ramkę i przyciski (2026-11-11, zrzut Stefana)
+Sesja ELMI, zadając jedno pytanie na raz, wpisała „🟤 Pytanie 1: …” z opcjami „**1A)** … **1B)** … **1C)**” w jednej linii wewnątrz wyjaśnienia, bez nagłówka „Pytania do Ciebie”; mod rysował to jako zwykły tekst, bez ramki i przycisków. Stefan: „pytania nie zostały potraktowane jako pytania”. Teraz linia „Pytanie N:” (także z kropką lub emoji z przodu) w wyjaśnieniu otwiera część pytań; opcje sklejone w jednej linii są rozdzielane na osobne; opcja bez myślnika też jest opcją. Materiały (obrazy) nad odpowiedzią to karty plików aplikacji, mod ich nie przenosi.
