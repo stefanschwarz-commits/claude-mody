@@ -912,7 +912,7 @@ export const register: Register = on => {
                     return (
                       <Box key={`${key}-todo-${n}`} flexDirection="row" backgroundColor={isTicked ? undefined : tint?.blue}>
                         <Box width={1} flexShrink={0} backgroundColor={isTicked ? ink.grey : 'suggestion'} />
-                        <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
+                        <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                         {isTicked ? (
                           <Box flexDirection="row" alignItems="flex-start" gap={1}>
                             {icon(els, e.surface, 'square-check', ink.grey, '☑')}
@@ -972,7 +972,7 @@ export const register: Register = on => {
                 return (
                   <Box key={`${key}-q${q.number}`} flexDirection="row">
                     <Box width={1} flexShrink={0} backgroundColor={ink.grey} />
-                    <Box flexDirection="row" alignItems="flex-start" flexGrow={1} paddingX={1} gap={1}>
+                    <Box flexDirection="row" alignItems="flex-start" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
                     <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
                   </Box></Box>
@@ -981,7 +981,7 @@ export const register: Register = on => {
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.sand}>
                   <Box width={1} flexShrink={0} backgroundColor={ink.sand} />
-                  <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
+                  <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Box flexDirection="row" alignItems="flex-start" gap={1}>
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
@@ -1030,7 +1030,7 @@ ${part.body}` : part.body
                 <Box key={`f${i}`} flexDirection="column" gap={1}>
                 <Box flexDirection="row" backgroundColor={tint?.[look.tint]}>
                   <Box width={1} flexShrink={0} backgroundColor={look.color} />
-                  <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
+                  <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
                     <Text bold>{look.title}</Text>
                   </Box>

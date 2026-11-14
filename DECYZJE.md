@@ -351,3 +351,6 @@ Stefan: „te kropki są naprawdę paskudne”, wybór „Kolorowy pasek z boku�
 
 ## 2026-11-14 skill uklad-odpowiedzi odświeżony: nagłówki bez kropek
 Reguła wyglad-uklad-odpowiedzi.md zmieniona przez sesję „Instrukcje dla Claude” (słowa Stefana: „te kropki są naprawdę paskudne”). SKILL.md = ta reguła bez zmian. Do wgrania na trzy konta po „tak” Stefana (Personal v12, ELMI v5, ATERIMA v4 to wersje ze starego tekstu).
+
+## 2026-11-14 wyglad 0.42.1: margines nad i pod zawartością ramek
+Stefan (zrzut paska Zrobione): „Dodaj po jednym wierszu przed i po, aby miał ładne marginesy.” Ramki z paskiem mają paddingY 1.
