@@ -354,3 +354,6 @@ Reguła wyglad-uklad-odpowiedzi.md zmieniona przez sesję „Instrukcje dla Clau
 
 ## 2026-11-14 wyglad 0.42.1: margines nad i pod zawartością ramek
 Stefan (zrzut paska Zrobione): „Dodaj po jednym wierszu przed i po, aby miał ładne marginesy.” Ramki z paskiem mają paddingY 1.
+
+## 2026-11-14 skill uklad-odpowiedzi, część B: karta z ikonami i przyciskami, bez kulek
+Stefan o próbnej karcie (ikony Tabler w kolorze stanu, niebieska karta zadania, pytanie z przyciskami 19A/19B): „masz tutaj zarówno ikonki, jak i przyciski, możemy to wdrożyć”; o 🔵🟤: „nie podobają mi się te kulki”. Część B dostała punkty 16 (bez kulek) i 17 (karta z ikonami, przycisk z zapasową linią „Napisz 19A”). Część A bez zmian.
