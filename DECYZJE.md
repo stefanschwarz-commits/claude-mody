@@ -345,3 +345,6 @@ Stefan (zrzut): „Czy mógłby w każdej sesji kolor organizacji widzialny, że
 
 ## 2026-11-14 wyglad 0.41.2 i ZESPOL.md: początek wersji dla zespołu
 Decyzja Stefana „1A”: robimy wersję modów dla pracowników ELMI i ATERIMA. Teksty, które Claude czyta o „Stefanie”, zmienione na „użytkownika”; ZESPOL.md = instrukcja instalacji (wyglad, projekt, dzwiek; bez komputer i straznik). Zostaje: neutralny układ odpowiedzi do instrukcji organizacji (po „tak” Stefana).
+
+## 2026-11-14 wyglad 0.42.0: kolorowy pasek z boku zamiast ramek z ikonami
+Stefan: „te kropki są naprawdę paskudne”, wybór „Kolorowy pasek z boku” (z czterech wariantów na obrazie). Ramki Zrobione/Nie udało się/Niewyjaśnione/Dla informacji, zadań i pytań: wąski kolorowy pasek po lewej zamiast obramowania i ikony. Silnik nie dopuszcza jednostronnych obramowań, więc pasek to osobny Box z tłem. Skill zespołu bez emoji w nagłówkach (mod rozpoznaje nagłówki także bez nich). Reguła globalna i skill Stefana nadal mają emoji w nagłówkach: do zmiany przez sesję „Instrukcje dla Claude”.

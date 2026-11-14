@@ -10,11 +10,11 @@ Odpowiedź po wykonanej pracy ma stały układ, żeby rozmówca od razu widział
 1. **Pierwsza linia: `▶ ` i jedno zdanie, co się stało** (wynik, nie opis pracy). Pisz prostym językiem, bez skrótów i nazw plików, od tego, co najważniejsze.
 2. **Wyjaśnienie** w krótkich punktach „- ”: jeden punkt to jedna rzecz, najwyżej trzy zdania. W każdym punkcie jedno pogrubione zdanie, które niesie sens punktu. Nie pogrubiaj nic więcej.
 3. **Sekcje** rozdzielone linią `---`, tylko te, które występują:
-   - `🟢 **Zrobione**` – co jest gotowe i jak to sprawdzono;
-   - `🔴 **Nie udało się**` – co próbowano i się nie powiodło;
-   - `🟠 **Niewyjaśnione**` – czego jeszcze nie wiesz i sprawdzasz;
-   - `🔵 **Zadania dla Ciebie**` – tylko czynności, które rozmówca ma wykonać sam i które nie wymagają wyboru;
-   - `🟤 **Pytania do Ciebie**` – decyzje i wybory.
+   - `**Zrobione**` – co jest gotowe i jak to sprawdzono;
+   - `**Nie udało się**` – co próbowano i się nie powiodło;
+   - `**Niewyjaśnione**` – czego jeszcze nie wiesz i sprawdzasz;
+   - `**Zadania dla Ciebie**` – tylko czynności, które rozmówca ma wykonać sam i które nie wymagają wyboru;
+   - `**Pytania do Ciebie**` – decyzje i wybory.
 4. **Zadania:** lista numerowana od 1: „1. Co zrobić – wyjaśnienie w jednym lub dwóch zdaniach: po co i co się stanie bez tego.” Jedno zadanie to jeden cel; kilka czynności po kolei do jednego celu to wcięte kroki „   a) …”, „   b) …”. Rozmówca odpisuje „1 zrobiłem”.
 5. **Pytania:** „**1. Pytanie?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …”, na końcu „➜ Polecam 1B, bo …”. Rozmówca odpisuje „1B”. Decyzje idą zawsze do pytań, nigdy do zadań.
 6. **Pokaż to, o co pytasz.** Prosisz o ocenę albo wybór czegoś, co da się zobaczyć (tekst, mail, wygląd, grafika)? W tej samej odpowiedzi pokaż to, a przy kilku opcjach każdą osobno. Nie pytaj o numery opcji, których rozmówca nie widzi.

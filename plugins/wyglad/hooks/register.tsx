@@ -910,7 +910,9 @@ export const register: Register = on => {
                     const n = all.slice(0, i + 1).filter(one => one.isItem).length
                     const isTicked = ticked.includes(`${key}:${i}`)
                     return (
-                      <Box key={`${key}-todo-${n}`} flexDirection="column" borderStyle="round" borderColor={isTicked ? ink.grey : 'suggestion'} backgroundColor={isTicked ? undefined : tint?.blue} paddingX={1} gap={1}>
+                      <Box key={`${key}-todo-${n}`} flexDirection="row" backgroundColor={isTicked ? undefined : tint?.blue}>
+                        <Box width={1} flexShrink={0} backgroundColor={isTicked ? ink.grey : 'suggestion'} />
+                        <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
                         {isTicked ? (
                           <Box flexDirection="row" alignItems="flex-start" gap={1}>
                             {icon(els, e.surface, 'square-check', ink.grey, '☑')}
@@ -936,7 +938,7 @@ export const register: Register = on => {
                             ))}
                           </Box>
                         )}
-                      </Box>
+                      </Box></Box>
                     )
                   })}
                   {all.filter(item => !item.isItem && isFence(item.text)).map((item, i) => (
@@ -968,17 +970,19 @@ export const register: Register = on => {
               // Answered: the question keeps its title and the choice, loses its options and buttons.
               if (choice) {
                 return (
-                  <Box key={`${key}-q${q.number}`} flexDirection="row" alignItems="flex-start" borderStyle="round" borderColor={ink.grey} paddingX={1} gap={1}>
-                    {icon(els, e.surface, 'message-question', ink.grey, '●')}
+                  <Box key={`${key}-q${q.number}`} flexDirection="row">
+                    <Box width={1} flexShrink={0} backgroundColor={ink.grey} />
+                    <Box flexDirection="row" alignItems="flex-start" flexGrow={1} paddingX={1} gap={1}>
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
                     <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
-                  </Box>
+                  </Box></Box>
                 )
               }
               return (
-                <Box key={`${key}-q${q.number}`} flexDirection="column" borderStyle="round" borderColor={ink.sand} backgroundColor={tint?.sand} paddingX={1} gap={1}>
+                <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.sand}>
+                  <Box width={1} flexShrink={0} backgroundColor={ink.sand} />
+                  <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
                   <Box flexDirection="row" alignItems="flex-start" gap={1}>
-                    {icon(els, e.surface, 'message-question', ink.sand, '●')}
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
                   {why.length > 0 ? marked(els, why.join('\n\n'), tint?.mark, true) : null}
@@ -1001,7 +1005,7 @@ export const register: Register = on => {
                       ))}
                     </Box>
                   ) : null}
-                </Box>
+                </Box></Box>
               )
             })}
           </Box>
@@ -1024,9 +1028,10 @@ ${part.body}` : part.body
               const isFence = (piece: Piece) => 'text' in piece && piece.text.startsWith('```')
               return (
                 <Box key={`f${i}`} flexDirection="column" gap={1}>
-                <Box flexDirection="column" borderStyle="round" borderColor={look.color} backgroundColor={tint?.[look.tint]} paddingX={1} gap={1}>
+                <Box flexDirection="row" backgroundColor={tint?.[look.tint]}>
+                  <Box width={1} flexShrink={0} backgroundColor={look.color} />
+                  <Box flexDirection="column" flexGrow={1} paddingX={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
-                    {icon(els, e.surface, look.icon, ink[look.tint], look.glyph)}
                     <Text bold>{look.title}</Text>
                   </Box>
                   {!isLongFold || full ? (
@@ -1065,7 +1070,7 @@ ${part.body}` : part.body
                       <Button key={`more-${key}-${i}`} label={full ? 'Zwiń szczegóły' : 'Pokaż szczegóły'} onPress={() => void update($, openFrames, list => (list.includes(`${key}-${i}`) ? list.filter(x => x !== `${key}-${i}`) : [...list, `${key}-${i}`]))} />
                     </Box>
                   ) : null}
-                </Box>
+                </Box></Box>
                 {(!isLongFold || full ? all.filter(isFence) : []).map((piece, j) => (
                   <Markdown key={`fence${i}-${j}`} text={'text' in piece ? piece.text : ''} />
                 ))}
