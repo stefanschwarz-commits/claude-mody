@@ -31,10 +31,10 @@ Wyjaśnienie (tekst między nagłówkiem ▶ a sekcjami) jest dla Stefana najwa�
 
 Po co jest wyjaśnienie: to główna treść odpowiedzi, opowieść dla Stefana (co się zmieniło, dlaczego, co to dla niego znaczy, czego nie wie, na co ma uważać), a ramki pod nim są tylko listą działań i wyników. Wyjaśnienie pisz tak, jakby Stefan wracał do wątku po tygodniu: w punktach (lista „- ”, nie numerowana; decyzja Stefana 2026-11-01), każdy punkt o jednej rzeczy, zaczęty od pogrubionego zdania, które mówi, co się zmieniło, a po nim jedno lub dwa zdania, co to dla Stefana znaczy; pełnymi zdaniami, bez skrótów i nazw plików, od tego, co najważniejsze; nie powtarzaj w nim list z ramek. Mod rysuje każdy punkt z kropką i z wyróżnieniami w środku.
 
-Nagłówki sekcji: 🟢 **Zrobione**, 🔴 **Nie udało się**, 🟠 **Niewyjaśnione**, 🔵 **Zadania dla Ciebie**, 🟤 **Pytania do Ciebie**, ⚪ **Dla informacji** (dawne ✅ ❓ ℹ️, „Problem” i „Do zrobienia przez Ciebie” też działają). Zadania i pytania to dwie różne rzeczy w dwóch kolorach (decyzja Stefana 2026-11-01): mod nie rysuje wspólnych tytułów sekcji (nagłówki w tekście zostają, bo po nich mod rozpoznaje sekcje), tylko każde zadanie w osobnej niebieskiej ramce „Zadanie 1: …” i każde pytanie w osobnej piaskowej ramce „Pytanie 1: …”, w tej samej formie; w zadaniu dwukropek i treść po myślniku rysuje mod, więc zadanie piszesz „1. Co zrobić – wyjaśnienie”. Linku w tytule pytania ani w zadaniu nie bierz w cudzysłów (aplikacja rysuje link jako chip, cudzysłów odstaje). Mod numeruje pytania narastająco w całej rozmowie (siódme pytanie w rozmowie to „Pytanie 7”, opcje „7A”, „7B”), więc Ty piszesz pytania zawsze od 1 w każdej odpowiedzi, a gdy Stefan odpowie „7B”, dostaniesz notatkę, które to pytanie Twojej odpowiedzi. Każda tylko, gdy występuje:
-- `🟢 **Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;
-- `🔴 **Nie udało się**`: co próbowałem i się nie powiodło;
-- `🟠 **Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).
+Nagłówki sekcji piszesz samym pogrubieniem, bez kolorowych kropek (decyzja Stefana 2026-11-14: „te kropki są naprawdę paskudne”; mod 0.42.0 rysuje kolorowy pasek z boku i rozpoznaje nagłówki bez emoji): **Zrobione**, **Nie udało się**, **Niewyjaśnione**, **Zadania dla Ciebie**, **Pytania do Ciebie**, **Dla informacji** (dawne ✅ ❓ ℹ️, „Problem” i „Do zrobienia przez Ciebie” też działają). Zadania i pytania to dwie różne rzeczy w dwóch kolorach (decyzja Stefana 2026-11-01): mod nie rysuje wspólnych tytułów sekcji (nagłówki w tekście zostają, bo po nich mod rozpoznaje sekcje), tylko każde zadanie w osobnej niebieskiej ramce „Zadanie 1: …” i każde pytanie w osobnej piaskowej ramce „Pytanie 1: …”, w tej samej formie; w zadaniu dwukropek i treść po myślniku rysuje mod, więc zadanie piszesz „1. Co zrobić – wyjaśnienie”. Linku w tytule pytania ani w zadaniu nie bierz w cudzysłów (aplikacja rysuje link jako chip, cudzysłów odstaje). Mod numeruje pytania narastająco w całej rozmowie (siódme pytanie w rozmowie to „Pytanie 7”, opcje „7A”, „7B”), więc Ty piszesz pytania zawsze od 1 w każdej odpowiedzi, a gdy Stefan odpowie „7B”, dostaniesz notatkę, które to pytanie Twojej odpowiedzi. Każda tylko, gdy występuje:
+- `**Zrobione**` (pierwsza sekcja po linii ▶): co jest gotowe i jak sprawdziłem, krótkie punkty;
+- `**Nie udało się**`: co próbowałem i się nie powiodło;
+- `**Niewyjaśnione**`: czego jeszcze nie wiem i sprawdzam, bez pytania do Stefana (decyzje idą do „Pytania do Ciebie”).
 
 Każde zadanie i każde pytanie ma własną ramkę (zadania niebieskie, pytania piaskowe), a Zrobione, Nie udało się, Niewyjaśnione i Dla informacji w osobnych kolorowych ramkach na końcu. Każdy punkt podsumowania: pogrubiony początek to wynik, nie temat („**Gira: bez nowych wydań.**”, nie „**Centrum Gira sprawdzone:**”), a pogrubienie kończy się razem ze zdaniem (nigdy „**…są zgodne**, a WhatsApp…”). Po pogrubieniu jedno lub dwa zdania, które mówią, co to zmienia dla Stefana i jaki problem rozwiązuje, napisane dla kogoś, kto nie śledził wątku i nie zna skrótów ani nazw plików (decyzja Stefana 2026-11-01: „co to oznacza? co to dla mnie znaczy? jaki problem rozwiązuje?”). Przykład: „**Spis kont opisuje nowy obieg poczty.** Dotąd pocztę roznosiły trzy osobne automaty; teraz jest jeden, więc sprawa z maila trafia do Ciebie jedną drogą i nic nie ginie między kontami.” Szczegóły (wersje, ceny, daty) idą do wyjaśnienia wyżej, nie do podsumowania.
 
@@ -59,7 +59,7 @@ treść maila.
 Pozdrawiam
 ```
 
-Mało tekstu i pokazywanie (decyzja Stefana 2026-11-08: „nie chcę i nie jestem w stanie czytać takiej ilości tekstu”): pisz naprawdę mało, szczegóły dopiero, gdy Stefan dopyta; co da się pokazać (schemat, wygląd, porównanie), pokazuj zamiast opisywać. Mod (0.41.0) sam rysuje nad ramką kafle stanu (ile zrobione, nie udało się, czeka na Ciebie, pytania), a w punkcie wyjaśnienia pokazuje tylko pogrubione zdanie i chowa resztę za przyciskiem „›”, więc pierwsze zdanie punktu ma nieść całą treść. Gdy w odpowiedzi jest tabela, mod niczego nie chowa ani nie przygasza (Stefan: „nie proponuj mi ukrywać, przygaszać, kiedy mam tabelę”). Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Nigdy nie pogrubiaj początków słów („bionic reading”, Stefan go nie chce; badania nie pokazują korzyści). Brak uprawnień (Stefan 2026-11-08: „czasami tego nie widzę”): gdy coś się nie udało przez brak uprawnień, zgodę albo blokadę trybu uprawnień, daj to w osobnej sekcji `🔴 **Brak uprawnień**` (mod rysuje ją z kłódką): co dokładnie zostało zablokowane, a pod spodem zadanie z kliknięciami, którymi Stefan to zmieni (na przykład przełączenie trybu z automatycznego na ręczny); nigdy nie chowaj tego w „Nie udało się” ani w wyjaśnieniu.
+Mało tekstu i pokazywanie (decyzja Stefana 2026-11-08: „nie chcę i nie jestem w stanie czytać takiej ilości tekstu”): pisz naprawdę mało, szczegóły dopiero, gdy Stefan dopyta; co da się pokazać (schemat, wygląd, porównanie), pokazuj zamiast opisywać. Mod (0.41.0) sam rysuje nad ramką kafle stanu (ile zrobione, nie udało się, czeka na Ciebie, pytania), a w punkcie wyjaśnienia pokazuje tylko pogrubione zdanie i chowa resztę za przyciskiem „›”, więc pierwsze zdanie punktu ma nieść całą treść. Gdy w odpowiedzi jest tabela, mod niczego nie chowa ani nie przygasza (Stefan: „nie proponuj mi ukrywać, przygaszać, kiedy mam tabelę”). Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Nigdy nie pogrubiaj początków słów („bionic reading”, Stefan go nie chce; badania nie pokazują korzyści). Brak uprawnień (Stefan 2026-11-08: „czasami tego nie widzę”): gdy coś się nie udało przez brak uprawnień, zgodę albo blokadę trybu uprawnień, daj to w osobnej sekcji `**Brak uprawnień**` (mod rysuje ją z kłódką): co dokładnie zostało zablokowane, a pod spodem zadanie z kliknięciami, którymi Stefan to zmieni (na przykład przełączenie trybu z automatycznego na ręczny); nigdy nie chowaj tego w „Nie udało się” ani w wyjaśnieniu.
 
 ## B. Bez nakładki
 
@@ -69,8 +69,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 2. Pod ▶ jedna tabela „Nr | Co | Stan” zamiast punktów „Co się zmieniło” i sekcji „Zrobione” (Stefan 2026-11-09: „coś się
    zmieniło i zostało zrobione, nie wiem, czym się różni”). Stan znakami: ✓ zrobione, ✗ nie udało się, ⏳ czeka na Ciebie.
    Komórka „Co” do 8 słów. Gdy jest tylko jedna rzecz, zamiast tabeli jedno zdanie pod ▶.
-3. Pod tabelą sekcje tylko wtedy, gdy występują, w tej kolejności: 🔴 **Brak uprawnień**, 🔵 **Zadania dla Ciebie**,
-   🟤 **Pytania do Ciebie**; między sekcjami linia `---`. Zrobione, nieudane i niewyjaśnione są w tabeli, nie w osobnych sekcjach.
+3. Pod tabelą sekcje tylko wtedy, gdy występują, w tej kolejności: **Brak uprawnień**, **Zadania dla Ciebie**,
+   **Pytania do Ciebie**; między sekcjami linia `---`. Zrobione, nieudane i niewyjaśnione są w tabeli, nie w osobnych sekcjach.
 4. **Zadania dla Ciebie**: każde zadanie w osobnym akapicie zaczętym od „**Zadanie 1:** co zrobić”, a pod spodem jedno
    lub dwa zdania, co to znaczy, po co i co się stanie bez tego. Bez szacunku czasu w nawiasie. Jedno zadanie to jeden cel;
    kilka czynności po kolei do jednego celu to kroki w tym samym zadaniu, oznaczone „K1A”, „K1B”, „K1C” (K jak krok),
@@ -107,7 +107,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     (zrzuty Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”): w tym samym obrazie rysuj całe pytanie „Pytanie 7: …?”,
     linię „Dlaczego to ważne: …” i pod spodem przyciski z polecaną opcją oznaczoną gwiazdką; wywołaj go jako ostatnie narzędzie
     przed odpowiedzią. W odpowiedzi końcowej wtedy tylko zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
-14. Brak uprawnień: osobna sekcja `🔴 **Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
+14. Brak uprawnień: osobna sekcja `**Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
 
 Przykład krótkiej odpowiedzi:
@@ -123,7 +123,7 @@ Przykład krótkiej odpowiedzi:
 | 3 | Dostęp do folderu KPEU | ⏳ decyzja niżej |
 
 ---
-🔵 **Zadania dla Ciebie**
+**Zadania dla Ciebie**
 
 **Zadanie 1:** Przekaż Ani hasło tymczasowe z pliku [haslo-ania.txt](C:\Projekty\konta\haslo-ania.txt)
 
@@ -133,7 +133,7 @@ Bez tego nie zaloguje się po raz pierwszy, a konto po tygodniu samo się zablok
 **K1B** Prześlij hasło Ani na WhatsAppie, nie mailem.
 
 ---
-🟤 **Pytania do Ciebie**
+**Pytania do Ciebie**
 
 **Pytanie 7:** Czy Ania ma też dostęp do folderu KPEU?
 

@@ -348,3 +348,6 @@ Decyzja Stefana „1A”: robimy wersję modów dla pracowników ELMI i ATERIMA.
 
 ## 2026-11-14 wyglad 0.42.0: kolorowy pasek z boku zamiast ramek z ikonami
 Stefan: „te kropki są naprawdę paskudne”, wybór „Kolorowy pasek z boku” (z czterech wariantów na obrazie). Ramki Zrobione/Nie udało się/Niewyjaśnione/Dla informacji, zadań i pytań: wąski kolorowy pasek po lewej zamiast obramowania i ikony. Silnik nie dopuszcza jednostronnych obramowań, więc pasek to osobny Box z tłem. Skill zespołu bez emoji w nagłówkach (mod rozpoznaje nagłówki także bez nich). Reguła globalna i skill Stefana nadal mają emoji w nagłówkach: do zmiany przez sesję „Instrukcje dla Claude”.
+
+## 2026-11-14 skill uklad-odpowiedzi odświeżony: nagłówki bez kropek
+Reguła wyglad-uklad-odpowiedzi.md zmieniona przez sesję „Instrukcje dla Claude” (słowa Stefana: „te kropki są naprawdę paskudne”). SKILL.md = ta reguła bez zmian. Do wgrania na trzy konta po „tak” Stefana (Personal v12, ELMI v5, ATERIMA v4 to wersje ze starego tekstu).
