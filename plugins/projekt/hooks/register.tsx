@@ -28,6 +28,9 @@ const ORGS: Record<string, string> = {
   '1f6c04b3-9eb2-479b-aa75-d2b914e7e274': 'ATERIMA',
 }
 
+// Each account has its own colour on the band, so Stefan sees at once where he is.
+const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#1565C0', ATERIMA: '#C62828' }
+
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
 }
@@ -219,7 +222,7 @@ export const register: Register = on => {
     const parts = [
       asks && asks.questions + asks.tasks > 0 ? `na Ciebie: ${asks.questions} pyt., ${asks.tasks} zad.` : '',
       s.lastAt === null ? '' : `ostatnio: ${when(s.lastAt, now)}`,
-      s.urgent ? `${s.urgent.kind === 'doing' ? 'w toku' : 'czeka'}: ${s.urgent.text}` : s.hasFile ? '' : 'bez STAN.md',
+      s.urgent ? `${s.urgent.kind === 'doing' ? 'w toku' : 'czeka'}: ${s.urgent.text}` : '',
     ].filter(Boolean)
     const room = width - s.account.length - head.length - 9
 
@@ -227,7 +230,9 @@ export const register: Register = on => {
       <Box flexDirection="column">
         {below}
         <Box>
-          <Text color="claude" bold>{`▣ ${s.account}`}</Text>
+          <Box backgroundColor={ACCOUNT_COLOR[s.account] ?? '#5F6368'} paddingX={1}>
+            <Text color="#FFFFFF" bold>{s.account}</Text>
+          </Box>
           <Text bold>{`  ·  ${head}`}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>

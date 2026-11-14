@@ -339,3 +339,6 @@ Zrzut Stefana: pasek pokazywał „Personal” na koncie ELMI („Dlaczego tak z
 
 ## 2026-11-14 projekt 0.3.0: na pasku pytania, zadania i ostrzeżenie o długiej sesji
 Stefan: „dopisz jeszcze, ile pytań i ile zadań” oraz „chcę jedynie ostrzeżenie, że sesja jest za długa i trzeba ją wymienić na nowo” (licznika dni bez zmian nie chce). Pasek liczy pytania i zadania z ostatniej odpowiedzi i pokazuje ostrzeżenie według progów strażnika długich sesji (2 streszczenia albo 40 MB).
+
+## 2026-11-14 projekt 0.4.0: kolor konta, bez napisu „bez STAN.md”
+Stefan (zrzut): „Czy mógłby w każdej sesji kolor organizacji widzialny, żeby była łatwiej widoczna?” oraz „co to znaczy brak stanu MD?”. Konto na pasku w kolorowej plakietce: Personal zielony, ELMI niebieski, ATERIMA czerwony. Napis „bez STAN.md” usunięty, bo nic Stefanowi nie mówił.

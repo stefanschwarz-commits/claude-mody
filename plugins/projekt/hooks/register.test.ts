@@ -47,7 +47,7 @@ test('pasek: konto, tytuł sesji, ostatnia aktywność i najpilniejsza sprawa', 
   await $.command.run({ command: 'stan', args: '' } as never)
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ plugin: 'projekt', surface, component: 'AbovePrompt', props: BAND })
-    expect(await ui.find({ type: 'Text', text: '▣ ELMI' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'ELMI' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Mody/ })).toBeDefined()
     // Before any prompt of this run: the session's start, three days ago.
     expect(await ui.find({ type: 'Text', text: /ostatnio: 3 dni temu/ })).toBeDefined()
@@ -64,14 +64,14 @@ test('aplikacja z jednym folderem: konto z organizacji sesji', async ($, on) => 
   folder(on, { 'STAN.md': STAN, '101.json': RECORD }, { CLAUDE_CODE_ORGANIZATION_UUID: '6de9bd9f-5915-4468-81fa-8e28071e05b9' })
   await $.command.run({ command: 'stan', args: '' } as never)
   const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
-  expect(await ui.find({ type: 'Text', text: '▣ ELMI' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'ELMI' })).toBeDefined()
 })
 
 test('bez zmiennej konta: Personal; sekcja „Czeka” daje sprawę z jej pogrubionego początku', async ($, on) => {
   folder(on, { 'STAN.md': CZEKA, '101.json': RECORD })
   await $.command.run({ command: 'stan', args: '' } as never)
   const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
-  expect(await ui.find({ type: 'Text', text: '▣ Personal' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Personal' })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /czeka: Dostęp od Dawida — nie wiadomo, do czego/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /w toku 0|dalej 0/ })).toBeUndefined()
 })
@@ -84,12 +84,12 @@ test('/stan pokazuje tabelę spraw', async ($, on) => {
   expect(out.text).toContain('| bezpiecznik | Dalej |')
 })
 
-test('bez STAN.md: pasek mówi, że pliku nie ma, /stan podpowiada, a /stan nowy zakłada plik', async ($, on) => {
+test('bez STAN.md: pasek milczy o braku pliku, /stan podpowiada, a /stan nowy zakłada plik', async ($, on) => {
   const written = folder(on, {})
   const out = await $.command.run({ command: 'stan', args: '' } as never)
   expect(out.text).toContain('/stan nowy')
   const ui = await $.ui.mount({ plugin: 'projekt', surface: 'terminal', component: 'AbovePrompt', props: BAND })
-  expect(await ui.find({ type: 'Text', text: /bez STAN.md/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /bez STAN.md/ })).toBeUndefined()
   const made = await $.command.run({ command: 'stan', args: 'nowy' } as never)
   expect(made.text).toContain('Założyłem')
   expect(written['STAN.md']).toContain('**Czeka:**')
