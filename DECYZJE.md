@@ -342,3 +342,6 @@ Stefan: „dopisz jeszcze, ile pytań i ile zadań” oraz „chcę jedynie ostr
 
 ## 2026-11-14 projekt 0.4.0: kolor konta, bez napisu „bez STAN.md”
 Stefan (zrzut): „Czy mógłby w każdej sesji kolor organizacji widzialny, żeby była łatwiej widoczna?” oraz „co to znaczy brak stanu MD?”. Konto na pasku w kolorowej plakietce: Personal zielony, ELMI niebieski, ATERIMA czerwony. Napis „bez STAN.md” usunięty, bo nic Stefanowi nie mówił.
+
+## 2026-11-14 wyglad 0.41.2 i ZESPOL.md: początek wersji dla zespołu
+Decyzja Stefana „1A”: robimy wersję modów dla pracowników ELMI i ATERIMA. Teksty, które Claude czyta o „Stefanie”, zmienione na „użytkownika”; ZESPOL.md = instrukcja instalacji (wyglad, projekt, dzwiek; bez komputer i straznik). Zostaje: neutralny układ odpowiedzi do instrukcji organizacji (po „tak” Stefana).

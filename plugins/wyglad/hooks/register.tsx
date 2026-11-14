@@ -415,7 +415,7 @@ export const register: Register = on => {
     // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
     await $.tool.register({
       name: 'odhacz',
-      description: 'Odhacza zadania w panelu „Moje sprawy”. Wywołaj, gdy Stefan napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Zadania dla Ciebie” ostatniej odpowiedzi. Gdy dajesz Stefanowi nowe zadanie zamiast wcześniejszego (nowy kod logowania, nowy link, zmieniony krok), wywołaj z `tekst` = fragment treści starego zadania i `stan` = nieaktualne, żeby stare zadanie znikło z panelu i było skreślone jako zastąpione.',
+      description: 'Odhacza zadania w panelu „Moje sprawy”. Wywołaj, gdy użytkownik napisze, że zadanie zrobił („1 zrobiłem”) albo że odpada; numery to numery z ramki „Zadania dla Ciebie” ostatniej odpowiedzi. Gdy dajesz użytkownikowi nowe zadanie zamiast wcześniejszego (nowy kod logowania, nowy link, zmieniony krok), wywołaj z `tekst` = fragment treści starego zadania i `stan` = nieaktualne, żeby stare zadanie znikło z panelu i było skreślone jako zastąpione.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -464,7 +464,7 @@ export const register: Register = on => {
       for (const m of e.text.matchAll(/\b(\d+)\s*([A-Z])\b/g)) {
         const n = Number(m[1])
         if (n > stamp.qBase && n <= stamp.qBase + stamp.questions) {
-          notes.push(`${m[1]}${m[2]}: Pytanie ${n - stamp.qBase} z Twojej ostatniej odpowiedzi (u Stefana numerowane narastająco jako ${n}), opcja ${m[2]}.`)
+          notes.push(`${m[1]}${m[2]}: Pytanie ${n - stamp.qBase} z Twojej ostatniej odpowiedzi (u użytkownika numerowane narastająco jako ${n}), opcja ${m[2]}.`)
           const id = `${answer.key}:q${n - stamp.qBase}`
           await update($, answered, all => ({ ...all, [id]: `${n}${m[2]}` }))
         }
@@ -478,7 +478,7 @@ export const register: Register = on => {
       }
     }
     if (notes.length === 0) return next(e)
-    const note = [`Numery w wiadomości Stefana odnoszą się do Twojej ostatniej odpowiedzi (zadania z ramki „Zadania dla Ciebie”, pytania numerowane narastająco w całej rozmowie):`, ...notes, 'Zadania odhacz narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
+    const note = [`Numery w wiadomości użytkownika odnoszą się do Twojej ostatniej odpowiedzi (zadania z ramki „Zadania dla Ciebie”, pytania numerowane narastająco w całej rozmowie):`, ...notes, 'Zadania odhacz narzędziem odhacz i potwierdź jednym zdaniem.'].join('\n')
     return next({ ...e, context: [...(e.context ?? []), note] })
   })
 
@@ -602,10 +602,10 @@ export const register: Register = on => {
     ]
     if (lines.length === 0) return next(e)
     const note = [
-      'Zachowaj w streszczeniu dosłownie, jako osobną sekcję „Czeka na Stefana (z ostatniej odpowiedzi)”, z tymi samymi numerami:',
+      'Zachowaj w streszczeniu dosłownie, jako osobną sekcję „Czeka na użytkownika (z ostatniej odpowiedzi)”, z tymi samymi numerami:',
       `Ostatnia odpowiedź: „${answer.headline}”.`,
       ...lines,
-      'Stefan odpowiada numerami zadań („1 zrobiłem”) i nazwami opcji („1A”), więc numeracja nie może się zmienić.',
+      'Użytkownik odpowiada numerami zadań („1 zrobiłem”) i nazwami opcji („1A”), więc numeracja nie może się zmienić.',
     ].join('\n')
     return next({ ...e, instructions: e.instructions ? `${e.instructions}\n\n${note}` : note })
   })

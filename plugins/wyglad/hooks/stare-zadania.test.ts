@@ -96,7 +96,7 @@ test('kompresja rozmowy: streszczacz dostaje otwarte zadania i pytania z numeram
   const withAsk = [SECOND, '', '---', '', '🔵 **Pytania do Ciebie**', '', '**1. Zostawić kod?**', '- **A)** Tak – plus: nic; minus: nic.', '- **B)** Nie – plus: nic; minus: nic.', '➜ Polecam 1A.'].join('\n')
   await complete($, withAsk, 'a')
   await $.session.compact({ trigger: 'auto', messages: [{ role: 'user', text: 'x', toolUses: [] }] } as never)
-  expect(told).toContain('Czeka na Stefana')
+  expect(told).toContain('Czeka na użytkownika')
   expect(told).toContain('1. Wejdź na stronę i wpisz kod CZLZPGDFZ (minuta) – poprzedni wygasł')
   expect(told).toContain('Pytanie 1. Zostawić kod? (opcje: 1A, 1B)')
 })
