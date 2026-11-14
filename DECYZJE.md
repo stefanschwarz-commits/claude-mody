@@ -336,3 +336,6 @@ Sesja ELMI, zadając jedno pytanie na raz, wpisała „🟤 Pytanie 1: …” z 
 
 ## 2026-11-14 projekt 0.2.1: konto z organizacji sesji
 Zrzut Stefana: pasek pokazywał „Personal” na koncie ELMI („Dlaczego tak zrobiłeś?”). Aplikacja uruchamia dziś wszystkie konta z jednego folderu konfiguracji, więc rozpoznawanie po folderze .claude-elmi przestało działać. Mod czyta teraz CLAUDE_CODE_ORGANIZATION_UUID (trzy organizacje Stefana), folder zostaje zapasem.
+
+## 2026-11-14 projekt 0.3.0: na pasku pytania, zadania i ostrzeżenie o długiej sesji
+Stefan: „dopisz jeszcze, ile pytań i ile zadań” oraz „chcę jedynie ostrzeżenie, że sesja jest za długa i trzeba ją wymienić na nowo” (licznika dni bez zmian nie chce). Pasek liczy pytania i zadania z ostatniej odpowiedzi i pokazuje ostrzeżenie według progów strażnika długich sesji (2 streszczenia albo 40 MB).

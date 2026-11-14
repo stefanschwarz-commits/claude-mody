@@ -94,3 +94,13 @@ test('bez STAN.md: pasek mówi, że pliku nie ma, /stan podpowiada, a /stan nowy
   expect(made.text).toContain('Założyłem')
   expect(written['STAN.md']).toContain('**Czeka:**')
 })
+
+test('pasek: liczba pytań i zadań z ostatniej odpowiedzi oraz ostrzeżenie o długiej sesji', async ($, on) => {
+  folder(on, { 'STAN.md': STAN, '101.json': RECORD, [`${SESSION}.jsonl.json`]: '{"offset": 50000000, "streszczenia": 0}' })
+  await $.command.run({ command: 'stan', args: '' } as never)
+  const answer = '▶ Gotowe.\n\n🔵 **Zadania dla Ciebie**\n1. Zrestartuj – bo tak.\n   a) krok\n2. Sprawdź – bo tak.\n\n🟤 **Pytania do Ciebie**\n**1. Który?**\n- **A)** ten\n'
+  await $.turn.complete({ answer } as never)
+  const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: /na Ciebie: 1 pyt\., 2 zad\./ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Sesja jest za długa/ })).toBeDefined()
+})

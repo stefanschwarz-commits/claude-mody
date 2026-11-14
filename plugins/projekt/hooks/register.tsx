@@ -76,6 +76,35 @@ async function lastAtOf($: EngineInterface, dir: string, cwd: string, sessionId:
   return startedAt
 }
 
+// Questions and tasks the answer leaves for Stefan: numbered items under
+// "Pytania do Ciebie" (bold "**1. …") and "Zadania dla Ciebie" ("1. …", not indented).
+export function countAsks(answer: string): { questions: number; tasks: number } {
+  let section: 'q' | 't' | '' = ''
+  let questions = 0
+  let tasks = 0
+  for (const line of answer.split(/\r?\n/)) {
+    if (/Pytania do Ciebie/.test(line)) section = 'q'
+    else if (/Zadania dla Ciebie|Do zrobienia przez Ciebie/.test(line)) section = 't'
+    else if (/^\s*(🟢|🔴|🟠|⚪|---)/.test(line)) section = ''
+    else if (section === 'q' && /^\*\*(Pytanie\s+)?\d+[.:]/.test(line)) questions++
+    else if (section === 't' && /^(\*\*Zadanie\s+)?\d+[.:]\s/.test(line)) tasks++
+  }
+  return { questions, tasks }
+}
+
+// The long-session guard hook keeps per-session counts; same thresholds as the hook.
+async function tooLongOf($: EngineInterface, sessionId: string): Promise<boolean> {
+  const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined)) ?? ''
+  const text = await $.fs.read(`${home.replace(/\\/g, '/')}/.claude/hooks/stan-sesji/dlugosc/${sessionId}.jsonl.json`).catch(() => undefined)
+  if (typeof text !== 'string') return false
+  try {
+    const s = JSON.parse(text) as { offset?: number; streszczenia?: number }
+    return (s.streszczenia ?? 0) >= 2 || (s.offset ?? 0) / 1048576 >= 40
+  } catch {
+    return false
+  }
+}
+
 // STAN.md in the working folder, else the nearest one above it.
 async function locate($: EngineInterface): Promise<{ text: string; path: string } | undefined> {
   const text = await $.fs.read(FILE).catch(() => undefined)
@@ -93,7 +122,9 @@ async function refresh($: EngineInterface): Promise<Status> {
   const { name, startedAt } = await sessionNameOf($, dir, sessionId)
   const lastAt = await lastAtOf($, dir, cwd, sessionId, startedAt)
   const found = await locate($)
-  const base = { project: folderName(cwd), account, session: name, lastAt }
+  const tooLong = sessionId ? await tooLongOf($, sessionId) : false
+  const asks = (await read($, status).catch(() => null))?.asks
+  const base = { project: folderName(cwd), account, session: name, lastAt, tooLong, asks }
   const next: Status = found
     ? await (async () => {
         const parsed = parse(found.text)
@@ -162,7 +193,11 @@ export const register: Register = on => {
   // read both again when the turn ends.
   on('turn.complete', async ($, e, next) => {
     const done = await next(e)
-    if (e.agentId === undefined) void refresh($).catch(() => undefined)
+    if (e.agentId === undefined) {
+      const asks = countAsks(typeof e.answer === 'string' ? e.answer : '')
+      await update($, status, s => (s ? { ...s, asks } : s)).catch(() => undefined)
+      void refresh($).catch(() => undefined)
+    }
 
     return done
   })
@@ -180,7 +215,9 @@ export const register: Register = on => {
     const now = await $.clock.now().catch(() => Date.now())
 
     const head = s.session || s.project
+    const asks = s.asks
     const parts = [
+      asks && asks.questions + asks.tasks > 0 ? `na Ciebie: ${asks.questions} pyt., ${asks.tasks} zad.` : '',
       s.lastAt === null ? '' : `ostatnio: ${when(s.lastAt, now)}`,
       s.urgent ? `${s.urgent.kind === 'doing' ? 'w toku' : 'czeka'}: ${s.urgent.text}` : s.hasFile ? '' : 'bez STAN.md',
     ].filter(Boolean)
@@ -194,6 +231,7 @@ export const register: Register = on => {
           <Text bold>{`  ·  ${head}`}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
+        {s.tooLong ? <Text color="warning" bold>{'⚠ Sesja jest za długa – trzeba ją wymienić na nową.'}</Text> : null}
       </Box>
     )
   })

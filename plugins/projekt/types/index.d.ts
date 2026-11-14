@@ -19,6 +19,10 @@ export type Status = {
   // When Stefan last wrote in this session, in clock milliseconds; null when unknown.
   lastAt: number | null
   ageDays: number | null
+  // What the last answer left for Stefan: numbered questions and tasks.
+  asks?: { questions: number; tasks: number }
+  // The long-session guard says this session should be swapped for a successor.
+  tooLong?: boolean
 }
 
 declare module 'claude-code' {
