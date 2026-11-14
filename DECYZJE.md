@@ -333,3 +333,6 @@ Wgrany wbudowaną przeglądarką z aktualnego `skills/uklad-odpowiedzi/SKILL.md`
 
 ## wyglad 0.41.1: pytanie wpisane w wyjaśnieniu dostaje ramkę i przyciski (2026-11-11, zrzut Stefana)
 Sesja ELMI, zadając jedno pytanie na raz, wpisała „🟤 Pytanie 1: …” z opcjami „**1A)** … **1B)** … **1C)**” w jednej linii wewnątrz wyjaśnienia, bez nagłówka „Pytania do Ciebie”; mod rysował to jako zwykły tekst, bez ramki i przycisków. Stefan: „pytania nie zostały potraktowane jako pytania”. Teraz linia „Pytanie N:” (także z kropką lub emoji z przodu) w wyjaśnieniu otwiera część pytań; opcje sklejone w jednej linii są rozdzielane na osobne; opcja bez myślnika też jest opcją. Materiały (obrazy) nad odpowiedzią to karty plików aplikacji, mod ich nie przenosi.
+
+## 2026-11-14 projekt 0.2.1: konto z organizacji sesji
+Zrzut Stefana: pasek pokazywał „Personal” na koncie ELMI („Dlaczego tak zrobiłeś?”). Aplikacja uruchamia dziś wszystkie konta z jednego folderu konfiguracji, więc rozpoznawanie po folderze .claude-elmi przestało działać. Mod czyta teraz CLAUDE_CODE_ORGANIZATION_UUID (trzy organizacje Stefana), folder zostaje zapasem.

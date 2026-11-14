@@ -21,6 +21,13 @@ const TEMPLATE = `# STAN
 **Dalej:**
 `
 
+// Stefan's three Claude organizations.
+const ORGS: Record<string, string> = {
+  '8a5350ca-2541-4066-8c79-d4cc738ae76c': 'Personal',
+  '6de9bd9f-5915-4468-81fa-8e28071e05b9': 'ELMI',
+  '1f6c04b3-9eb2-479b-aa75-d2b914e7e274': 'ATERIMA',
+}
+
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
 }
@@ -32,7 +39,11 @@ async function accountOf($: EngineInterface): Promise<{ account: string; dir: st
   const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined)) ?? ''
   const dir = (configDir ?? `${home}/.claude`).replace(/\\/g, '/').replace(/\/$/, '')
   const name = folderName(dir).toLowerCase()
-  const account = /aterima/.test(name) ? 'ATERIMA' : /elmi/.test(name) ? 'ELMI' : 'Personal'
+  // The desktop app runs every account from one config folder and tells the session its
+  // organization instead, so the organization decides first; the folder is the fallback.
+  const org = (await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)) ?? ''
+  const byOrg = ORGS[org.toLowerCase()]
+  const account = byOrg ?? (/aterima/.test(name) ? 'ATERIMA' : /elmi/.test(name) ? 'ELMI' : 'Personal')
   return { account, dir }
 }
 

@@ -60,6 +60,13 @@ test('pasek: konto, tytuł sesji, ostatnia aktywność i najpilniejsza sprawa', 
   expect(await ui.find({ type: 'Text', text: /ostatnio: dziś/ })).toBeDefined()
 })
 
+test('aplikacja z jednym folderem: konto z organizacji sesji', async ($, on) => {
+  folder(on, { 'STAN.md': STAN, '101.json': RECORD }, { CLAUDE_CODE_ORGANIZATION_UUID: '6de9bd9f-5915-4468-81fa-8e28071e05b9' })
+  await $.command.run({ command: 'stan', args: '' } as never)
+  const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: '▣ ELMI' })).toBeDefined()
+})
+
 test('bez zmiennej konta: Personal; sekcja „Czeka” daje sprawę z jej pogrubionego początku', async ($, on) => {
   folder(on, { 'STAN.md': CZEKA, '101.json': RECORD })
   await $.command.run({ command: 'stan', args: '' } as never)
