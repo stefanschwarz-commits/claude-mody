@@ -358,6 +358,9 @@ Stefan (zrzut paska Zrobione): „Dodaj po jednym wierszu przed i po, aby miał 
 ## 2026-11-14 skill uklad-odpowiedzi, część B: karta z ikonami i przyciskami, bez kulek
 Stefan o próbnej karcie (ikony Tabler w kolorze stanu, niebieska karta zadania, pytanie z przyciskami 19A/19B): „masz tutaj zarówno ikonki, jak i przyciski, możemy to wdrożyć”; o 🔵🟤: „nie podobają mi się te kulki”. Część B dostała punkty 16 (bez kulek) i 17 (karta z ikonami, przycisk z zapasową linią „Napisz 19A”). Część A bez zmian.
 
+## 2026-11-15 skill uklad-odpowiedzi, część B: bloki z Code z ikonami, bez paska
+Stefan po makietach w Cowork: bloki jak w module 0.43.0 (Wyjaśnienie, decyzja, zadanie, Nie udało się, Jeszcze sprawdzam, Czeka na innych, Zrobione) plus ikony Tabler z karty z 14.11 („podobają mi się twoje ikony bardzo”). Zasada Stefana: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to jest potrzebny”, więc w Cowork bez paska. Wyjaśnienie na jaśniejszym szarym tle. „Idealnie. Tak jest pięknie.”, „wdrażamy taki układ”. Punkt 17 części B przepisany. Do decyzji (pytanie 25): czy ikony i ta zasada paska idą też do moda w Code.
+
 ## 2026-11-15 wyglad 0.42.2: pasek z boku także przy „Co się zmieniło” i kaflach stanu
 Stefan (zrzut): „wygląd tego nowego moda jest świetny, ale część wciąż wygląda na starą”. Ramka wyjaśnienia „Co się zmieniło” i kafle stanu („1 zrobione”) miały jeszcze okrągłe obramowanie; teraz kolorowy pasek z boku jak reszta, bez ikony ▷. Karta szkicu maila zostaje w ramce (to kartka papieru).
 

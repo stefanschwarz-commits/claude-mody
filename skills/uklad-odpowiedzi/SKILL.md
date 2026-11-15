@@ -112,18 +112,26 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 15. Nigdy nie pogrubiaj początków słów.
 16. Bez kolorowych kulek (🔵 🟤 🔴 🟢 🟠 ⚪) w nagłówkach sekcji i nigdzie indziej (Stefan 2026-11-14: „nie podobają mi się
     te kulki”). Nagłówki sekcji są czystym pogrubionym tekstem.
-17. Karta z ikonami (decyzja Stefana 2026-11-14: „masz tutaj zarówno ikonki, jak i przyciski, możemy to wdrożyć”): gdy jest
-    narzędzie do wizualizacji, tabelę stanu, zadania i pytanie rysujesz w jednym obrazie zamiast w tekście, jako ostatnie
-    narzędzie przed odpowiedzią:
-    - biała karta stanu: każdy wiersz to ikona i do 8 słów; ikony Tabler w kolorze roli: `ti-circle-check` zielona (zrobione),
-      `ti-clock` pomarańczowa (czeka na Ciebie), `ti-x` czerwona (nie udało się), `ti-lock` czerwona (brak uprawnień);
-    - niebieska karta zadania z ikoną `ti-hand-finger`: „Zadanie 1: …”, kroki K1A, K1B pod spodem;
-    - karta pytania z ikoną `ti-help-circle`: „Pytanie 19: …?”, „Dlaczego to ważne: …”, przyciski 19A, 19B (polecany z ikoną
-      `ti-star` i grubszą ramką), a pod nimi mała linia „Przycisk nie działa? Napisz w czacie 19A albo 19B.”; przycisk
-      wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać. Napisz 19A.”
-      (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie).
-    Odpowiedź końcowa pod kartą: pasek, `### ▶ …` i jedno zdanie, czego potrzebujesz („Czekam na 19A albo 19B.”); tabeli,
-    zadań i pytań nie powtarzasz tekstem. Bez narzędzia do wizualizacji piszesz po staremu, punkty 2–5.
+17. Bloki z ikonami (decyzja Stefana 2026-11-15 po makietach: „Idealnie. Tak jest pięknie.”, „wdrażamy taki układ”): gdy jest
+    narzędzie do wizualizacji, wyjaśnienie, pytanie, zadania i stany rysujesz w jednym obrazie zamiast w tekście, jako ostatnie
+    narzędzie przed odpowiedzią. Te same bloki co w Claude Code, w tej kolejności, każdy tylko gdy występuje:
+    - Wyjaśnienie: jaśniejsze szare tło niż reszta szarych bloków (`color-mix(in srgb, var(--surface-1) 50%, var(--surface-2))`;
+      Stefan 2026-11-15: „troszeczkę jaśniejsze tło”), ikona `ti-info-circle`, wynik pogrubiony, pod nim 1–2 krótkie szare zdania;
+    - Czeka na Ciebie · decyzja: pomarańczowe tło, ikona `ti-help-circle`, „Pytanie 25: …?”, „Dlaczego to ważne: …”,
+      przyciski 25A, 25B (polecany z ikoną `ti-star` i grubszą ramką), pod nimi mała linia „Przycisk nie działa? Napisz 25A
+      albo 25B.”; przycisk wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać.
+      Napisz 25A.” (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie);
+    - Czeka na Ciebie · zadanie: niebieskie tło, ikona `ti-hand-finger`, „Zadanie 1: …”, kroki K1A, K1B pod spodem;
+    - Nie udało się: czerwone tło, ikona `ti-lock` przy braku uprawnień, inaczej `ti-x`;
+    - Jeszcze sprawdzam: szare tło, ikona `ti-search`;
+    - Czeka na innych: szare tło, ikona `ti-hourglass`, kto i na co;
+    - Zrobione: zielone tło, ikona `ti-circle-check`.
+    Każdy blok: zaokrąglone rogi, mała etykieta z ikoną w kolorze bloku, pod nią treść do 8 słów. Bez paska z boku, bo każdy blok
+    ma zabarwione tło (Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to
+    jest potrzebny”). Kolory tylko ze zmiennych motywu (`--bg-warning`, `--bg-accent`, `--bg-danger`, `--bg-success`,
+    `--surface-1`), żeby działały w jasnym i ciemnym motywie.
+    Odpowiedź końcowa pod obrazem: pasek, `### ▶ …` i jedno lub dwa zdania, w tym czego potrzebujesz („Czekam na 25A albo
+    25B.”); bloków nie powtarzasz tekstem. Bez narzędzia do wizualizacji piszesz po staremu, punkty 2–5.
 
 Przykład krótkiej odpowiedzi:
 
