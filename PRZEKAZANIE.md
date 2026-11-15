@@ -7,6 +7,10 @@ bez nakładki) wgrywany na trzy konta claude.ai. Tok pracy: `CLAUDE.md` w repozy
 DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` → `claude plugin update <mod>@claude-mody` → zadanie
 „zamknij i otwórz aplikację”).
 
+## DO ZROBIENIA (2026-11-15 20:25): dogranie decyzji 26A na ELMI i ATERIMA
+- Po wgraniu v8/v9 doszedł commit a6fad6d (nagłówek odpowiedzi w obrazie, część B punkt 17). Personal ma go już z karty.
+  Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA. Skill zespołu bez zmian.
+
 ## Zlecenie Stefana z 2026-11-15 („wdrożyć teraz dla całej firmy”): WYKONANE 2026-11-15
 - `uklad-odpowiedzi` wgrany przez Replace: Personal v21, ELMI v8, ATERIMA v9 (część B z punktami 16–17, bloki z ikonami).
 - `uklad-odpowiedzi-zespol` v2 wgrany i opublikowany w ELMI i ATERIMA („No change to access”, czyli nadal domyślnie włączony).
