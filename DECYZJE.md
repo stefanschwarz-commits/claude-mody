@@ -384,3 +384,6 @@ Stefan (zrzut bloku zadania z Code): „tam, gdzie trzeba dużo czytać, było n
 
 ## 2026-11-15 wdrożenie bloków z ikonami w całej firmie
 Stefan: „wdrożyć teraz dla całej firmy, czyli dla wszystkich sesji Code oraz Cowork we wszystkich trzech kontach”. Skill zespołu `uklad-odpowiedzi-zespol` dostał punkt 11 (bloki z ikonami bez moda). Wgranie na konta robi sesja „Mody” (przeglądarka na komputerze Stefana); zlecenie na górze PRZEKAZANIE.md.
+
+## 2026-11-15 skill uklad-odpowiedzi, część B: Wyjaśnienie jak w Code
+Stefan (zrzut bloku Wyjaśnienie z Code): „zobacz, jak ładnie jest to kolorystycznie zgrane; jeśli jest inaczej, dopasuj nasz styl”. Tytuł „Wyjaśnienie” biały i pogrubiony (nie mała szara etykieta), wynik pogrubiony, punkty z pogrubionym pierwszym zdaniem i szarą resztą; same szarości.

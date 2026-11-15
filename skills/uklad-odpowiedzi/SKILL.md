@@ -116,7 +116,10 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     narzędzie do wizualizacji, wyjaśnienie, pytanie, zadania i stany rysujesz w jednym obrazie zamiast w tekście, jako ostatnie
     narzędzie przed odpowiedzią. Te same bloki co w Claude Code, w tej kolejności, każdy tylko gdy występuje:
     - Wyjaśnienie: jaśniejsze szare tło niż reszta szarych bloków (`color-mix(in srgb, var(--surface-1) 50%, var(--surface-2))`;
-      Stefan 2026-11-15: „troszeczkę jaśniejsze tło”), ikona `ti-info-circle`, wynik pogrubiony, pod nim 1–2 krótkie szare zdania;
+      Stefan 2026-11-15: „troszeczkę jaśniejsze tło”); jak w Code (zrzut Stefana 2026-11-15: „zobacz, jak ładnie jest to
+      kolorystycznie zgrane”): tytuł „Wyjaśnienie” w `--text-primary`, 15px, pogrubiony, z ikoną `ti-info-circle` w tym samym
+      kolorze; pod nim wynik pogrubiony w `--text-primary`; dalej punkty, każdy w osobnym akapicie: pogrubione pierwsze zdanie
+      w `--text-primary`, reszta zdania w `--text-secondary`; bez kolorów, same szarości i biel;
     - Czeka na Ciebie · decyzja: pomarańczowe tło, ikona `ti-help-circle`, „Pytanie 25: …?”, „Dlaczego to ważne: …”,
       przyciski 25A, 25B (polecany z ikoną `ti-star` i grubszą ramką), pod nimi mała linia „Przycisk nie działa? Napisz 25A
       albo 25B.”; przycisk wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać.
