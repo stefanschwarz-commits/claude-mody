@@ -122,11 +122,15 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       albo 25B.”; przycisk wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać.
       Napisz 25A.” (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie);
     - Czeka na Ciebie · zadanie: niebieskie tło, ikona `ti-hand-finger`, „Zadanie 1: …”, kroki K1A, K1B pod spodem;
-    - Nie udało się: czerwone tło, ikona `ti-lock` przy braku uprawnień, inaczej `ti-x`;
+    - Nie udało się: czerwone tło, bez etykiety nad punktami; każdy punkt w osobnym wierszu z czerwoną ikoną i czerwonym
+      tekstem, zaczęty od rodzaju: `ti-lock` „Brak uprawnień: …”, `ti-x` „Nie udało się: …” (jak w Code, zrzut Stefana
+      2026-11-15);
     - Jeszcze sprawdzam: szare tło, ikona `ti-search`;
     - Czeka na innych: szare tło, ikona `ti-hourglass`, kto i na co;
     - Zrobione: zielone tło, ikona `ti-circle-check`.
-    Każdy blok: zaokrąglone rogi, mała etykieta z ikoną w kolorze bloku, pod nią treść do 8 słów. Bez paska z boku, bo każdy blok
+    Każdy blok: zaokrąglone rogi, mała etykieta z ikoną w kolorze bloku, pod nią treść do 8 słów. Kilka rzeczy w bloku: każda
+    w osobnym wierszu z własną ikoną i tekstem w kolorze bloku (Stefan 2026-11-15: „nie widać punktowania”): w Zrobione
+    `ti-check`, w Czeka na innych `ti-user` z imieniem. Bez paska z boku, bo każdy blok
     ma zabarwione tło (Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to
     jest potrzebny”). Kolory tylko ze zmiennych motywu (`--bg-warning`, `--bg-accent`, `--bg-danger`, `--bg-success`,
     `--surface-1`), żeby działały w jasnym i ciemnym motywie.

@@ -375,3 +375,6 @@ Sesja „Instrukcje dla Claude” dopasowała część A reguły do wyglad 0.43.
 
 ## 2026-11-15 skill uklad-odpowiedzi wgrany: Personal v16, ELMI v7, ATERIMA v8
 Treść: część A z siedmioma blokami (z reguły) + część B z punktami 16–17 (karta z ikonami). Uwaga: punkty 16–17 części B są tylko w SKILL.md, nie w regule; samo `cp` reguły na SKILL.md je wycina (tak wyszła na Personal błędna v15, poprawiona w v16). Do czasu dopisania ich do reguły: po skopiowaniu reguły sprawdź `git diff` i przywróć punkty 16–17. Treść do przeglądarki: strona lokalna ustawia window.name, potem claude.ai czyta ją i zapisuje w sessionStorage (fetch z localhost jest blokowany).
+
+## 2026-11-15 skill uklad-odpowiedzi, część B: punkty w blokach z własną ikoną
+Stefan: „nie widać punktowania”, zrzut bloku z Code (kłódka „Brak uprawnień: …”, krzyżyk „Nie udało się: …”, czerwony tekst). W Cowork każdy punkt bloku w osobnym wierszu z ikoną i tekstem w kolorze bloku; „Nie udało się” bez etykiety, rodzaj na początku punktu.
