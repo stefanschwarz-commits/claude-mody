@@ -378,3 +378,6 @@ Treść: część A z siedmioma blokami (z reguły) + część B z punktami 16�
 
 ## 2026-11-15 skill uklad-odpowiedzi, część B: punkty w blokach z własną ikoną
 Stefan: „nie widać punktowania”, zrzut bloku z Code (kłódka „Brak uprawnień: …”, krzyżyk „Nie udało się: …”, czerwony tekst). W Cowork każdy punkt bloku w osobnym wierszu z ikoną i tekstem w kolorze bloku; „Nie udało się” bez etykiety, rodzaj na początku punktu.
+
+## 2026-11-15 skill uklad-odpowiedzi, część B: tekst do czytania w zwykłym kolorze
+Stefan (zrzut bloku zadania z Code): „tam, gdzie trzeba dużo czytać, było na biało”. W kolorze bloku tylko ikona i etykieta; tytuł, wyjaśnienie i kroki w zwykłym kolorze tekstu. Krótkie punkty z ikoną (Nie udało się) mogą być w kolorze bloku.

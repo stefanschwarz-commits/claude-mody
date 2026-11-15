@@ -122,6 +122,10 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       albo 25B.”; przycisk wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać.
       Napisz 25A.” (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie);
     - Czeka na Ciebie · zadanie: niebieskie tło, ikona `ti-hand-finger`, „Zadanie 1: …”, kroki K1A, K1B pod spodem;
+    Tekst do czytania zawsze w zwykłym kolorze tekstu, nie w kolorze bloku (zrzut Stefana 2026-11-15: „tam, gdzie trzeba dużo
+    czytać, było na biało”): w kolorze bloku tylko ikona i mała etykieta; tytuł zadania czy pytania pogrubiony w `--text-primary`,
+    wyjaśnienie w `--text-secondary`, kroki „K1A” pogrubione i treść kroku w `--text-primary`. Wyjątek: krótkie jednowierszowe
+    punkty z własną ikoną (np. „Nie udało się: …”) mogą mieć tekst w kolorze bloku;
     - Nie udało się: czerwone tło, bez etykiety nad punktami; każdy punkt w osobnym wierszu z czerwoną ikoną i czerwonym
       tekstem, zaczęty od rodzaju: `ti-lock` „Brak uprawnień: …”, `ti-x` „Nie udało się: …” (jak w Code, zrzut Stefana
       2026-11-15);
