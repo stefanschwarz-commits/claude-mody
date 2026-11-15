@@ -381,3 +381,6 @@ Stefan: „nie widać punktowania”, zrzut bloku z Code (kłódka „Brak upraw
 
 ## 2026-11-15 skill uklad-odpowiedzi, część B: tekst do czytania w zwykłym kolorze
 Stefan (zrzut bloku zadania z Code): „tam, gdzie trzeba dużo czytać, było na biało”. W kolorze bloku tylko ikona i etykieta; tytuł, wyjaśnienie i kroki w zwykłym kolorze tekstu. Krótkie punkty z ikoną (Nie udało się) mogą być w kolorze bloku.
+
+## 2026-11-15 wdrożenie bloków z ikonami w całej firmie
+Stefan: „wdrożyć teraz dla całej firmy, czyli dla wszystkich sesji Code oraz Cowork we wszystkich trzech kontach”. Skill zespołu `uklad-odpowiedzi-zespol` dostał punkt 11 (bloki z ikonami bez moda). Wgranie na konta robi sesja „Mody” (przeglądarka na komputerze Stefana); zlecenie na górze PRZEKAZANIE.md.

@@ -7,6 +7,13 @@ bez nakładki) wgrywany na trzy konta claude.ai. Tok pracy: `CLAUDE.md` w repozy
 DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` → `claude plugin update <mod>@claude-mody` → zadanie
 „zamknij i otwórz aplikację”).
 
+## DO ZROBIENIA NAJPIERW (zlecenie Stefana 2026-11-15 19:54: „wdrożyć teraz dla całej firmy, wszystkie sesje Code i Cowork, trzy konta”)
+- Wgrać przez Replace aktualny `skills/uklad-odpowiedzi/SKILL.md` na Personal, ELMI i ATERIMA (część B, punkt 17: bloki z ikonami,
+  punkty z ikoną, tekst do czytania w zwykłym kolorze; przygotowane w sesji chmurowej Cowork).
+- Wgrać `skills/uklad-odpowiedzi-zespol/SKILL.md` (nowy punkt 11, bloki z ikonami) w ELMI i ATERIMA.
+- Dopisać punkty 16–17 części B do procedury: reguła ich nie ma, więc `cp` reguły na SKILL.md je wycina; po kopiowaniu przywróć z git.
+- Po wgraniu: Stefanowi jedno zadanie „zamknij i otwórz aplikację Claude”; otwarte sesje odświeżyć (decyzja 16A).
+
 ## Stan (2026-11-11)
 - wyglad 0.43.0 (ostatnie: pytanie wpisane w wyjaśnieniu bez nagłówka, z opcjami w jednej linii, dostaje ramkę i przyciski; wcześniej
   0.41.0 kafle stanu, schowane szczegóły punktów, ramka „Brak uprawnień”; 0.40.x nowy pasek, odnośniki ze ścieżką z nawiasem).
