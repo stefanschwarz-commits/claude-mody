@@ -387,3 +387,6 @@ Stefan: „wdrożyć teraz dla całej firmy, czyli dla wszystkich sesji Code ora
 
 ## 2026-11-15 skill uklad-odpowiedzi, część B: Wyjaśnienie jak w Code
 Stefan (zrzut bloku Wyjaśnienie z Code): „zobacz, jak ładnie jest to kolorystycznie zgrane; jeśli jest inaczej, dopasuj nasz styl”. Tytuł „Wyjaśnienie” biały i pogrubiony (nie mała szara etykieta), wynik pogrubiony, punkty z pogrubionym pierwszym zdaniem i szarą resztą; same szarości.
+
+## 2026-11-15 skille wgrane na trzy konta (zlecenie Stefana „wdrożyć teraz dla całej firmy”)
+uklad-odpowiedzi: Personal v21, ELMI v8, ATERIMA v9. uklad-odpowiedzi-zespol v2 opublikowany w ELMI i ATERIMA (dostęp bez zmian: domyślnie włączony). Sumy kontrolne tekstu sprawdzone w przeglądarce przed wgraniem; punkty 16–17 części B obecne.

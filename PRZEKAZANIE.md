@@ -7,19 +7,19 @@ bez nakładki) wgrywany na trzy konta claude.ai. Tok pracy: `CLAUDE.md` w repozy
 DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` → `claude plugin update <mod>@claude-mody` → zadanie
 „zamknij i otwórz aplikację”).
 
-## DO ZROBIENIA NAJPIERW (zlecenie Stefana 2026-11-15 19:54: „wdrożyć teraz dla całej firmy, wszystkie sesje Code i Cowork, trzy konta”)
-- Wgrać przez Replace aktualny `skills/uklad-odpowiedzi/SKILL.md` na Personal, ELMI i ATERIMA (część B, punkt 17: bloki z ikonami,
-  punkty z ikoną, tekst do czytania w zwykłym kolorze; przygotowane w sesji chmurowej Cowork).
-- Wgrać `skills/uklad-odpowiedzi-zespol/SKILL.md` (nowy punkt 11, bloki z ikonami) w ELMI i ATERIMA.
-- Dopisać punkty 16–17 części B do procedury: reguła ich nie ma, więc `cp` reguły na SKILL.md je wycina; po kopiowaniu przywróć z git.
-- Po wgraniu: Stefanowi jedno zadanie „zamknij i otwórz aplikację Claude”; otwarte sesje odświeżyć (decyzja 16A).
+## Zlecenie Stefana z 2026-11-15 („wdrożyć teraz dla całej firmy”): WYKONANE 2026-11-15
+- `uklad-odpowiedzi` wgrany przez Replace: Personal v21, ELMI v8, ATERIMA v9 (część B z punktami 16–17, bloki z ikonami).
+- `uklad-odpowiedzi-zespol` v2 wgrany i opublikowany w ELMI i ATERIMA („No change to access”, czyli nadal domyślnie włączony).
+  Na Personal go nie ma: konto prywatne nie ma organizacji, a obok skilla Stefana dawałby dwa układy naraz.
+- Punkty 16–17 części B są już w regule (sesja „Instrukcje dla Claude”), więc `cp` reguły na SKILL.md ich nie wycina; mimo to po kopiowaniu sprawdź `git diff`.
+- Publikacja nowej wersji skilla organizacji: po Replace trzeba jeszcze „Publish to org” → „Publish”; przycisk klikaj przez `find`, nie po współrzędnych.
 
 ## Stan (2026-11-11)
 - wyglad 0.43.0 (ostatnie: pytanie wpisane w wyjaśnieniu bez nagłówka, z opcjami w jednej linii, dostaje ramkę i przyciski; wcześniej
   0.41.0 kafle stanu, schowane szczegóły punktów, ramka „Brak uprawnień”; 0.40.x nowy pasek, odnośniki ze ścieżką z nawiasem).
 - projekt 0.2.0: pasek nad polem = „▣ konto · tytuł sesji · ostatnio: … · czeka/w toku: najpilniejsza sprawa z STAN.md”.
 - straznik 0.1.0, dzwiek 0.1.0, komputer 0.2.0 bez zmian.
-- Skill `uklad-odpowiedzi` w kontach: Personal v16, ELMI v7, ATERIMA v8 (siedem bloków; wgrane 2026-11-15); skill dla zespołu `uklad-odpowiedzi-zespol` opublikowany w ELMI i ATERIMA jako domyślnie włączony. Po każdej zmianie
+- Skill `uklad-odpowiedzi` w kontach: Personal v21, ELMI v8, ATERIMA v9 (bloki z ikonami w części B; wgrane 2026-11-15); skill dla zespołu `uklad-odpowiedzi-zespol` opublikowany w ELMI i ATERIMA jako domyślnie włączony. Po każdej zmianie
   reguły: odśwież SKILL.md, commit, po „tak” Stefana wgraj przez Replace (przeglądarka wbudowana, base64 → DataTransfer; zapis
   w sessionStorage przetrwa przełączanie kont; menu konta „Stefan · …” w lewym dolnym rogu, pozycje `menuitemradio`).
   Identyfikatory skilla w pamięci sesji: `~/.claude/projects/C--Projekty-claude-mody/memory/skill-uklad-odpowiedzi-w-koncie-claude-ai.md`.
