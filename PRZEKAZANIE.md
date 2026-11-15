@@ -12,7 +12,7 @@ DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` 
   0.41.0 kafle stanu, schowane szczegóły punktów, ramka „Brak uprawnień”; 0.40.x nowy pasek, odnośniki ze ścieżką z nawiasem).
 - projekt 0.2.0: pasek nad polem = „▣ konto · tytuł sesji · ostatnio: … · czeka/w toku: najpilniejsza sprawa z STAN.md”.
 - straznik 0.1.0, dzwiek 0.1.0, komputer 0.2.0 bez zmian.
-- Skill `uklad-odpowiedzi` w kontach: Personal v12, ELMI v5, ATERIMA v4 (treść z 0.41.0; wgrane 2026-11-09). Po każdej zmianie
+- Skill `uklad-odpowiedzi` w kontach: Personal v16, ELMI v7, ATERIMA v8 (siedem bloków; wgrane 2026-11-15); skill dla zespołu `uklad-odpowiedzi-zespol` opublikowany w ELMI i ATERIMA jako domyślnie włączony. Po każdej zmianie
   reguły: odśwież SKILL.md, commit, po „tak” Stefana wgraj przez Replace (przeglądarka wbudowana, base64 → DataTransfer; zapis
   w sessionStorage przetrwa przełączanie kont; menu konta „Stefan · …” w lewym dolnym rogu, pozycje `menuitemradio`).
   Identyfikatory skilla w pamięci sesji: `~/.claude/projects/C--Projekty-claude-mody/memory/skill-uklad-odpowiedzi-w-koncie-claude-ai.md`.
