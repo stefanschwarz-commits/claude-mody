@@ -141,8 +141,12 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     ma zabarwione tło (Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to
     jest potrzebny”). Kolory tylko ze zmiennych motywu (`--bg-warning`, `--bg-accent`, `--bg-danger`, `--bg-success`,
     `--surface-1`), żeby działały w jasnym i ciemnym motywie.
-    Odpowiedź końcowa pod obrazem: pasek, `### ▶ …` i jedno lub dwa zdania, w tym czego potrzebujesz („Czekam na 25A albo
-    25B.”); bloków nie powtarzasz tekstem. Bez narzędzia do wizualizacji piszesz po staremu, punkty 2–5.
+    Nagłówek odpowiedzi też w obrazie, na samej górze, nad blokami (decyzja Stefana 26A z 2026-11-15, po zrzucie, na którym
+    tekst pod obrazem „wymaga jeszcze popracowania”): mała szara linia „Odpowiedź N · dziś GG:MM” (`--text-secondary`, 13px),
+    pod nią zdanie ▶ jako ikona `ti-player-play` i tekst 18px, pogrubiony, w `--text-primary`, bez tła.
+    Odpowiedź końcowa pod obrazem: tylko jedno krótkie zdanie, czego potrzebujesz („Czekam na 25A albo 25B.”), albo gdy nic
+    nie potrzebujesz, jedno zdanie „Nic nie musisz robić.”; bez paska, bez `### ▶`, bez `---`; bloków nie powtarzasz tekstem.
+    Bez narzędzia do wizualizacji piszesz po staremu, punkty 1–5.
 
 
 Przykład krótkiej odpowiedzi:

@@ -390,3 +390,6 @@ Stefan (zrzut bloku Wyjaśnienie z Code): „zobacz, jak ładnie jest to kolorys
 
 ## 2026-11-15 skille wgrane na trzy konta (zlecenie Stefana „wdrożyć teraz dla całej firmy”)
 uklad-odpowiedzi: Personal v21, ELMI v8, ATERIMA v9. uklad-odpowiedzi-zespol v2 opublikowany w ELMI i ATERIMA (dostęp bez zmian: domyślnie włączony). Sumy kontrolne tekstu sprawdzone w przeglądarce przed wgraniem; punkty 16–17 części B obecne.
+
+## 2026-11-15 skill uklad-odpowiedzi, część B: nagłówek w obrazie (26A)
+Stefan o tekście pod obrazem („Odpowiedź 84”, ▶ i zdanie): „ten fragment wymaga jeszcze popracowania”. Decyzja 26A: pasek „Odpowiedź N · dziś GG:MM” i zdanie ▶ (ikona `ti-player-play`) na górze obrazu; pod obrazem tylko jedno zdanie, czego potrzeba.
