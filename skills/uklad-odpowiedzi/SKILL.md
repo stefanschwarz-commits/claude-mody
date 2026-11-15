@@ -133,6 +133,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     Odpowiedź końcowa pod obrazem: pasek, `### ▶ …` i jedno lub dwa zdania, w tym czego potrzebujesz („Czekam na 25A albo
     25B.”); bloków nie powtarzasz tekstem. Bez narzędzia do wizualizacji piszesz po staremu, punkty 2–5.
 
+
 Przykład krótkiej odpowiedzi:
 
 ---
