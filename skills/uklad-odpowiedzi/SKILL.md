@@ -110,6 +110,20 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     przed odpowiedzią. W odpowiedzi końcowej wtedy tylko zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
 14. Brak uprawnień: osobna sekcja `**Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
+16. Bez kolorowych kulek (🔵 🟤 🔴 🟢 🟠 ⚪) w nagłówkach sekcji i nigdzie indziej (Stefan 2026-11-14: „nie podobają mi się
+    te kulki”). Nagłówki sekcji są czystym pogrubionym tekstem.
+17. Karta z ikonami (decyzja Stefana 2026-11-14: „masz tutaj zarówno ikonki, jak i przyciski, możemy to wdrożyć”): gdy jest
+    narzędzie do wizualizacji, tabelę stanu, zadania i pytanie rysujesz w jednym obrazie zamiast w tekście, jako ostatnie
+    narzędzie przed odpowiedzią:
+    - biała karta stanu: każdy wiersz to ikona i do 8 słów; ikony Tabler w kolorze roli: `ti-circle-check` zielona (zrobione),
+      `ti-clock` pomarańczowa (czeka na Ciebie), `ti-x` czerwona (nie udało się), `ti-lock` czerwona (brak uprawnień);
+    - niebieska karta zadania z ikoną `ti-hand-finger`: „Zadanie 1: …”, kroki K1A, K1B pod spodem;
+    - karta pytania z ikoną `ti-help-circle`: „Pytanie 19: …?”, „Dlaczego to ważne: …”, przyciski 19A, 19B (polecany z ikoną
+      `ti-star` i grubszą ramką), a pod nimi mała linia „Przycisk nie działa? Napisz w czacie 19A albo 19B.”; przycisk
+      wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać. Napisz 19A.”
+      (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie).
+    Odpowiedź końcowa pod kartą: pasek, `### ▶ …` i jedno zdanie, czego potrzebujesz („Czekam na 19A albo 19B.”); tabeli,
+    zadań i pytań nie powtarzasz tekstem. Bez narzędzia do wizualizacji piszesz po staremu, punkty 2–5.
 
 Przykład krótkiej odpowiedzi:
 
