@@ -5,8 +5,8 @@ import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
-import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe, shortViewOf } from './zakreslacz'
-import { foldOf, hasTable, isPermission, tilesOf } from './skroty'
+import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe } from './zakreslacz'
+import { tilesOf } from './skroty'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -85,10 +85,6 @@ function stampText(at: number, sameDayAs?: number): string {
   return isSameDay ? time : `${day}, ${time}`
 }
 const openTexts = atom({ plugin: 'wyglad', key: 'openTexts' } as const, [] as string[])
-// Answers whose explanation shows only its marked runs ("Tylko wyróżnione"), by key.
-const onlyMarks = atom({ plugin: 'wyglad', key: 'onlyMarks' } as const, [] as string[])
-// Points of the explanation whose hidden rest Stefan opened (key of the answer + block).
-const openPoints = atom({ plugin: 'wyglad', key: 'openPoints' } as const, [] as string[])
 // Every task asked of Stefan in this session, and the questions of the latest answer.
 const sprawy = atom({ plugin: 'wyglad', key: 'sprawy' } as const, [] as Sprawa[])
 // The text of the latest final answer, so a short one without ▶ is not taken for a work note.
@@ -270,7 +266,8 @@ function numbered(body: string): string {
 const SECTION = {
   done: { title: 'Zrobione', color: 'success', tint: 'green', icon: 'circle-check', glyph: '●' },
   failed: { title: 'Nie udało się', color: 'error', tint: 'red', icon: 'circle-x', glyph: '●' },
-  open: { title: 'Niewyjaśnione', color: 'warning', tint: 'orange', icon: 'help-circle', glyph: '●' },
+  open: { title: 'Jeszcze sprawdzam', color: 'inactive', tint: 'grey', icon: 'help-circle', glyph: '●' },
+  waiting: { title: 'Czeka na innych', color: 'inactive', tint: 'grey', icon: 'clock', glyph: '●' },
   info: { title: 'Dla informacji', color: 'inactive', tint: 'grey', icon: 'info-circle', glyph: '●' },
 } as const
 
@@ -694,7 +691,7 @@ export const register: Register = on => {
     const opened = await read($, openFrames)
     // Zrobione, Problem and Dla informacji show in full; only a really long lot folds.
     const isLongFold = reply.parts
-      .filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'info')
+      .filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'waiting' || part.kind === 'info')
       .reduce((n, part) => n + part.body.split(/\r?\n/).filter(l => l.trim() !== '').length, 0) > FOLD_LINES
     const isLatest = (await read($, last))?.key === key
     const ticked = await read($, doneTasks)
@@ -705,10 +702,6 @@ export const register: Register = on => {
     const now = await $.clock.now().catch(() => Date.now())
     const barText = stamp ? `Odpowiedź ${stamp.n} · ${stampText(stamp.at, isLatest ? undefined : now)}` : isLatest ? 'Nowa odpowiedź' : 'Odpowiedź'
     const isOpen = (await read($, openTexts)).includes(key)
-    const onlyMarked = await read($, onlyMarks)
-    const pointsOpen = await read($, openPoints)
-    // With a table in the answer nothing folds (Stefan 2026-11-08).
-    const canFold = !hasTable(text)
     const tint = await tintOf($)
     const ink = inkOf(tint)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
@@ -719,56 +712,37 @@ export const register: Register = on => {
     const todos = reply.parts.filter(part => part.kind === 'todo')
     const questions = reply.parts.filter(part => part.kind === 'questions').flatMap(part => splitQuestions(part.body))
     const plain = reply.parts.filter(part => part.kind === 'plain')
-    const folded = reply.parts.filter(part => part.kind === 'done' || part.kind === 'failed' || part.kind === 'open' || part.kind === 'info')
+    const ORDER = ['failed', 'open', 'waiting', 'done', 'info']
+    const folded = reply.parts.filter(part => ORDER.includes(part.kind)).sort((a, b) => ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind))
 
     return (
       <Box flexDirection="column" gap={1}>
         <Box key={key} flexDirection="column" gap={1}>
-          {/* A light bar marks where the latest answer starts; older ones get a faint line. */}
-          {isLatest ? (
-            <Box backgroundColor="inactive" paddingX={1} flexDirection="row" gap={1}>
-              <Text color="inverseText" bold>{barText}</Text>
-              {stamp ? <Text color="inverseText">najnowsza</Text> : null}
-            </Box>
-          ) : (
-            <Box flexDirection="row" gap={1}>
-              <Text dimColor>{barText}</Text>
-            </Box>
-          )}
-          {/* Status tiles: what is done, failed, waits for Stefan or asks him, seen before any reading. */}
+          {/* One quiet line: which answer this is and what waits for Stefan. */}
           {(() => {
             const t = tilesOf(reply.parts, questions.length)
-            const all = [
-              { n: t.done, label: 'zrobione', color: ink.green },
-              { n: t.failed, label: 'nie udało się', color: ink.red },
-              { n: t.todo, label: 'czeka na Ciebie', color: ink.orange },
-              { n: t.questions, label: t.questions === 1 ? 'pytanie' : 'pytania', color: ink.sand },
-            ].filter(tile => tile.n > 0)
-            if (all.length === 0) return null
+            const count = (n: number, one: string, few: string, many: string) =>
+              `${n} ${n === 1 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many}`
+            const waits = [
+              t.questions > 0 ? count(t.questions, 'pytanie', 'pytania', 'pytań') : '',
+              t.todo > 0 ? count(t.todo, 'zadanie', 'zadania', 'zadań') : '',
+            ].filter(Boolean)
             return (
               <Box flexDirection="row" gap={1} flexWrap="wrap">
-                {all.map(tile => (
-                  <Box key={`${key}-tile-${tile.label}`} borderStyle="round" borderColor={tile.color} paddingX={1} flexDirection="row" gap={1}>
-                    <Text bold color={tile.color}>{String(tile.n)}</Text>
-                    <Text>{tile.label}</Text>
-                  </Box>
-                ))}
+                <Text dimColor bold={isLatest}>{barText}</Text>
+                {isLatest && stamp ? <Text dimColor>najnowsza</Text> : null}
+                {waits.length > 0 ? <Text bold color={ink.orange}>{`· czeka na Ciebie: ${waits.join(', ')}`}</Text> : null}
+                {t.failed > 0 ? <Text bold color={ink.red}>{`· nie udało się: ${t.failed}`}</Text> : null}
               </Box>
             )
           })()}
-          {/* The headline and the explanation are the answer's main content, so they stand in a
-              frame of their own, the strongest on the page; the lists below are only what to do. */}
-          <Box flexDirection="column" borderStyle="round" borderColor={ink.text} paddingX={1} gap={1}>
-          {/* Named like every other frame (Stefan's 5B): what this part is. */}
-          <Box flexDirection="row" gap={1}>
-            {icon(els, e.surface, 'player-play', ink.text, '▶')}
-            <Text bold>Co się zmieniło</Text>
-          </Box>
-          {/* The text takes the frame's full width (Stefan's 1A of 2026-11-04, after one day
-              with a narrower measure: "poszerz ramkę z powrotem do pełnej szerokości"). */}
-          <Box flexDirection="column" gap={1}>
+          {/* The explanation is a block like the others (Stefan 2026-11-15): white bar, grey ground. */}
+          <Box flexDirection="row" backgroundColor={tint?.grey}>
+          <Box width={1} flexShrink={0} backgroundColor={ink.text} />
+          <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
+          <Text bold>Wyjaśnienie</Text>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
-          <Markdown text={`**${fileLinksOf(reply.headline)}**`} />
+          <Markdown text={`### ${fileLinksOf(reply.headline)}`} />
         {(() => {
           // A long explanation shows its first lines until opened.
           const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')
@@ -784,39 +758,19 @@ export const register: Register = on => {
           // A bold run in a prose paragraph is the paragraph's point: drawn as a marker,
           // and "Tylko wyróżnione" leaves those runs alone, one per line.
           const blocks = blocksOf(isLong && !isOpen ? lines.slice(0, cut).join('\n') : lines.join('\n'))
-          const isOnly = hasMarks(blocks) && onlyMarked.includes(key)
           return (
             <Box flexDirection="column" gap={1}>
-              {isOnly
-                ? shortViewOf(blocks).map((sentence, i) => (
-                    // One marked sentence per line, as plain text with its own emphasis inside.
-                    <Box key={`m${i}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                      <Text dimColor>·</Text>
-                      <Text>{sentence.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`, true))}</Text>
-                    </Box>
-                  ))
-                : blocks.map((block, i) => (
+              {blocks.map((block, i) => (
                     <Box key={`b${i}`} flexDirection="column">
                       {block.kind === 'md' || (!block.runs.some(run => run.isMark) && !block.isBullet) ? (
                         <Markdown text={block.kind === 'md' ? block.text : fileLinksOf(block.runs.map(run => (run.href ? `[${run.text}](${run.href})` : run.path ? `[${run.text}](${run.path})` : run.text)).join(''))} />
                       ) : (
                         (() => {
-                          // Each point shows its bold sentence; the rest opens on "›" (Stefan 2026-11-08).
-                          const pointKey = `${key}-b${i}`
-                          const fold = canFold && block.isBullet ? foldOf(block.runs) : undefined
-                          const isPointOpen = pointsOpen.includes(pointKey)
-                          const runs = fold && !isPointOpen ? fold.lead : block.runs
+                          const runs = block.runs
                           return (
                             <Box flexDirection="row" alignItems="flex-start" gap={1} paddingLeft={block.isBullet && (block.level ?? 1) > 1 ? 2 : 0}>
-                              {block.isBullet ? <Text>{(block.level ?? 1) > 1 ? '◦' : '•'}</Text> : null}
+                              {block.isBullet && (block.level ?? 1) > 1 ? <Text>◦</Text> : null}
                               <Text dimColor={hasSentence(runs)}>{runs.map((run, j) => emphasis(els, run, tint?.mark, `r${j}`))}</Text>
-                              {fold ? (
-                                <Button
-                                  key={`point-${pointKey}`}
-                                  label={isPointOpen ? '‹' : '›'}
-                                  onPress={() => void update($, openPoints, list => (list.includes(pointKey) ? list.filter(x => x !== pointKey) : [...list, pointKey]))}
-                                />
-                              ) : null}
                             </Box>
                           )
                         })()
@@ -836,15 +790,6 @@ export const register: Register = on => {
                       ))}
                     </Box>
                   ))}
-              {hasMarks(blocks) ? (
-                <Box>
-                  <Button
-                    key={`only-${key}`}
-                    label={isOnly ? 'Pokaż całość' : 'Tylko wyróżnione'}
-                    onPress={() => void update($, onlyMarks, list => (list.includes(key) ? list.filter(x => x !== key) : [...list, key]))}
-                  />
-                </Box>
-              ) : null}
               {isLong ? (
                 <Box>
                   <Button
@@ -898,6 +843,55 @@ export const register: Register = on => {
         ))}
         {todos.length + questions.length > 0 ? (
           <Box flexDirection="column" gap={1}>
+            {/* Each question is its own frame, in the same form as a task: "Pytanie 7: title", why, options, advice, buttons. */}
+            {questions.map((q, i) => {
+              const [title, ...why] = q.text.split('\n\n')
+              // The number runs on through the conversation once the answer is recorded.
+              const g = (stamp?.qBase ?? 0) + Number(q.number)
+              const named = (id: string) => `${g}${letterOfId(id)}`
+              const choice = replied[`${key}:q${q.number}`]
+              // Answered: the question keeps its title and the choice, loses its options and buttons.
+              if (choice) {
+                return (
+                  <Box key={`${key}-q${q.number}`} flexDirection="row">
+                    <Box width={1} flexShrink={0} backgroundColor={ink.grey} />
+                    <Box flexDirection="row" alignItems="flex-start" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
+                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
+                    <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
+                  </Box></Box>
+                )
+              }
+              return (
+                <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.orange}>
+                  <Box width={1} flexShrink={0} backgroundColor={ink.orange} />
+                  <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
+                  <Text bold color={ink.orange}>Czeka na Ciebie · decyzja</Text>
+                  <Box flexDirection="row" alignItems="flex-start" gap={1}>
+                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
+                  </Box>
+                  {why.length > 0 ? marked(els, why.join('\n\n'), tint?.mark, true) : null}
+                  {/* One option per line, named as its button; the star marks the advice. */}
+                  {optionsOf(q).map(option => (
+                    <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
+                      <Text bold>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
+                      {marked(els, option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim(), tint?.mark, false)}
+                    </Box>
+                  ))}
+                  {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} /> : null}
+                  {optionsOf(q).length > 0 ? (
+                    <Box flexDirection="row" flexWrap="wrap" gap={2}>
+                      {optionsOf(q).map(option => (
+                        <Button
+                          key={`b${i}-${option.id}`}
+                          label={`Wybierz ${named(option.id)}${option.isBest ? ' ★' : ''}`}
+                          onPress={fill(named(option.id))}
+                        />
+                      ))}
+                    </Box>
+                  ) : null}
+                </Box></Box>
+              )
+            })}
             {todos.length > 0 ? (() => {
               // Each task is its own frame, in the same form as a question: "Zadanie 1: what", then why.
               // A fenced block (text to copy) and a file row are drawn below the frames.
@@ -921,9 +915,9 @@ export const register: Register = on => {
                           </Box>
                         ) : (
                           <Box flexDirection="column" gap={1}>
+                            <Text bold color={ink.blue}>Czeka na Ciebie · zadanie</Text>
                             {/* Markdown, not Text: a link in the task's head stays clickable. The why is plain, not grey: it is the task. */}
                             <Box flexDirection="row" alignItems="flex-start" gap={1}>
-                              {icon(els, e.surface, 'square', ink.blue, '☐')}
                               <Markdown text={`**Zadanie ${n}: ${fileLinksOf(taskOf(item.text).what)}**`} />
                             </Box>
                             {taskOf(item.text).why ? marked(els, taskOf(item.text).why, tint?.mark, false) : null}
@@ -960,54 +954,6 @@ export const register: Register = on => {
                 </Box>
               )
             })() : null}
-            {/* Each question is its own frame, in the same form as a task: "Pytanie 7: title", why, options, advice, buttons. */}
-            {questions.map((q, i) => {
-              const [title, ...why] = q.text.split('\n\n')
-              // The number runs on through the conversation once the answer is recorded.
-              const g = (stamp?.qBase ?? 0) + Number(q.number)
-              const named = (id: string) => `${g}${letterOfId(id)}`
-              const choice = replied[`${key}:q${q.number}`]
-              // Answered: the question keeps its title and the choice, loses its options and buttons.
-              if (choice) {
-                return (
-                  <Box key={`${key}-q${q.number}`} flexDirection="row">
-                    <Box width={1} flexShrink={0} backgroundColor={ink.grey} />
-                    <Box flexDirection="row" alignItems="flex-start" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
-                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} dimColor />
-                    <Text dimColor>{`odpowiedziałeś ${choice}`}</Text>
-                  </Box></Box>
-                )
-              }
-              return (
-                <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.sand}>
-                  <Box width={1} flexShrink={0} backgroundColor={ink.sand} />
-                  <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
-                  <Box flexDirection="row" alignItems="flex-start" gap={1}>
-                    <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
-                  </Box>
-                  {why.length > 0 ? marked(els, why.join('\n\n'), tint?.mark, true) : null}
-                  {/* One option per line, named as its button; the star marks the advice. */}
-                  {optionsOf(q).map(option => (
-                    <Box key={`o${i}-${option.id}`} flexDirection="row" alignItems="flex-start" gap={1}>
-                      <Text bold>{`${named(option.id)}${option.isBest ? ' ★' : ''}`}</Text>
-                      {marked(els, option.text.replace(/\s*[★⭐]️?\s*/gu, ' ').trim(), tint?.mark, false)}
-                    </Box>
-                  ))}
-                  {q.tip ? <Markdown text={`**${tipOf(q).replace(/(Polecam\s+)\d+/i, `$1${g}`)}**`} /> : null}
-                  {optionsOf(q).length > 0 ? (
-                    <Box flexDirection="row" flexWrap="wrap" gap={2}>
-                      {optionsOf(q).map(option => (
-                        <Button
-                          key={`b${i}-${option.id}`}
-                          label={`Wybierz ${named(option.id)}${option.isBest ? ' ★' : ''}`}
-                          onPress={fill(named(option.id))}
-                        />
-                      ))}
-                    </Box>
-                  ) : null}
-                </Box></Box>
-              )
-            })}
           </Box>
         ) : null}
         {folded.length > 0 ? (
@@ -1017,8 +963,7 @@ export const register: Register = on => {
               // Each frame folds and opens on its own button.
               const full = opened.includes(`${key}-${i}`)
               const base = SECTION[part.kind as keyof typeof SECTION] ?? SECTION.info
-              // A failure for want of a permission is named so: Stefan can change the permission himself.
-              const look = part.kind === 'failed' && isPermission(part.body) ? { ...base, title: 'Brak uprawnień', icon: 'lock' } : base
+              const look = base
               const body = part.kind === 'done' && part.title.length > 30 ? `${part.title}
 
 ${part.body}` : part.body
@@ -1032,7 +977,7 @@ ${part.body}` : part.body
                   <Box width={1} flexShrink={0} backgroundColor={look.color} />
                   <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
-                    <Text bold>{look.title}</Text>
+                    <Text bold color={ink[look.tint]}>{look.title}</Text>
                   </Box>
                   {!isLongFold || full ? (
                     all.filter(piece => !isFence(piece)).map((piece, j) =>

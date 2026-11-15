@@ -8,7 +8,7 @@ DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` 
 „zamknij i otwórz aplikację”).
 
 ## Stan (2026-11-11)
-- wyglad 0.41.1 (ostatnie: pytanie wpisane w wyjaśnieniu bez nagłówka, z opcjami w jednej linii, dostaje ramkę i przyciski; wcześniej
+- wyglad 0.43.0 (ostatnie: pytanie wpisane w wyjaśnieniu bez nagłówka, z opcjami w jednej linii, dostaje ramkę i przyciski; wcześniej
   0.41.0 kafle stanu, schowane szczegóły punktów, ramka „Brak uprawnień”; 0.40.x nowy pasek, odnośniki ze ścieżką z nawiasem).
 - projekt 0.2.0: pasek nad polem = „▣ konto · tytuł sesji · ostatnio: … · czeka/w toku: najpilniejsza sprawa z STAN.md”.
 - straznik 0.1.0, dzwiek 0.1.0, komputer 0.2.0 bez zmian.

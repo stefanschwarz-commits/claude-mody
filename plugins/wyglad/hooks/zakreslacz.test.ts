@@ -86,18 +86,8 @@ test('zakreślenie w wyjaśnieniu ma własne tło, a „Tylko wyróżnione” zo
   expect(all.find(s => s.text === 'pogrubienie')?.bold).toBe(true)
   // A block with only a marked word keeps its full color.
   expect(all.some(s => s.text.startsWith('Drugi akapit') && s.dim)).toBe(false)
-  const only = await ui.find({ type: 'Button', text: 'Tylko wyróżnione' })
-  expect(only).toBeDefined()
-  await ui.press({ key: (only as { key?: string } | undefined)?.key ?? '' })
-  const after = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  // The short view: the sentence as plain text, its emphasis inside, no background on the sentence.
-  expect(after.some(s => s.text.startsWith('Pierwszy akapit mówi, że') && s.bg === undefined)).toBe(true)
-  // The sentence is plain text in the short view: part of its line, no span of its own.
-  expect(after.some(s => s.text.includes('ramki rysują się po restarcie') && s.bg === undefined)).toBe(true)
-  expect(after.some(s => s.text === 'Trzeci akapit bez wyróżnienia.')).toBe(true)
-  // The link paragraph marks a word, so its sentence is in the short view too.
-  expect(after.some(s => s.text.startsWith('Drugi akapit'))).toBe(true)
-  expect(await ui.find({ type: 'Button', text: 'Pokaż całość' })).toBeDefined()
+  // No short view any more: the whole text shows at once (Stefan 2026-11-15).
+  expect(await ui.find({ type: 'Button', text: 'Tylko wyróżnione' })).toBeUndefined()
 })
 
 test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem', async ($, on) => {
@@ -105,8 +95,8 @@ test('wyjaśnienie w punktach: każdy punkt z kropką i własnym wyróżnieniem'
   const reply = ['▶ **Punkty.**', '', '- **Pierwsza rzecz jest zrobiona i działa.** Szczegół pierwszy.', '- Druga rzecz z **jednym słowem** w środku.', '- Trzecia bez wyróżnienia.', '', '---', '', '🟢 **Zrobione**', '- **Gotowe.** Tak.'].join('\n')
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
-  // Every point gets its dot, the one without a bold too (it used to go to Markdown dotless).
-  expect(all.filter(s => s.text === '•').length).toBe(3)
+  // Points stand as plain lines in the block, without dots (Stefan 2026-11-15).
+  expect(all.filter(s => s.text === '•').length).toBe(0)
   expect(all.find(s => s.text === 'jednym słowem')?.bold).toBe(true)
   expect(all.find(s => s.text === 'Pierwsza rzecz jest zrobiona i działa.')?.bold).toBe(true)
 })
@@ -174,7 +164,7 @@ test('nazwa pliku z pełną ścieżką jest odnośnikiem wszędzie: w zdaniu, w 
   // The desktop opens no file link inline, so a file in a sentence is its name plus a row with "Pokaż w folderze".
   expect(links).toEqual([])
   expect(await ui.find({ type: 'Button', text: 'Pokaż w folderze' })).toBeDefined()
-  expect(md).toContain('**Plan jest w [plan.md](file:///C:/Projekty/plan.md).**')
+  expect(md).toContain('### Plan jest w [plan.md](file:///C:/Projekty/plan.md).')
   expect(md).toContain('Bez wyróżnienia, ale z plikiem [stan.md](file:///C:/Projekty/stan.md).')
   expect(md).toContain('**Plan zapisany w [plan.md](file:///C:/Projekty/plan.md).**')
 })
@@ -200,7 +190,7 @@ test('podpunkty pod punktem wyjaśnienia są osobnymi, wciętymi punktami, nie j
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   const all = spans((await ui.find({ type: 'Box' })) as unknown as Node)
   // A point gets its dot, a sub-point a hollow one; a point without a bold keeps its dot too.
-  expect(all.filter(s => s.text === '•').length).toBe(2)
+  expect(all.filter(s => s.text === '•').length).toBe(0)
   expect(all.filter(s => s.text === '◦').length).toBe(1)
   expect(all.some(s => s.text === 'Katarzyna wysłała trzy listy.')).toBe(true)
 })

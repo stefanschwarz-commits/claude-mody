@@ -63,7 +63,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
     // The bar names the answer and when it was finished, to the second; no ▶ marker any more.
     expect(await ui.find({ type: 'Text', text: /^(Nowa )?[Oo]dpowiedź/ })).toBeDefined()
-    expect(bolds(await ui.find({ type: 'Box' }))).toContain('Mod działa i jest gotowy do testu.')
+    expect(markdowns(await ui.find({ type: 'Box' }))).toContain('### Mod działa i jest gotowy do testu.')
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()
@@ -384,7 +384,7 @@ test('podsumowanie: pogrubiony początek punktu, reszta szarym; stare „Problem
   expect(bold).toContain('Testy przechodzą.')
   expect(faint).toContain('23 z 23 na kopii.')
   expect(bold).toContain('Nie udało się')
-  expect(bold).toContain('Niewyjaśnione')
+  expect(bold).toContain('Jeszcze sprawdzam')
 })
 
 test('blok do wklejenia (```) w zadaniach nie zamienia się w kratki i nie zawyża licznika', async ($, on) => {
@@ -555,7 +555,7 @@ test('odpowiedź bez ▶, ale ze znanymi sekcjami: pierwsza linia jest nagłówk
   expect(parsed?.parts.map(p => p.kind)).toEqual(['done', 'open'])
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
   expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: 'Niewyjaśnione' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'Jeszcze sprawdzam' })).toBeDefined()
   // Plain prose without sections stays the engine's own drawing.
   expect(splitReply('Zwykłe zdanie.\n\nDrugie zdanie bez sekcji.')).toBeUndefined()
 })
@@ -581,3 +581,17 @@ test('jedno zadanie z krokami: ramka „Zadanie 1” i w niej „Krok 1a”, „
   expect(await ui.find({ type: 'Text', text: 'Remove' })).toBeDefined()
 })
 
+
+test('siedem bloków jednego kształtu: linia stanu, Wyjaśnienie, decyzja i zadanie przed wynikami (Stefan 2026-11-15)', async ($, on) => {
+  setup(on)
+  const reply = ['▶ Zaproszenia gotowe, sala nie.', '', '- **Lista gości gotowa.** Dwanaście osób.', '', '---', '**Zrobione**', '1. **Lista gotowa.** Sprawdzona.', '', '---', '**Czeka na innych**', '1. **Ania: czy sala jest wolna.** Przypomnę jutro.', '', '---', '**Jeszcze sprawdzam**', '1. **Catering.** Sprawdzam sam.', '', '---', '**Nie udało się**', '1. **Sala niezarezerwowana.** Brak dostępu.', '', '---', '**Zadania dla Ciebie**', '1. Daj dostęp do kalendarza – bez tego nie zarezerwuję sali.', '', '---', '**Pytania do Ciebie**', '**1. Wysłać dziś?**', 'Dlaczego to ważne: goście potrzebują tygodnia.', '- **A)** Tak – plus: szybciej; minus: ryzyko.', '- **B)** Nie – plus: pewność; minus: później.', '➜ Polecam 1A, bo czas.'].join('\n')
+  expect(splitReply(reply)?.parts.map(p => p.kind)).toEqual(['plain', 'done', 'waiting', 'open', 'failed', 'todo', 'questions'])
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  for (const label of ['Wyjaśnienie', 'Czeka na Ciebie · decyzja', 'Czeka na Ciebie · zadanie', 'Nie udało się', 'Jeszcze sprawdzam', 'Czeka na innych', 'Zrobione']) {
+    expect(await ui.find({ type: 'Text', text: label })).toBeDefined()
+  }
+  expect(await ui.find({ type: 'Text', text: '· czeka na Ciebie: 1 pytanie, 1 zadanie' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: '· nie udało się: 1' })).toBeDefined()
+  // No frames with borders and no status tiles any more.
+  expect(await ui.find({ type: 'Text', text: 'Co się zmieniło' })).toBeUndefined()
+})
