@@ -360,3 +360,6 @@ Stefan o próbnej karcie (ikony Tabler w kolorze stanu, niebieska karta zadania,
 
 ## 2026-11-15 wyglad 0.42.2: pasek z boku także przy „Co się zmieniło” i kaflach stanu
 Stefan (zrzut): „wygląd tego nowego moda jest świetny, ale część wciąż wygląda na starą”. Ramka wyjaśnienia „Co się zmieniło” i kafle stanu („1 zrobione”) miały jeszcze okrągłe obramowanie; teraz kolorowy pasek z boku jak reszta, bez ikony ▷. Karta szkicu maila zostaje w ramce (to kartka papieru).
+
+## 2026-11-15 wyglad 0.42.3: cofnięty pasek przy „Co się zmieniło” i kaflach
+Stefan: „Nie musisz na siłę wszystkiego robić z ramką i kreską po lewej. To nie o to chodzi.” Ramka wyjaśnienia i kafle stanu wracają do stanu z 0.42.1 (okrągłe obramowanie). Do ustalenia, co dokładnie wygląda na starą.
