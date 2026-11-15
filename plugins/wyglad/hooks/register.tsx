@@ -748,20 +748,23 @@ export const register: Register = on => {
             return (
               <Box flexDirection="row" gap={1} flexWrap="wrap">
                 {all.map(tile => (
-                  <Box key={`${key}-tile-${tile.label}`} borderStyle="round" borderColor={tile.color} paddingX={1} flexDirection="row" gap={1}>
+                  <Box key={`${key}-tile-${tile.label}`} flexDirection="row">
+                    <Box width={1} flexShrink={0} backgroundColor={tile.color} />
+                    <Box flexDirection="row" paddingX={1} gap={1}>
                     <Text bold color={tile.color}>{String(tile.n)}</Text>
                     <Text>{tile.label}</Text>
-                  </Box>
+                  </Box></Box>
                 ))}
               </Box>
             )
           })()}
           {/* The headline and the explanation are the answer's main content, so they stand in a
               frame of their own, the strongest on the page; the lists below are only what to do. */}
-          <Box flexDirection="column" borderStyle="round" borderColor={ink.text} paddingX={1} gap={1}>
+          <Box flexDirection="row">
+            <Box width={1} flexShrink={0} backgroundColor={ink.text} />
+            <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
           {/* Named like every other frame (Stefan's 5B): what this part is. */}
           <Box flexDirection="row" gap={1}>
-            {icon(els, e.surface, 'player-play', ink.text, '▶')}
             <Text bold>Co się zmieniło</Text>
           </Box>
           {/* The text takes the frame's full width (Stefan's 1A of 2026-11-04, after one day
@@ -858,7 +861,7 @@ export const register: Register = on => {
           )
         })()}
           </Box>
-          </Box>
+          </Box></Box>
         </Box>
         {/* A mail draft reads like a sheet of paper: who and what on top, then only the text to send. */}
         {mailsOf(plain.map(part => part.body).join('\n\n')).mails.map((mail, i) => (
