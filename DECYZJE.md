@@ -412,3 +412,4 @@ Stefan po makietach w Cowork: etykiety wszystkich bloków tej samej wielkości (
 
 ## 2026-11-16 skill uklad-odpowiedzi, część B: szare tło widoczne w ciemnym motywie, nic przed obrazem
 Zrzut Stefana z innej sesji (23:13, „są błędy”): szare bloki na `--surface-1` w ciemnym motywie zlewały się z tłem okna, a nad obrazem stało zdanie po angielsku. Szare tło to teraz `color-mix(in srgb, var(--text-primary) 7%, transparent)` (widoczne w obu motywach); przed obrazem żadnego tekstu, wszystko po polsku.
+Tego samego dnia: wynik w Wyjaśnieniu ma 15px jak punkty, nie 16px (Stefan: „w wyjaśnieniu piszesz za dużą czcionką”).

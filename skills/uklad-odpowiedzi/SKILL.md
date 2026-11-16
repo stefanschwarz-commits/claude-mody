@@ -122,7 +122,7 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     w kolorze bloku, zawsze tej samej wielkości (Stefan 2026-11-16: „wyjaśnienie ma większą czcionkę niż czeka na ciebie”):
     - Wyjaśnienie: lekko szare tło `color-mix(in srgb, var(--text-primary) 7%, transparent)` (Stefan 2026-11-16: „ma być na lekko
       szarym tle”; `--surface-1` w ciemnym motywie zlewało się z tłem okna), etykieta `ti-info-circle`
-      w `--text-secondary`; wynik jednym zdaniem 16px pogrubionym w `--text-primary`; punkty w osobnych akapitach 15px:
+      w `--text-secondary`; wynik jednym zdaniem 15px (ta sama wielkość co punkty; Stefan 2026-11-16: „za dużą czcionkę”) pogrubionym w `--text-primary`; punkty w osobnych akapitach 15px:
       pogrubione pierwsze zdanie w `--text-primary`, reszta w `--text-secondary`;
     - Czeka na Ciebie · decyzja: tło `--bg-warning`, etykieta `ti-help-circle`; „Pytanie 25: …?” 16px pogrubione; „Dlaczego to
       ważne: …” 14px szare; potem tabela opcji z kolumnami Opcja | Co się stanie | Plus | Minus (Stefan 2026-11-16: „żeby plusy
