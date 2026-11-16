@@ -15,6 +15,9 @@ kontach nie muszą sobie nic przesyłać, wystarczy że obie pracują tutaj wed�
 4. Dopisz wpis do `DECYZJE.md` (co i dlaczego, z datą) i zaktualizuj wiersz w `STAN.md`.
 5. `git commit` + `git push`.
 6. `claude plugin marketplace update claude-mody` i `claude plugin update <mod>@claude-mody`.
+   Potem to samo w folderze domowym z `--scope project` (`cd ~ && claude plugin update <mod>@claude-mody --scope project`): jest tam
+   druga instalacja modów i bez tego sesje z folderu domowego rysują starą wersją. Na koniec sprawdź w
+   `~/.claude/plugins/installed_plugins.json`, że oba wpisy mają nowy numer.
 7. Stefanowi: jedno zadanie „zamknij i otwórz aplikację Claude”, bo mod ładuje się przy starcie.
 
 ## Ustalenia wyglądu (nie zmieniać bez decyzji Stefana)

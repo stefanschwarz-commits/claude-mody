@@ -403,3 +403,6 @@ Stefan: „tamta sesja działa w starszym trybie z pionową kreską po lewej str
 
 ## 2026-11-16 mod wyglad 0.46.0: ikony przy etykietach bloków; 0.45.0 nie było zainstalowane
 Stefan po restarcie: „tej kreski miało nie być”, „w tej najnowszej wersji skilla mieliśmy jakieś ikonki”. Przyczyna kresek: wersja 0.45.0 (bez paska przy zabarwionym tle) była w repozytorium, ale nikt nie uruchomił `claude plugin update`, więc aplikacja wczytała 0.44.0. Zasada: po każdym wypchnięciu wersji sesja, która ją wydała, sprawdza `installed_plugins.json` (ma być nowy numer), a sesja w chmurze prosi sesję lokalną o instalację. Ikony: etykiety bloków w Code mają te same ikony Tabler co bloki w czacie (info-circle, help-circle, hand-finger, lock albo x, search, hourglass, circle-check); dodane ścieżki hand-finger, hourglass, search, x, sprawdzone na obrazie.
+
+## 2026-11-16 druga instalacja modów w folderze domowym (zakres project) była stara
+W `installed_plugins.json` są dwa wpisy każdego moda: zakres user i zakres project dla `C:\Users\StefanSCHWARZ(ELMI)`. Ten drugi stał na wyglad 0.39.0 i projekt 0.1.2 (od 2026-11-06), więc sesje uruchamiane w folderze domowym rysowały starym wyglądem („starszy tryb z pionową kreską”). Zaktualizowany do 0.46.0 i 0.4.0; krok 6 w CLAUDE.md dopisany.
