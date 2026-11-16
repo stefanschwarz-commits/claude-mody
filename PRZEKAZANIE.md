@@ -7,6 +7,10 @@ bez nakładki) wgrywany na trzy konta claude.ai. Tok pracy: `CLAUDE.md` w repozy
 DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` → `claude plugin update <mod>@claude-mody` → zadanie
 „zamknij i otwórz aplikację”).
 
+## DO ZROBIENIA (2026-11-16 01:40): zainstalować wyglad 0.45.0
+- Sesja chmurowa zrobiła 0.45.0 (bez paska z boku, gdy blok ma tło; testy 78/78). Na komputerze: `claude plugin marketplace update
+  claude-mody` i `claude plugin update wyglad@claude-mody`, potem Stefanowi „zamknij i otwórz aplikację Claude”.
+
 ## DO ZROBIENIA (2026-11-15 20:25): dogranie decyzji 26A na ELMI i ATERIMA
 - Po wgraniu v8/v9 doszedł commit a6fad6d (nagłówek odpowiedzi w obrazie, część B punkt 17). Personal ma go już z karty.
   Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA. Skill zespołu bez zmian.

@@ -744,9 +744,11 @@ export const register: Register = on => {
               </Box>
             )
           })()}
-          {/* The explanation is a block like the others (Stefan 2026-11-15): white bar, grey ground. */}
+          {/* The explanation is a block like the others (Stefan 2026-11-15): grey ground. A side bar only
+              where there is no tinted ground (Stefan 2026-11-15: "jeżeli wszystko ma zabarwione tła, to pasek
+              nie jest potrzebny; jeżeli nie ma, to jest potrzebny"). */}
           <Box flexDirection="row" backgroundColor={tint?.grey}>
-          <Box width={1} flexShrink={0} backgroundColor={ink.text} />
+          {!tint?.grey && <Box width={1} flexShrink={0} backgroundColor={ink.text} />}
           <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
           <Text bold>Wyjaśnienie</Text>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
@@ -871,7 +873,7 @@ export const register: Register = on => {
               }
               return (
                 <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.orange}>
-                  <Box width={1} flexShrink={0} backgroundColor={ink.orange} />
+                  {!tint?.orange && <Box width={1} flexShrink={0} backgroundColor={ink.orange} />}
                   <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Text bold color={ink.orange}>Czeka na Ciebie · decyzja</Text>
                   <Box flexDirection="row" alignItems="flex-start" gap={1}>
@@ -913,7 +915,7 @@ export const register: Register = on => {
                     const isTicked = ticked.includes(`${key}:${i}`)
                     return (
                       <Box key={`${key}-todo-${n}`} flexDirection="row" backgroundColor={isTicked ? undefined : tint?.blue}>
-                        <Box width={1} flexShrink={0} backgroundColor={isTicked ? ink.grey : 'suggestion'} />
+                        {(isTicked || !tint?.blue) && <Box width={1} flexShrink={0} backgroundColor={isTicked ? ink.grey : 'suggestion'} />}
                         <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                         {isTicked ? (
                           <Box flexDirection="row" alignItems="flex-start" gap={1}>
@@ -982,7 +984,7 @@ ${part.body}` : part.body
               return (
                 <Box key={`f${i}`} flexDirection="column" gap={1}>
                 <Box flexDirection="row" backgroundColor={tint?.[look.tint]}>
-                  <Box width={1} flexShrink={0} backgroundColor={look.color} />
+                  {!tint?.[look.tint] && <Box width={1} flexShrink={0} backgroundColor={look.color} />}
                   <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
                     <Text bold color={ink[look.tint]}>{look.title}</Text>

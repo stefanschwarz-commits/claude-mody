@@ -283,6 +283,30 @@ test('aplikacja (jasna i ciemna) dostaje półprzezroczyste tła, niezależnie o
   expect(found.filter(color => ['#17212E', '#2A1F14', '#222326', '#172116', '#2A1616', '#262320'].includes(color))).toEqual([])
 })
 
+test('blok z zabarwionym tłem nie ma paska z boku; bez tła pasek zostaje (Stefan 2026-11-15)', async ($, on) => {
+  setup(on)
+  type Node = { props?: { width?: number; backgroundColor?: string }; children?: (Node | string)[] }
+  const bars = async (surface: 'desktop' | 'terminal') => {
+    const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
+    let n = 0
+    const walk = (node: Node) => {
+      if (node.props?.width === 1 && node.props.backgroundColor) n++
+      node.children?.forEach(c => typeof c === 'object' && walk(c))
+    }
+    walk((await ui.find({ type: 'Box' })) as unknown as Node)
+    return n
+  }
+  let hasConfig = true
+  on('config.list', () => {
+    if (!hasConfig) throw new Error('brak ustawień')
+    return { value: [{ key: 'theme', value: 'light' }] } as never
+  })
+  expect(await bars('desktop')).toBe(0)
+  expect(await bars('terminal')).toBe(0)
+  hasConfig = false
+  expect(await bars('terminal')).toBeGreaterThan(0)
+})
+
 test('panel: pytanie z treścią opcji, nie same przyciski; pasek ma jedną linię', async ($, on) => {
   setup(on)
   on('turn.complete', () => ({ text: '' }))
