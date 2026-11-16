@@ -6,7 +6,7 @@ import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions,
 import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe } from './zakreslacz'
-import { tilesOf } from './skroty'
+import { isPermission, tilesOf } from './skroty'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -271,11 +271,11 @@ function numbered(body: string): string {
 
 // How each summary section is drawn: its title, frame colour and tint.
 const SECTION = {
-  done: { title: 'Zrobione', color: 'success', tint: 'green', icon: 'circle-check', glyph: '●' },
-  failed: { title: 'Nie udało się', color: 'error', tint: 'red', icon: 'circle-x', glyph: '●' },
-  open: { title: 'Jeszcze sprawdzam', color: 'inactive', tint: 'grey', icon: 'help-circle', glyph: '●' },
-  waiting: { title: 'Czeka na innych', color: 'inactive', tint: 'grey', icon: 'clock', glyph: '●' },
-  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey', icon: 'info-circle', glyph: '●' },
+  done: { title: 'Zrobione', color: 'success', tint: 'green', icon: 'circle-check', glyph: '✓' },
+  failed: { title: 'Nie udało się', color: 'error', tint: 'red', icon: 'x', glyph: '✗' },
+  open: { title: 'Jeszcze sprawdzam', color: 'inactive', tint: 'grey', icon: 'search', glyph: '…' },
+  waiting: { title: 'Czeka na innych', color: 'inactive', tint: 'grey', icon: 'hourglass', glyph: '⧗' },
+  info: { title: 'Dla informacji', color: 'inactive', tint: 'grey', icon: 'info-circle', glyph: 'i' },
 } as const
 
 // A summary split into drawable pieces: a numbered point is { n, lead, rest },
@@ -750,7 +750,10 @@ export const register: Register = on => {
           <Box flexDirection="row" backgroundColor={tint?.grey}>
           {!tint?.grey && <Box width={1} flexShrink={0} backgroundColor={ink.text} />}
           <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
-          <Text bold>Wyjaśnienie</Text>
+          <Box flexDirection="row" gap={1}>
+            {icon(els, e.surface, 'info-circle', ink.text, 'i')}
+            <Text bold>Wyjaśnienie</Text>
+          </Box>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
           <Markdown text={`### ${fileLinksOf(reply.headline)}`} />
         {(() => {
@@ -875,7 +878,10 @@ export const register: Register = on => {
                 <Box key={`${key}-q${q.number}`} flexDirection="row" backgroundColor={tint?.orange}>
                   {!tint?.orange && <Box width={1} flexShrink={0} backgroundColor={ink.orange} />}
                   <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
-                  <Text bold color={ink.orange}>Czeka na Ciebie · decyzja</Text>
+                  <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, 'help-circle', ink.orange, '?')}
+                    <Text bold color={ink.orange}>Czeka na Ciebie · decyzja</Text>
+                  </Box>
                   <Box flexDirection="row" alignItems="flex-start" gap={1}>
                     <Markdown text={`**Pytanie ${g}: ${title.replace(/\*\*/g, '')}**`} />
                   </Box>
@@ -925,7 +931,10 @@ export const register: Register = on => {
                           </Box>
                         ) : (
                           <Box flexDirection="column" gap={1}>
-                            <Text bold color={ink.blue}>Czeka na Ciebie · zadanie</Text>
+                            <Box flexDirection="row" gap={1}>
+                              {icon(els, e.surface, 'hand-finger', ink.blue, '☞')}
+                              <Text bold color={ink.blue}>Czeka na Ciebie · zadanie</Text>
+                            </Box>
                             {/* Markdown, not Text: a link in the task's head stays clickable. The why is plain, not grey: it is the task. */}
                             <Box flexDirection="row" alignItems="flex-start" gap={1}>
                               <Markdown text={`**Zadanie ${n}: ${fileLinksOf(taskOf(item.text).what)}**`} />
@@ -987,6 +996,7 @@ ${part.body}` : part.body
                   {!tint?.[look.tint] && <Box width={1} flexShrink={0} backgroundColor={look.color} />}
                   <Box flexDirection="column" flexGrow={1} paddingX={1} paddingY={1} gap={1}>
                   <Box flexDirection="row" gap={1}>
+                    {icon(els, e.surface, part.kind === 'failed' && isPermission(part.body) ? 'lock' : look.icon, ink[look.tint], look.glyph)}
                     <Text bold color={ink[look.tint]}>{look.title}</Text>
                   </Box>
                   {!isLongFold || full ? (

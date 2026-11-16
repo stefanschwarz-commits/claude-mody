@@ -636,3 +636,13 @@ test('siedem bloków jednego kształtu: linia stanu, Wyjaśnienie, decyzja i zad
   // No frames with borders and no status tiles any more.
   expect(await ui.find({ type: 'Text', text: 'Co się zmieniło' })).toBeUndefined()
 })
+
+test('etykiety bloków mają ikony jak w wersji dla czatu (Stefan 2026-11-16: „mieliśmy jakieś ikonki”)', async ($, on) => {
+  setup(on)
+  const reply = ['▶ Gotowe.', '', '- **Jedno.** Szczegół.', '', '---', '**Zrobione**', '1. **Lista gotowa.** Sprawdzona.', '', '---', '**Czeka na innych**', '1. **Ania: sala.** Jutro.', '', '---', '**Jeszcze sprawdzam**', '1. **Catering.** Sam.', '', '---', '**Nie udało się**', '1. **Sala.** Brak uprawnień do kalendarza.', '', '---', '**Zadania dla Ciebie**', '1. Daj dostęp – bez tego nie zarezerwuję.', '', '---', '**Pytania do Ciebie**', '**1. Wysłać dziś?**', '- **A)** Tak – plus: szybciej; minus: ryzyko.', '- **B)** Nie – plus: pewność; minus: później.'].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(reply) })
+  // One icon per label: explanation, decision, task, failure for want of a permission, checking, waiting, done.
+  for (const alt of ['i', '?', '☞', '✗', '…', '⧗', '✓']) {
+    expect(await ui.find({ type: 'Svg', props: { alt } })).toBeDefined()
+  }
+})

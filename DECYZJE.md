@@ -400,3 +400,6 @@ Potwierdzone przez Stefana 2026-11-16 po restarcie: „Czyta się dobrze” (jas
 
 ## 2026-11-16 mod wyglad 0.45.0: bez paska z boku przy zabarwionym tle
 Stefan: „tamta sesja działa w starszym trybie z pionową kreską po lewej stronie”; zasada z 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to jest potrzebny”; 2026-11-15 19:54: wdrożyć w Code i Cowork. Pasek z boku rysowany tylko, gdy blok nie ma tła (np. odpowiedziane pytanie, odhaczone zadanie, brak ustawień motywu). Nowy test.
+
+## 2026-11-16 mod wyglad 0.46.0: ikony przy etykietach bloków; 0.45.0 nie było zainstalowane
+Stefan po restarcie: „tej kreski miało nie być”, „w tej najnowszej wersji skilla mieliśmy jakieś ikonki”. Przyczyna kresek: wersja 0.45.0 (bez paska przy zabarwionym tle) była w repozytorium, ale nikt nie uruchomił `claude plugin update`, więc aplikacja wczytała 0.44.0. Zasada: po każdym wypchnięciu wersji sesja, która ją wydała, sprawdza `installed_plugins.json` (ma być nowy numer), a sesja w chmurze prosi sesję lokalną o instalację. Ikony: etykiety bloków w Code mają te same ikony Tabler co bloki w czacie (info-circle, help-circle, hand-finger, lock albo x, search, hourglass, circle-check); dodane ścieżki hand-finger, hourglass, search, x, sprawdzone na obrazie.
