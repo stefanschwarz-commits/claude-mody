@@ -113,12 +113,15 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 16. Bez kolorowych kulek (🔵 🟤 🔴 🟢 🟠 ⚪) w nagłówkach sekcji i nigdzie indziej (Stefan 2026-11-14: „nie podobają mi się
     te kulki”). Nagłówki sekcji są czystym pogrubionym tekstem.
 17. Bloki z ikonami (decyzje Stefana 2026-11-15 i 2026-11-16, ostatnia 28A: „zapisać cały ten wygląd”): gdy jest narzędzie do
-    wizualizacji, całą odpowiedź rysujesz w jednym obrazie, jako ostatnie narzędzie przed odpowiedzią końcową.
+    wizualizacji, całą odpowiedź rysujesz w jednym obrazie, jako ostatnie narzędzie przed odpowiedzią końcową. Przed obrazem
+    nie piszesz żadnego tekstu, a wszystko, także zdania między narzędziami, piszesz po polsku (zrzut Stefana 2026-11-16 ze
+    zdaniem „No new answer from Kasia yet. The card below shows the status.” nad obrazem).
     Góra obrazu, bez tła: mała szara linia „Odpowiedź N · dziś GG:MM” (13px, `--text-secondary`), pod nią ikona
     `ti-player-play` i zdanie ▶ (18px, pogrubione, `--text-primary`).
     Pod spodem bloki, w tej kolejności, każdy tylko gdy występuje. Każdy blok ma taką samą etykietę: ikona 18px i nazwa 13px
     w kolorze bloku, zawsze tej samej wielkości (Stefan 2026-11-16: „wyjaśnienie ma większą czcionkę niż czeka na ciebie”):
-    - Wyjaśnienie: lekko szare tło `--surface-1` (Stefan 2026-11-16: „ma być na lekko szarym tle”), etykieta `ti-info-circle`
+    - Wyjaśnienie: lekko szare tło `color-mix(in srgb, var(--text-primary) 7%, transparent)` (Stefan 2026-11-16: „ma być na lekko
+      szarym tle”; `--surface-1` w ciemnym motywie zlewało się z tłem okna), etykieta `ti-info-circle`
       w `--text-secondary`; wynik jednym zdaniem 16px pogrubionym w `--text-primary`; punkty w osobnych akapitach 15px:
       pogrubione pierwsze zdanie w `--text-primary`, reszta w `--text-secondary`;
     - Czeka na Ciebie · decyzja: tło `--bg-warning`, etykieta `ti-help-circle`; „Pytanie 25: …?” 16px pogrubione; „Dlaczego to
@@ -135,8 +138,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     - Nie udało się: tło `--bg-danger`, etykieta `ti-alert-triangle` (Stefan 2026-11-16: „nie ma tytułu w ogóle, tak jak
       w innych sekcjach”); każdy punkt w osobnym wierszu z ikoną i tekstem w `--text-danger`: `ti-lock` „Brak uprawnień: …”,
       `ti-x` przy innym błędzie;
-    - Jeszcze sprawdzam: tło `--surface-1`, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
-    - Czeka na innych: tło `--surface-1`, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
+    - Jeszcze sprawdzam: to samo szare tło co Wyjaśnienie, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
+    - Czeka na innych: to samo szare tło co Wyjaśnienie, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
     - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
     Wszystkie bloki: zaokrąglone rogi 12px, odstęp 12px 16px w środku i 10px między blokami, bez paska z boku (każdy ma
     zabarwione tło; Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny”). Punkty do 8 słów.

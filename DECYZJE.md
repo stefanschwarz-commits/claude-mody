@@ -409,3 +409,6 @@ W `installed_plugins.json` są dwa wpisy każdego moda: zakres user i zakres pro
 
 ## 2026-11-16 skill uklad-odpowiedzi, część B: wygląd 28A
 Stefan po makietach w Cowork: etykiety wszystkich bloków tej samej wielkości („wyjaśnienie ma większą czcionkę niż czeka na ciebie”), Wyjaśnienie na lekko szarym tle `--surface-1`, „Nie udało się” z tytułem i ikoną trójkąta, opcje pytania w tabeli Opcja | Co się stanie | Plus | Minus („żeby plusy i minusy były tak ładnie rozdzielone”), guziki pod tabelą w jednym rzędzie, pełne pomarańczowe (30C), polecany tylko z ★. Decyzja 28A: zapisać i przenieść na ELMI i ATERIMA. Punkt 17 części B przepisany.
+
+## 2026-11-16 skill uklad-odpowiedzi, część B: szare tło widoczne w ciemnym motywie, nic przed obrazem
+Zrzut Stefana z innej sesji (23:13, „są błędy”): szare bloki na `--surface-1` w ciemnym motywie zlewały się z tłem okna, a nad obrazem stało zdanie po angielsku. Szare tło to teraz `color-mix(in srgb, var(--text-primary) 7%, transparent)` (widoczne w obu motywach); przed obrazem żadnego tekstu, wszystko po polsku.
