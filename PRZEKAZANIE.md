@@ -7,15 +7,15 @@ bez nakładki) wgrywany na trzy konta claude.ai. Tok pracy: `CLAUDE.md` w repozy
 DECYZJE/STAN → commit/push → `claude plugin marketplace update claude-mody` → `claude plugin update <mod>@claude-mody` → zadanie
 „zamknij i otwórz aplikację”).
 
-## DO ZROBIENIA (2026-11-16 22:42): wgrać skill uklad-odpowiedzi z wyglądem 28A na ELMI i ATERIMA
+## WYKONANE 2026-11-16 (ELMI v11, ATERIMA v13; reguła ma punkt 17 w wersji 28A): wgrać skill uklad-odpowiedzi z wyglądem 28A na ELMI i ATERIMA
 - Część B, punkt 17 przepisany (tabela opcji, pomarańczowe guziki, równe etykiety). Personal dostaje go kartą w sesji chmurowej.
   Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA. Reguła w `~/.claude/rules` też musi mieć ten punkt.
 
-## DO ZROBIENIA (2026-11-16 01:40): zainstalować wyglad 0.45.0
+## WYKONANE 2026-11-16 (zainstalowany wyglad 0.46.0, oba zakresy): zainstalować wyglad 0.45.0
 - Sesja chmurowa zrobiła 0.45.0 (bez paska z boku, gdy blok ma tło; testy 78/78). Na komputerze: `claude plugin marketplace update
   claude-mody` i `claude plugin update wyglad@claude-mody`, potem Stefanowi „zamknij i otwórz aplikację Claude”.
 
-## DO ZROBIENIA (2026-11-15 20:25): dogranie decyzji 26A na ELMI i ATERIMA
+## WYKONANE 2026-11-16 (weszło razem z 28A): dogranie decyzji 26A na ELMI i ATERIMA
 - Po wgraniu v8/v9 doszedł commit a6fad6d (nagłówek odpowiedzi w obrazie, część B punkt 17). Personal ma go już z karty.
   Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA. Skill zespołu bez zmian.
 
