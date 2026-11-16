@@ -396,3 +396,4 @@ Stefan o tekście pod obrazem („Odpowiedź 84”, ▶ i zdanie): „ten fragme
 
 ## 2026-11-16 mod wyglad 0.44.0: jasny styl aplikacji
 Stefan (zrzut jasnej aplikacji): „Kurczę, mamy wpadkę. Nasz mod nie działa, gdy masz jasny styl.” Przyczyna: mod wybierał tła z ustawienia `theme` w konfiguracji Claude Code (u Stefana „dark”), a aplikacja ma własny jasny lub ciemny wygląd; w jasnej aplikacji tekst był czarny na ciemnych tłach. Poprawka: w aplikacji, na telefonie i w VS Code (każdy ekran poza terminalem) tła są półprzezroczyste (`rgba`), a kolory ikon i pasków to półtony, więc czytają się na obu wyglądach. Terminal zostaje przy ustawieniu `theme`. Nie sprawdzone na żywo w aplikacji (brak sposobu, by zobaczyć ją w obu stylach z sesji); do oceny przez Stefana po restarcie.
+Potwierdzone przez Stefana 2026-11-16 po restarcie: „Czyta się dobrze” (jasny styl aplikacji, wyglad 0.44.0).
