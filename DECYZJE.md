@@ -393,3 +393,6 @@ uklad-odpowiedzi: Personal v21, ELMI v8, ATERIMA v9. uklad-odpowiedzi-zespol v2 
 
 ## 2026-11-15 skill uklad-odpowiedzi, część B: nagłówek w obrazie (26A)
 Stefan o tekście pod obrazem („Odpowiedź 84”, ▶ i zdanie): „ten fragment wymaga jeszcze popracowania”. Decyzja 26A: pasek „Odpowiedź N · dziś GG:MM” i zdanie ▶ (ikona `ti-player-play`) na górze obrazu; pod obrazem tylko jedno zdanie, czego potrzeba.
+
+## 2026-11-16 mod wyglad 0.44.0: jasny styl aplikacji
+Stefan (zrzut jasnej aplikacji): „Kurczę, mamy wpadkę. Nasz mod nie działa, gdy masz jasny styl.” Przyczyna: mod wybierał tła z ustawienia `theme` w konfiguracji Claude Code (u Stefana „dark”), a aplikacja ma własny jasny lub ciemny wygląd; w jasnej aplikacji tekst był czarny na ciemnych tłach. Poprawka: w aplikacji, na telefonie i w VS Code (każdy ekran poza terminalem) tła są półprzezroczyste (`rgba`), a kolory ikon i pasków to półtony, więc czytają się na obu wyglądach. Terminal zostaje przy ustawieniu `theme`. Nie sprawdzone na żywo w aplikacji (brak sposobu, by zobaczyć ją w obu stylach z sesji); do oceny przez Stefana po restarcie.

@@ -18,7 +18,14 @@ type Drawers = { Svg?: (props: { source: string; alt: string; width?: number; he
 // A mail draft is a light sheet in both themes, so it never looks like Claude's own text.
 const PAPER = { sheet: '#FBFAF6', ink: '#222222', label: '#6b6a66', edge: '#9a958a' }
 
+// The apps (desktop, phone, VS Code) have their own light or dark look, which the /config "theme"
+// row does not follow (2026-11-16: a light app with theme "dark" drew black text on dark tints).
+// There the tints are translucent and the inks mid-tones, so both looks read well.
+const TINT_ADAPTIVE = { blue: 'rgba(74,143,224,0.16)', orange: 'rgba(232,163,61,0.16)', grey: 'rgba(128,128,128,0.14)', green: 'rgba(76,175,80,0.14)', red: 'rgba(229,72,77,0.14)', sand: 'rgba(184,173,152,0.16)', mark: 'rgba(255,213,0,0.28)' }
+const INK_ADAPTIVE: Ink = { green: '#3f9a45', red: '#d33a40', orange: '#cf8412', blue: '#3a82d8', sand: '#9a8f78', grey: '#8a8984', text: '#8a8984' }
+
 function inkOf(tint: { blue: string } | undefined): Ink {
+  if (tint?.blue === TINT_ADAPTIVE.blue) return INK_ADAPTIVE
   return tint?.blue === '#EEF4FC' ? INK_LIGHT : INK_DARK
 }
 
@@ -322,7 +329,8 @@ function pieces(body: string): Piece[] {
 
 // Faint blue inside the question cards and faint orange behind the tasks,
 // light or dark as the theme is.
-async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; sand: string; mark: string } | undefined> {
+async function tintOf($: { config: { list: () => Promise<readonly { key: string; value: unknown }[]> } }, surface?: string): Promise<{ blue: string; orange: string; grey: string; green: string; red: string; sand: string; mark: string } | undefined> {
+  if (surface && surface !== 'terminal') return TINT_ADAPTIVE
   try {
     const theme = String((await $.config.list()).find(row => row.key === 'theme')?.value ?? 'dark')
     return theme.includes('light') ? { blue: '#EEF4FC', orange: '#FDF3E7', grey: '#F2F2F0', green: '#EEF6EA', red: '#FCEEEE', sand: '#F6F3EC', mark: '#FFF0A6' } : { blue: '#17212E', orange: '#2A1F14', grey: '#222326', green: '#172116', red: '#2A1616', sand: '#262320', mark: '#3a3720' }
@@ -640,7 +648,7 @@ export const register: Register = on => {
     if (e.props.isExpanded || (await $.store.get(OFF)) === true) return next(e)
     const els = $.ui.resolve(e)
     const { Box, Text } = els
-    const ink = inkOf(await tintOf($))
+    const ink = inkOf(await tintOf($, e.surface))
     const kinds = [...new Set(e.props.calls.map(call => stepOf(call.tool)))].slice(0, 3).join(', ')
     const running = e.props.calls.some(call => call.isRunning) ? ' …' : ''
     return (
@@ -656,7 +664,7 @@ export const register: Register = on => {
     if (isRunning || isErrored || isInterrupted || (await $.store.get(OFF)) === true) return next(e)
     const els = $.ui.resolve(e)
     const { Box, Text } = els
-    const ink = inkOf(await tintOf($))
+    const ink = inkOf(await tintOf($, e.surface))
     return (
       <Box flexDirection="row" gap={1}>
         {icon(els, e.surface, 'settings', ink.grey, '·', 14)}
@@ -702,7 +710,7 @@ export const register: Register = on => {
     const now = await $.clock.now().catch(() => Date.now())
     const barText = stamp ? `Odpowiedź ${stamp.n} · ${stampText(stamp.at, isLatest ? undefined : now)}` : isLatest ? 'Nowa odpowiedź' : 'Odpowiedź'
     const isOpen = (await read($, openTexts)).includes(key)
-    const tint = await tintOf($)
+    const tint = await tintOf($, e.surface)
     const ink = inkOf(tint)
     const tick = (id: string) => () => void update($, doneTasks, list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
     const fill = (value: string) => () => {

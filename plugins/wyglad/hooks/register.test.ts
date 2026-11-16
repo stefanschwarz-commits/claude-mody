@@ -258,12 +258,29 @@ test('opcje zapisane listą „**1A) ★**” (instrukcja v6) też działają', 
   ])
 })
 
-test('karta pytania ma delikatne tło dopasowane do motywu', async ($, on) => {
+test('karta pytania w terminalu ma delikatne tło dopasowane do motywu z ustawień', async ($, on) => {
   setup(on)
   on('config.list', () => ({ value: [{ key: 'theme', value: 'light' }] }) as never)
-  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(REPLY) })
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'terminal', component: 'AssistantMessage', props: message(REPLY) })
   expect(await ui.find({ type: 'Box', props: { backgroundColor: '#EEF4FC' } })).toBeDefined()
   expect(await ui.find({ type: 'Box', props: { backgroundColor: '#FDF3E7' } })).toBeDefined()
+})
+
+test('aplikacja (jasna i ciemna) dostaje półprzezroczyste tła, niezależnie od ustawienia theme (2026-11-16)', async ($, on) => {
+  setup(on)
+  // Ustawienie „dark”, a aplikacja jasna: dawniej ciemne tła i czarny tekst.
+  on('config.list', () => ({ value: [{ key: 'theme', value: 'dark' }] }) as never)
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: message(REPLY) })
+  type Node = { props?: { backgroundColor?: string }; children?: (Node | string)[] }
+  const found: string[] = []
+  const walk = (n: Node) => {
+    if (n.props?.backgroundColor) found.push(n.props.backgroundColor)
+    n.children?.forEach(c => typeof c === 'object' && walk(c))
+  }
+  walk((await ui.find({ type: 'Box' })) as unknown as Node)
+  expect(found).toContain('rgba(232,163,61,0.16)')
+  // Paski z boku to półtony (czytelne na obu tłach); dawnych ciemnych tintów nie ma.
+  expect(found.filter(color => ['#17212E', '#2A1F14', '#222326', '#172116', '#2A1616', '#262320'].includes(color))).toEqual([])
 })
 
 test('panel: pytanie z treścią opcji, nie same przyciski; pasek ma jedną linię', async ($, on) => {
@@ -310,8 +327,8 @@ test('podsumowanie: punkty z numerami zamiast kropek, delikatne szare tło', asy
   }
   walk((await ui.find({ type: 'Box' })) as unknown as Node)
   bold.push(...bolds(await ui.find({ type: 'Box' })))
-  expect(found).toContain('#172116')
-  expect(found).toContain('#2A1616')
+  expect(found).toContain('rgba(76,175,80,0.14)')
+  expect(found).toContain('rgba(229,72,77,0.14)')
   expect(bold).toContain('Pierwsze.')
   expect(bold).toContain('Drugie.')
   expect(bold).toContain('Jedyne.')
