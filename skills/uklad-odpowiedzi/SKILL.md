@@ -112,40 +112,38 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
 15. Nigdy nie pogrubiaj początków słów.
 16. Bez kolorowych kulek (🔵 🟤 🔴 🟢 🟠 ⚪) w nagłówkach sekcji i nigdzie indziej (Stefan 2026-11-14: „nie podobają mi się
     te kulki”). Nagłówki sekcji są czystym pogrubionym tekstem.
-17. Bloki z ikonami (decyzja Stefana 2026-11-15 po makietach: „Idealnie. Tak jest pięknie.”, „wdrażamy taki układ”): gdy jest
-    narzędzie do wizualizacji, wyjaśnienie, pytanie, zadania i stany rysujesz w jednym obrazie zamiast w tekście, jako ostatnie
-    narzędzie przed odpowiedzią. Te same bloki co w Claude Code, w tej kolejności, każdy tylko gdy występuje:
-    - Wyjaśnienie: jaśniejsze szare tło niż reszta szarych bloków (`color-mix(in srgb, var(--surface-1) 50%, var(--surface-2))`;
-      Stefan 2026-11-15: „troszeczkę jaśniejsze tło”); jak w Code (zrzut Stefana 2026-11-15: „zobacz, jak ładnie jest to
-      kolorystycznie zgrane”): tytuł „Wyjaśnienie” w `--text-primary`, 15px, pogrubiony, z ikoną `ti-info-circle` w tym samym
-      kolorze; pod nim wynik pogrubiony w `--text-primary`; dalej punkty, każdy w osobnym akapicie: pogrubione pierwsze zdanie
-      w `--text-primary`, reszta zdania w `--text-secondary`; bez kolorów, same szarości i biel;
-    - Czeka na Ciebie · decyzja: pomarańczowe tło, ikona `ti-help-circle`, „Pytanie 25: …?”, „Dlaczego to ważne: …”,
-      przyciski 25A, 25B (polecany z ikoną `ti-star` i grubszą ramką), pod nimi mała linia „Przycisk nie działa? Napisz 25A
-      albo 25B.”; przycisk wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę linię na „Tu przycisk nie może wysłać.
-      Napisz 25A.” (Stefan 2026-11-11: przyciski bywają martwe, np. na telefonie);
-    - Czeka na Ciebie · zadanie: niebieskie tło, ikona `ti-hand-finger`, „Zadanie 1: …”, kroki K1A, K1B pod spodem;
-    Tekst do czytania zawsze w zwykłym kolorze tekstu, nie w kolorze bloku (zrzut Stefana 2026-11-15: „tam, gdzie trzeba dużo
-    czytać, było na biało”): w kolorze bloku tylko ikona i mała etykieta; tytuł zadania czy pytania pogrubiony w `--text-primary`,
-    wyjaśnienie w `--text-secondary`, kroki „K1A” pogrubione i treść kroku w `--text-primary`. Wyjątek: krótkie jednowierszowe
-    punkty z własną ikoną (np. „Nie udało się: …”) mogą mieć tekst w kolorze bloku;
-    - Nie udało się: czerwone tło, bez etykiety nad punktami; każdy punkt w osobnym wierszu z czerwoną ikoną i czerwonym
-      tekstem, zaczęty od rodzaju: `ti-lock` „Brak uprawnień: …”, `ti-x` „Nie udało się: …” (jak w Code, zrzut Stefana
-      2026-11-15);
-    - Jeszcze sprawdzam: szare tło, ikona `ti-search`;
-    - Czeka na innych: szare tło, ikona `ti-hourglass`, kto i na co;
-    - Zrobione: zielone tło, ikona `ti-circle-check`.
-    Każdy blok: zaokrąglone rogi, mała etykieta z ikoną w kolorze bloku, pod nią treść do 8 słów. Kilka rzeczy w bloku: każda
-    w osobnym wierszu z własną ikoną i tekstem w kolorze bloku (Stefan 2026-11-15: „nie widać punktowania”): w Zrobione
-    `ti-check`, w Czeka na innych `ti-user` z imieniem. Bez paska z boku, bo każdy blok
-    ma zabarwione tło (Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny; jeżeli nie ma, to
-    jest potrzebny”). Kolory tylko ze zmiennych motywu (`--bg-warning`, `--bg-accent`, `--bg-danger`, `--bg-success`,
-    `--surface-1`), żeby działały w jasnym i ciemnym motywie.
-    Nagłówek odpowiedzi też w obrazie, na samej górze, nad blokami (decyzja Stefana 26A z 2026-11-15, po zrzucie, na którym
-    tekst pod obrazem „wymaga jeszcze popracowania”): mała szara linia „Odpowiedź N · dziś GG:MM” (`--text-secondary`, 13px),
-    pod nią zdanie ▶ jako ikona `ti-player-play` i tekst 18px, pogrubiony, w `--text-primary`, bez tła.
-    Odpowiedź końcowa pod obrazem: tylko jedno krótkie zdanie, czego potrzebujesz („Czekam na 25A albo 25B.”), albo gdy nic
-    nie potrzebujesz, jedno zdanie „Nic nie musisz robić.”; bez paska, bez `### ▶`, bez `---`; bloków nie powtarzasz tekstem.
+17. Bloki z ikonami (decyzje Stefana 2026-11-15 i 2026-11-16, ostatnia 28A: „zapisać cały ten wygląd”): gdy jest narzędzie do
+    wizualizacji, całą odpowiedź rysujesz w jednym obrazie, jako ostatnie narzędzie przed odpowiedzią końcową.
+    Góra obrazu, bez tła: mała szara linia „Odpowiedź N · dziś GG:MM” (13px, `--text-secondary`), pod nią ikona
+    `ti-player-play` i zdanie ▶ (18px, pogrubione, `--text-primary`).
+    Pod spodem bloki, w tej kolejności, każdy tylko gdy występuje. Każdy blok ma taką samą etykietę: ikona 18px i nazwa 13px
+    w kolorze bloku, zawsze tej samej wielkości (Stefan 2026-11-16: „wyjaśnienie ma większą czcionkę niż czeka na ciebie”):
+    - Wyjaśnienie: lekko szare tło `--surface-1` (Stefan 2026-11-16: „ma być na lekko szarym tle”), etykieta `ti-info-circle`
+      w `--text-secondary`; wynik jednym zdaniem 16px pogrubionym w `--text-primary`; punkty w osobnych akapitach 15px:
+      pogrubione pierwsze zdanie w `--text-primary`, reszta w `--text-secondary`;
+    - Czeka na Ciebie · decyzja: tło `--bg-warning`, etykieta `ti-help-circle`; „Pytanie 25: …?” 16px pogrubione; „Dlaczego to
+      ważne: …” 14px szare; potem tabela opcji z kolumnami Opcja | Co się stanie | Plus | Minus (Stefan 2026-11-16: „żeby plusy
+      i minusy były tak ładnie i estetycznie rozdzielone”): `table-layout:fixed`, szerokości 14% / 36% / 25% / 25%, 14px,
+      cienkie linie między wierszami, polecana opcja „25A ★”, Plus i Minus w `--text-secondary`; pod tabelą „➜ Polecam 25A,
+      bo …”; pod nią guziki w jednym rzędzie równej szerokości (siatka, wysokość 40px), pełne pomarańczowe: tło
+      `--fill-warning`, tekst `--on-warning`, bez ramki, polecany tylko z ★, bez grubszej ramki (decyzja 30C); na końcu mała
+      linia „Przycisk nie działa? Napisz 25A albo 25B.”; guzik wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę
+      linię na „Tu przycisk nie może wysłać. Napisz 25A.” (przyciski bywają martwe, np. na telefonie);
+    - Czeka na Ciebie · zadanie: tło `--bg-accent`, etykieta `ti-hand-finger`; „Zadanie 1: …” 16px pogrubione; jedno zdanie
+      po co, 14px szare; kroki „K1A …” 15px, „K1A” pogrubione, treść w `--text-primary`; kolejne zadanie w tym samym bloku
+      po odstępie;
+    - Nie udało się: tło `--bg-danger`, etykieta `ti-alert-triangle` (Stefan 2026-11-16: „nie ma tytułu w ogóle, tak jak
+      w innych sekcjach”); każdy punkt w osobnym wierszu z ikoną i tekstem w `--text-danger`: `ti-lock` „Brak uprawnień: …”,
+      `ti-x` przy innym błędzie;
+    - Jeszcze sprawdzam: tło `--surface-1`, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
+    - Czeka na innych: tło `--surface-1`, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
+    - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
+    Wszystkie bloki: zaokrąglone rogi 12px, odstęp 12px 16px w środku i 10px między blokami, bez paska z boku (każdy ma
+    zabarwione tło; Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny”). Punkty do 8 słów.
+    Tekst do czytania w zwykłym kolorze; w kolorze bloku tylko etykieta i krótkie punkty z ikoną. Kolory tylko ze zmiennych
+    motywu, żeby działały w jasnym i ciemnym motywie.
+    Odpowiedź końcowa pod obrazem: tylko jedno krótkie zdanie, czego potrzebujesz („Czekam na 25A albo 25B.”), albo „Nic nie
+    musisz robić.”; bez paska, bez `### ▶`, bez `---`; bloków nie powtarzasz tekstem.
     Bez narzędzia do wizualizacji piszesz po staremu, punkty 1–5.
 
 

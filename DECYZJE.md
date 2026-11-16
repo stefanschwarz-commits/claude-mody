@@ -406,3 +406,6 @@ Stefan po restarcie: „tej kreski miało nie być”, „w tej najnowszej wersj
 
 ## 2026-11-16 druga instalacja modów w folderze domowym (zakres project) była stara
 W `installed_plugins.json` są dwa wpisy każdego moda: zakres user i zakres project dla `C:\Users\StefanSCHWARZ(ELMI)`. Ten drugi stał na wyglad 0.39.0 i projekt 0.1.2 (od 2026-11-06), więc sesje uruchamiane w folderze domowym rysowały starym wyglądem („starszy tryb z pionową kreską”). Zaktualizowany do 0.46.0 i 0.4.0; krok 6 w CLAUDE.md dopisany.
+
+## 2026-11-16 skill uklad-odpowiedzi, część B: wygląd 28A
+Stefan po makietach w Cowork: etykiety wszystkich bloków tej samej wielkości („wyjaśnienie ma większą czcionkę niż czeka na ciebie”), Wyjaśnienie na lekko szarym tle `--surface-1`, „Nie udało się” z tytułem i ikoną trójkąta, opcje pytania w tabeli Opcja | Co się stanie | Plus | Minus („żeby plusy i minusy były tak ładnie rozdzielone”), guziki pod tabelą w jednym rzędzie, pełne pomarańczowe (30C), polecany tylko z ★. Decyzja 28A: zapisać i przenieść na ELMI i ATERIMA. Punkt 17 części B przepisany.
