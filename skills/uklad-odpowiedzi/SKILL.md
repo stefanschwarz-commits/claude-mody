@@ -43,7 +43,7 @@ W „Zadania dla Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić
 
 W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.
 
-Linki (decyzja Stefana „1A”, 2026-10-31): każdy adres podawaj jako odnośnik `[krótka nazwa](pełny adres)`, nigdy jako goły tekst, skróconą ścieżkę („/kontakt/”) ani w `kodzie`; Stefan ma kliknąć raz, bez kopiowania. Dotyczy też nagłówka ▶, zadań, pytań i punktów podsumowania. Plik na komputerze też jako `[nazwa](pełna ścieżka)` i to wszędzie, gdzie wymieniasz plik z nazwy (nagłówek, wyjaśnienie, zadanie, podsumowanie; decyzja Stefana 2026-11-01: „nazwy plików… były jednocześnie linkami”): mod zamienia ścieżkę na odnośnik, który otwiera plik, a plik wpisany jako osobna linia pod zadaniem dostaje dodatkowo przycisk „Pokaż w folderze”. Nigdy sama nazwa pliku bez ścieżki.
+Linki (decyzja Stefana „1A”, 2026-10-31): każdy adres podawaj jako odnośnik `[krótka nazwa](pełny adres)`, nigdy jako goły tekst, skróconą ścieżkę („/kontakt/”) ani w `kodzie`; Stefan ma kliknąć raz, bez kopiowania. Dotyczy też nagłówka ▶, zadań, pytań i punktów podsumowania. Plik na komputerze też jako `[nazwa](pełna ścieżka)` i to wszędzie, gdzie wymieniasz plik z nazwy (nagłówek, wyjaśnienie, zadanie, podsumowanie; decyzja Stefana 2026-11-01: „nazwy plików… były jednocześnie linkami”): mod zamienia ścieżkę na odnośnik, który otwiera plik, a plik wpisany jako osobna linia pod zadaniem dostaje dodatkowo przycisk „Pokaż w folderze”. Nigdy sama nazwa pliku bez ścieżki. Odnośnik do innego wątku w Claude daj w postaci `claude://claude.ai/chat/<id rozmowy>` (projekt: `claude://claude.ai/project/<id>`, nowy wątek z gotowym tekstem: `claude://claude.ai/new?q=<tekst zakodowany>`), nigdy `https://claude.ai/…`, bo ten otwiera przeglądarkę, a `claude://` otwiera aplikację Claude w Windows (Stefan 2026-11-17). Sesji Claude Code nie da się otworzyć odnośnikiem po ID: podaj jej dokładną nazwę.
 
 Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.
 
@@ -89,6 +89,9 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    Ścieżkę z nawiasem, nawiasem kwadratowym albo spacją (np. `C:\Users\StefanSCHWARZ(ELMI)\…\[ATERIMA] …`) zawsze bierz
    w ostre nawiasy: `[manifest.html](<C:\…\manifest.html>)`; bez nich czat pokazuje surowy tekst zamiast odnośnika
    (zrzut Stefana 2026-11-08). Plik, który Stefan ma obejrzeć, wyślij też jako załącznik, bo w czacie odnośnik do pliku na komputerze bywa nieklikalny.
+   Odnośnik do innego wątku w Claude: `claude://claude.ai/chat/<id rozmowy>` (projekt: `claude://claude.ai/project/<id>`),
+   nigdy `https://claude.ai/…`, bo otwiera przeglądarkę zamiast aplikacji Claude w Windows (Stefan 2026-11-17). Sesji Claude
+   Code nie da się otworzyć odnośnikiem po ID: podaj jej dokładną nazwę.
 8. Gdy odpowiedź kończy się pytaniem albo zadaniem, ostatnie zdanie odpowiedzi mówi wprost, czego od Stefana potrzebujesz
    („Czekam na 7A albo 7B.”), bo tu nie ma dymka ani linii stanu, które by mu to pokazały.
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
@@ -140,7 +143,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       innym błędzie), a tekst punktu w `--text-primary`, czyli biały w ciemnym motywie (Stefan 2026-11-17: „chciałbym, aby ten
       tekst był również biały”);
     - Jeszcze sprawdzam: szare tło `color-mix(in srgb, var(--text-primary) 7%, transparent)`, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
-    - Czeka na innych: to samo szare tło co Jeszcze sprawdzam, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
+    - Czeka na innych: fioletowe tło `--bg-pro` (decyzja 33A z 2026-11-17: inny kolor niż Jeszcze sprawdzam), etykieta
+      `ti-hourglass` w `--text-pro`, punkty z `ti-user` w `--text-pro` i tekstem w `--text-primary`: „Dominik: na co”;
     - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
     Szkic maila lub wiadomości w obrazie: zawsze w odwróconych kolorach, białe tło przy ciemnym motywie i czarne przy jasnym
     (Stefan 2026-11-17: „treść maila zawsze na białym tle, gdy kontekst jest ciemny, oraz na czarnym tle, gdy kontekst jest

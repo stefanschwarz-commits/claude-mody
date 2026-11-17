@@ -440,3 +440,6 @@ Stefan (zrzut maila do kancelarii w Wyjaśnieniu): „treść maila zawsze na bi
 ## 2026-11-17 skill ładnie, część B: tekst punktów „Nie udało się” biały
 Stefan o przykładzie w Cowork: tekst punktów „Brak uprawnień…”, „Strona…” ma być biały, czerwone zostają tylko ikony i etykieta. Mod w Code rysuje treść ramek zwykłym kolorem tekstu, więc tam bez zmian.
 Tego samego dnia: tło Wyjaśnienia o ton jaśniejsze (11% zamiast 7%) niż Jeszcze sprawdzam i Czeka na innych (Stefan: „tło w sekcji wyjaśnienia nieco jaśniejsze”).
+
+## 2026-11-17 skill ładnie: „Czeka na innych” fioletowe (33A), odnośniki do wątków przez claude://
+33A: „Czeka na innych” ma fioletowe tło `--bg-pro`, inne niż szare „Jeszcze sprawdzam”. Stefan: odnośniki do innych wątków mają otwierać aplikację Claude w Windows, nie przeglądarkę; format z pomocy Anthropic: `claude://claude.ai/chat/<id>`, `claude://claude.ai/project/<id>`, `claude://claude.ai/new?q=…`; sesji Code po ID nie ma. Dopisane w części A (akapit Linki) i B (punkt 7). Część A trzeba przenieść do reguły `~/.claude/rules/wyglad-uklad-odpowiedzi.md`. Do sprawdzenia: czy kliknięcie `claude://` w odpowiedzi działa (zgłaszany błąd w aplikacji).
