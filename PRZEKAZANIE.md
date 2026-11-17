@@ -1,6 +1,6 @@
 # PRZEKAZANIE — sesja „💻 🏡 ⚙️ Mody” (zapisane 2026-11-11, sesja zużyta: trzy streszczenia, zapis ponad 40 MB)
 
-## DO ZROBIENIA (2026-11-17 00:56): dograć dwie poprawki skilla na ELMI i ATERIMA
+## WYKONANE 2026-11-17 08:20 (ELMI v12, ATERIMA v14, sprawdzone odczytem): dograć dwie poprawki skilla na ELMI i ATERIMA
 - Po wgraniu 28A doszły commity f2d8913 (szare tło widoczne w ciemnym motywie, nic przed obrazem) i b424139 (wynik
   w Wyjaśnieniu 15px). Personal ma je z karty. Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA.
 
