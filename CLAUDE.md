@@ -33,9 +33,12 @@ wkleja się je raz. Bez nich Claude pisze w innym układzie i mod rysuje tylko c
 się tylko na jednym koncie, najpierw sprawdź, czy sesja ma instrukcje w kontekście. Zmiany w instrukcjach idą
 przez sesję „Instrukcje dla Claude”. Pamięć sesji i reguły w `~/.claude/rules` są wspólne dla komputera.
 
-## Skill „uklad-odpowiedzi” (jedno źródło układu odpowiedzi, od 2026-11-01)
+## Skill „ladny” (jedno źródło układu odpowiedzi, od 2026-11-01; do 2026-11-17 nazywał się „uklad-odpowiedzi”)
 `skills/uklad-odpowiedzi/SKILL.md` = część A (treść reguły `~/.claude/rules/wyglad-uklad-odpowiedzi.md`) + część B (układ bez
 nakładki dla Cowork i czatu; wzór w OneDrive „Instrukcje Claude” → `do-instrukcji-ogolnych-uklad-odpowiedzi-bez-nakladki.md`).
 Po każdej zmianie reguły: odśwież SKILL.md (skrypt w DECYZJE.md z 2026-11-01 „Skill uklad-odpowiedzi”), commit, i po „tak”
-Stefana wgraj nową wersję w claude.ai (Customize → Skills → uklad-odpowiedzi), na każdym koncie, na którym ma działać.
+Stefana wgraj nową wersję w claude.ai (Customize → Skills → ladny), na każdym koncie, na którym ma działać.
+Folder w repo zostaje `skills/uklad-odpowiedzi/` (cytują go reguła i część A); nazwę daje tylko linia `name:`.
+Replace w claude.ai odrzuca zmianę nazwy („Skill name mismatch”), więc przy kolejnej zmianie nazwy: nowy skill przez Upload,
+stary tylko wyłączony; usunięcie starego wyłącznie po zgodzie Stefana.
 

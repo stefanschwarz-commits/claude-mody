@@ -1,5 +1,5 @@
 ---
-name: uklad-odpowiedzi
+name: ladny
 description: Układ każdej odpowiedzi końcowej do Stefana (nagłówek ▶, Wyjaśnienie, Zrobione, Zadania dla Ciebie, Pytania do Ciebie). Stosuj zawsze, w każdej odpowiedzi końcowej, w Claude Code, Cowork i czacie claude.ai; wariant zależy od tego, czy odpowiedź rysuje nakładka „wyglad” (Claude Code na komputerze Stefana), czy nie (Cowork, czat, telefon).
 ---
 
