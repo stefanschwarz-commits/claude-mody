@@ -1,5 +1,8 @@
 # PRZEKAZANIE — sesja „💻 🏡 ⚙️ Mody” (zapisane 2026-11-11, sesja zużyta: trzy streszczenia, zapis ponad 40 MB)
 
+## DO ZROBIENIA (2026-11-17 14:30): wgrać oba skille bez przycisków
+- `ładnie-stefan` (Personal dostaje kartą; ELMI, ATERIMA przez Replace) i `ładnie` zespołu w ELMI i ATERIMA: usunięte żółte przyciski.
+
 ## DO ZROBIENIA (2026-11-17 11:30): reguła + wgranie skilla ładnie na ELMI i ATERIMA
 - Część A dostała zdanie o odnośnikach `claude://claude.ai/chat/<id>` (akapit „Linki”): przenieść je do reguły
   `~/.claude/rules/wyglad-uklad-odpowiedzi.md`. Potem wgrać aktualny SKILL.md na ELMI i ATERIMA (białe punkty Nie udało się,

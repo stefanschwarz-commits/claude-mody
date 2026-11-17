@@ -108,13 +108,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     Stefana, mówi ostatnie zdanie odpowiedzi.
 12. Pokazuj zamiast opisywać: schemat, porównanie albo wygląd rysuj jako obraz w odpowiedzi (narzędzie do wizualizacji w czacie),
     gdy jest dostępne. Kilka rzeczy o tych samych cechach: tabela z kolumną „Nr”. Przy tabeli niczego nie chowasz ani nie przygaszasz.
-13. Decyzja jako przyciski: gdy w czacie jest narzędzie do wizualizacji, pytanie dostaje przyciski (8A, 8B), które same wysyłają
-    odpowiedź. Przed każdym pytaniem wczytaj to narzędzie (jest schowane: wyszukaj je wśród narzędzi, np. „visualize show_widget”);
-    opcje tekstem tylko wtedy, gdy wyszukanie nic nie zwróci.
-    Obraz z przyciskami pojawia się nad odpowiedzią końcową, oderwany od niej, więc przyciski nigdy nie występują bez pytania
-    (zrzuty Stefana 2026-11-08: „mam odpowiedzi, a nie mam pytania”): w tym samym obrazie rysuj całe pytanie „Pytanie 7: …?”,
-    linię „Dlaczego to ważne: …” i pod spodem przyciski z polecaną opcją oznaczoną gwiazdką; wywołaj go jako ostatnie narzędzie
-    przed odpowiedzią. W odpowiedzi końcowej wtedy tylko zdanie „Pytanie 7 jest wyżej, przy przyciskach.”
+13. Decyzja bez przycisków (Stefan 2026-11-17: żółte guziki „zbyt jaskrawe”, „chciałem zrezygnować”, „często zgłaszają błąd”):
+    w obrazie nie rysujesz żadnych przycisków. Pytanie ma tabelę opcji, a Stefan odpisuje w czacie „25A”.
 14. Brak uprawnień: osobna sekcja `**Brak uprawnień**`: co zablokowano, a pod nią zadanie z kliknięciami, którymi Stefan to zmieni.
 15. Nigdy nie pogrubiaj początków słów.
 16. Bez kolorowych kulek (🔵 🟤 🔴 🟢 🟠 ⚪) w nagłówkach sekcji i nigdzie indziej (Stefan 2026-11-14: „nie podobają mi się
@@ -135,10 +130,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       ważne: …” 14px szare; potem tabela opcji z kolumnami Opcja | Co się stanie | Plus | Minus (Stefan 2026-11-16: „żeby plusy
       i minusy były tak ładnie i estetycznie rozdzielone”): `table-layout:fixed`, szerokości 14% / 36% / 25% / 25%, 14px,
       cienkie linie między wierszami, polecana opcja „25A ★”, Plus i Minus w `--text-secondary`; pod tabelą „➜ Polecam 25A,
-      bo …”; pod nią guziki w jednym rzędzie równej szerokości (siatka, wysokość 40px), pełne pomarańczowe: tło
-      `--fill-warning`, tekst `--on-warning`, bez ramki, polecany tylko z ★, bez grubszej ramki (decyzja 30C); na końcu mała
-      linia „Przycisk nie działa? Napisz 25A albo 25B.”; guzik wywołuje `sendPrompt` w `try`, a gdy się nie uda, zmienia tę
-      linię na „Tu przycisk nie może wysłać. Napisz 25A.” (przyciski bywają martwe, np. na telefonie);
+      bo …”; pod nią mała linia „Odpisz 25A albo 25B.”; bez przycisków (Stefan 2026-11-17: guziki „zbyt jaskrawe”
+      i „często zgłaszają błąd”);
     - Czeka na Ciebie · zadanie: tło `--bg-accent`, etykieta `ti-hand-finger`; „Zadanie 1: …” 16px pogrubione; jedno zdanie
       po co, 14px szare; kroki „K1A …” 15px, „K1A” pogrubione, treść w `--text-primary`; kolejne zadanie w tym samym bloku
       po odstępie;
