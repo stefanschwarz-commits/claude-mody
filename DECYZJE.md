@@ -433,3 +433,6 @@ Nowe skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55C
 Stefan (zrzut): „Spójrz, to znowu wyjaśnienie. Użyłeś niewłaściwego fontu dla tego słowa.” Pierwsze zdanie bloku było rysowane jako nagłówek `###`, a aplikacja rysuje nagłówki innym krojem. Teraz pogrubione zdanie w zwykłym kroju, jak punkty pod nim.
 
 Stare skille „ladny” i „uklad-odpowiedzi” usunięte na trzech kontach po „Tak, usuń” Stefana; został tylko „ładnie”.
+
+## 2026-11-17 skill ładnie, część B: szkic maila w odwróconych kolorach
+Stefan (zrzut maila do kancelarii w Wyjaśnieniu): „treść maila zawsze na białym tle, gdy kontekst jest ciemny, oraz na czarnym tle, gdy kontekst jest jasny”. W obrazie szkic maila ma tło `--text-primary` i tekst `--surface-2`. Otwarte: pytanie 31 (osobny blok „Do wysłania” nad pytaniem czy w Wyjaśnieniu).

@@ -141,6 +141,11 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     - Jeszcze sprawdzam: to samo szare tło co Wyjaśnienie, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
     - Czeka na innych: to samo szare tło co Wyjaśnienie, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
     - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
+    Szkic maila lub wiadomości w obrazie: zawsze w odwróconych kolorach, białe tło przy ciemnym motywie i czarne przy jasnym
+    (Stefan 2026-11-17: „treść maila zawsze na białym tle, gdy kontekst jest ciemny, oraz na czarnym tle, gdy kontekst jest
+    jasny”): tło `var(--text-primary)`, tekst `var(--surface-2)`, zaokrąglone rogi 8px, odstęp 12px 16px; linie „Od:”, „Do:”,
+    „DW:”, „Temat:” 14px przygaszone (`opacity` niedozwolone, więc ten sam kolor, ale bez pogrubienia), pod nimi pusta linia
+    i treść 15px z zachowaniem akapitów.
     Wszystkie bloki: zaokrąglone rogi 12px, odstęp 12px 16px w środku i 10px między blokami, bez paska z boku (każdy ma
     zabarwione tło; Stefan 2026-11-15: „jeżeli wszystko ma zabarwione tła, to pasek nie jest potrzebny”). Punkty do 8 słów.
     Tekst do czytania w zwykłym kolorze; w kolorze bloku tylko etykieta i krótkie punkty z ikoną. Kolory tylko ze zmiennych
