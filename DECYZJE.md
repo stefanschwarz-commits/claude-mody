@@ -436,3 +436,6 @@ Stare skille „ladny” i „uklad-odpowiedzi” usunięte na trzech kontach po
 
 ## 2026-11-17 skill ładnie, część B: szkic maila w odwróconych kolorach
 Stefan (zrzut maila do kancelarii w Wyjaśnieniu): „treść maila zawsze na białym tle, gdy kontekst jest ciemny, oraz na czarnym tle, gdy kontekst jest jasny”. W obrazie szkic maila ma tło `--text-primary` i tekst `--surface-2`. Otwarte: pytanie 31 (osobny blok „Do wysłania” nad pytaniem czy w Wyjaśnieniu).
+
+## 2026-11-17 skill ładnie, część B: tekst punktów „Nie udało się” biały
+Stefan o przykładzie w Cowork: tekst punktów „Brak uprawnień…”, „Strona…” ma być biały, czerwone zostają tylko ikony i etykieta. Mod w Code rysuje treść ramek zwykłym kolorem tekstu, więc tam bez zmian.

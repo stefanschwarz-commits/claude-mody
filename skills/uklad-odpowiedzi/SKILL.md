@@ -136,8 +136,9 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       po co, 14px szare; kroki „K1A …” 15px, „K1A” pogrubione, treść w `--text-primary`; kolejne zadanie w tym samym bloku
       po odstępie;
     - Nie udało się: tło `--bg-danger`, etykieta `ti-alert-triangle` (Stefan 2026-11-16: „nie ma tytułu w ogóle, tak jak
-      w innych sekcjach”); każdy punkt w osobnym wierszu z ikoną i tekstem w `--text-danger`: `ti-lock` „Brak uprawnień: …”,
-      `ti-x` przy innym błędzie;
+      w innych sekcjach”); każdy punkt w osobnym wierszu: ikona w `--text-danger` (`ti-lock` „Brak uprawnień: …”, `ti-x` przy
+      innym błędzie), a tekst punktu w `--text-primary`, czyli biały w ciemnym motywie (Stefan 2026-11-17: „chciałbym, aby ten
+      tekst był również biały”);
     - Jeszcze sprawdzam: to samo szare tło co Wyjaśnienie, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
     - Czeka na innych: to samo szare tło co Wyjaśnienie, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
     - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
