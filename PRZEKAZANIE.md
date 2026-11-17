@@ -15,7 +15,7 @@
 - Dla zespołu „ładnie” (plik skills/uklad-odpowiedzi-zespol/SKILL.md), opublikowany „Installed by default”: ELMI skill_011RxUgDK5HUQVLj83yWBZL5,
   ATERIMA skill_012dy7Q8roNWVt6N6JwJrKoQ. Nowa wersja: Replace + „Publish to org”. Stary „uklad-odpowiedzi-zespol” w obu organizacjach „Not available”.
 - kontekst-ucs (ELMI v3, ATERIMA v3) odsyła do `ładnie-stefan`.
-- Do zrobienia po „tak” Stefana: instrukcje organizacji ELMI i ATERIMA wołają jeszcze „uklad-odpowiedzi-zespol” – zmienić na „ładnie”.
+- Instrukcje organizacji ELMI i ATERIMA wołają „ładnie” (decyzja 6A); „ładnie-stefan” na trzech kontach w najnowszej wersji z repozytorium.
 
 ## Cel sesji
 Mody Claude Code Stefana w repozytorium `C:\Projekty\claude-mody` (GitHub `stefanschwarz-commits/claude-mody`): wyglad, projekt,
