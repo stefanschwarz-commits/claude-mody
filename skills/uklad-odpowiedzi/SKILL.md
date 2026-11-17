@@ -43,7 +43,7 @@ W „Zadania dla Ciebie” nie używaj tabeli: lista numerowana „1. Co zrobić
 
 W tabelach porównawczych oznaczaj odpowiedzi znakami ✓ (tak), ✗ (nie), ~ (częściowo), ? (nie wiadomo), nigdy kolorowymi kropkami; kropki są tylko dla statusu sprawy.
 
-Linki (decyzja Stefana „1A”, 2026-10-31): każdy adres podawaj jako odnośnik `[krótka nazwa](pełny adres)`, nigdy jako goły tekst, skróconą ścieżkę („/kontakt/”) ani w `kodzie`; Stefan ma kliknąć raz, bez kopiowania. Dotyczy też nagłówka ▶, zadań, pytań i punktów podsumowania. Plik na komputerze też jako `[nazwa](pełna ścieżka)` i to wszędzie, gdzie wymieniasz plik z nazwy (nagłówek, wyjaśnienie, zadanie, podsumowanie; decyzja Stefana 2026-11-01: „nazwy plików… były jednocześnie linkami”): mod zamienia ścieżkę na odnośnik, który otwiera plik, a plik wpisany jako osobna linia pod zadaniem dostaje dodatkowo przycisk „Pokaż w folderze”. Nigdy sama nazwa pliku bez ścieżki. Odnośnik do innego wątku w Claude daj w postaci `claude://claude.ai/chat/<id rozmowy>` (projekt: `claude://claude.ai/project/<id>`, nowy wątek z gotowym tekstem: `claude://claude.ai/new?q=<tekst zakodowany>`), nigdy `https://claude.ai/…`, bo ten otwiera przeglądarkę, a `claude://` otwiera aplikację Claude w Windows (Stefan 2026-11-17). Sesji Claude Code nie da się otworzyć odnośnikiem po ID: podaj jej dokładną nazwę. Stronę internetową, którą Stefan ma obejrzeć, otwórz mu sam w panelu przeglądarki obok czatu (wbudowana przeglądarka, narzędzie `preview_start` lub `navigate`), gdy masz to narzędzie; odnośnik podaj wtedy tylko dodatkowo (Stefan 2026-11-17: „otwieraj mi je w panelu przeglądarki obok, zamiast podawać mi linki zewnętrzne”).
+Linki (decyzja Stefana „1A”, 2026-10-31): każdy adres podawaj jako odnośnik `[krótka nazwa](pełny adres)`, nigdy jako goły tekst, skróconą ścieżkę („/kontakt/”) ani w `kodzie`; Stefan ma kliknąć raz, bez kopiowania. Dotyczy też nagłówka ▶, zadań, pytań i punktów podsumowania. Plik na komputerze też jako `[nazwa](pełna ścieżka)` i to wszędzie, gdzie wymieniasz plik z nazwy (nagłówek, wyjaśnienie, zadanie, podsumowanie; decyzja Stefana 2026-11-01: „nazwy plików… były jednocześnie linkami”): mod zamienia ścieżkę na odnośnik, który otwiera plik, a plik wpisany jako osobna linia pod zadaniem dostaje dodatkowo przycisk „Pokaż w folderze”. Nigdy sama nazwa pliku bez ścieżki. Odnośnik do innego wątku w Claude daj w postaci `claude://claude.ai/chat/<id rozmowy>` (projekt: `claude://claude.ai/project/<id>`, nowy wątek z gotowym tekstem: `claude://claude.ai/new?q=<tekst zakodowany>`), nigdy `https://claude.ai/…`, bo ten otwiera przeglądarkę, a `claude://` otwiera aplikację Claude w Windows (Stefan 2026-11-17). Sesji Claude Code nie da się otworzyć odnośnikiem po ID: podaj jej dokładną nazwę. Link https kliknięty w czacie otwiera się u Stefana w Edge, a on chce oglądać rzeczy w aplikacji Claude (decyzja 13A z 2026-11-17): gdy pokazujesz mu artefakt, dokument albo stronę, sam otwórz je w panelu wbudowanej przeglądarki aplikacji Claude (narzędzia Claude_Browser, np. `preview_start`) i napisz, że jest otwarte obok rozmowy. Link podawaj tylko dodatkowo, np. na telefon. Gdy panelu nie widać, nie podawaj skrótu klawiszowego (Stefan ich nie chce), tylko opisz kliknięcie.
 
 Pytania: pogrubione pytanie „**1. …?**”, linia „Dlaczego to ważne: …”, potem każda opcja w osobnej linii „- **A)** co się stanie – plus: …; minus: …” (bez tabeli), na końcu linia „➜ Polecam 1B, bo …”. Mod sam nazywa opcje jak przyciski (1A, 1B, 2A…) i oznacza polecaną gwiazdką, więc nie wpisuj gwiazdek ★ ani ⭐ w treść opcji.
 
@@ -92,8 +92,10 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
    Odnośnik do innego wątku w Claude: `claude://claude.ai/chat/<id rozmowy>` (projekt: `claude://claude.ai/project/<id>`),
    nigdy `https://claude.ai/…`, bo otwiera przeglądarkę zamiast aplikacji Claude w Windows (Stefan 2026-11-17). Sesji Claude
    Code nie da się otworzyć odnośnikiem po ID: podaj jej dokładną nazwę.
-   Stronę internetową do obejrzenia otwórz sam w panelu przeglądarki obok czatu, gdy masz wbudowaną przeglądarkę
-   (`preview_start` lub `navigate`); odnośnik podaj wtedy tylko dodatkowo (Stefan 2026-11-17).
+   Link https kliknięty w czacie otwiera się u Stefana w Edge, a on chce oglądać rzeczy w aplikacji Claude (decyzja 13A
+   z 2026-11-17): artefakt, dokument albo stronę otwórz sam w panelu wbudowanej przeglądarki aplikacji Claude (narzędzia
+   Claude_Browser, np. `preview_start`) i napisz, że jest otwarte obok rozmowy; link podawaj tylko dodatkowo, np. na telefon.
+   Gdy panelu nie widać, nie podawaj skrótu klawiszowego, tylko opisz kliknięcie.
 8. Gdy odpowiedź kończy się pytaniem albo zadaniem, ostatnie zdanie odpowiedzi mówi wprost, czego od Stefana potrzebujesz
    („Czekam na 7A albo 7B.”), bo tu nie ma dymka ani linii stanu, które by mu to pokazały.
 9. Szkic maila lub wiadomości zawsze w bloku ```mail z liniami „Od:”, „Do:”, „Temat:”, pustą linią i samą treścią.
@@ -159,6 +161,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     motywu, żeby działały w jasnym i ciemnym motywie.
     Odpowiedź końcowa pod obrazem: tylko jedno krótkie zdanie, czego potrzebujesz („Czekam na 25A albo 25B.”), albo „Nic nie
     musisz robić.”; bez paska, bez `### ▶`, bez `---`; bloków nie powtarzasz tekstem.
+    W obrazkach nie rób przycisków „Kopiuj”: okno obrazka nie ma dostępu do schowka i przycisk nie działa. Tekst do skopiowania
+    dawaj w zwykłym bloku kodu w odpowiedzi końcowej, bo on ma własny, działający przycisk kopiowania (Stefan 2026-11-17).
     Bez narzędzia do wizualizacji piszesz po staremu, punkty 1–5.
 
 
