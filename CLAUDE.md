@@ -38,7 +38,8 @@ przez sesję „Instrukcje dla Claude”. Pamięć sesji i reguły w `~/.claude/
 nakładki dla Cowork i czatu; wzór w OneDrive „Instrukcje Claude” → `do-instrukcji-ogolnych-uklad-odpowiedzi-bez-nakladki.md`).
 Po każdej zmianie reguły: odśwież SKILL.md (skrypt w DECYZJE.md z 2026-11-01 „Skill uklad-odpowiedzi”), commit, i po „tak”
 Stefana wgraj nową wersję w claude.ai (Customize → Skills → ladny), na każdym koncie, na którym ma działać.
-Folder w repo zostaje `skills/uklad-odpowiedzi/` (cytują go reguła i część A); nazwę daje tylko linia `name:`.
+Folder w repo zostaje `skills/uklad-odpowiedzi/` (cytują go reguła i część A); nazwę daje tylko linia `name:`, która
+musi zostać `name: ladny` – przy odświeżaniu SKILL.md z reguły podmieniaj tylko treść pod nagłówkiem YAML, nigdy nagłówek.
 Replace w claude.ai odrzuca zmianę nazwy („Skill name mismatch”), więc przy kolejnej zmianie nazwy: nowy skill przez Upload,
 stary tylko wyłączony; usunięcie starego wyłącznie po zgodzie Stefana.
 
