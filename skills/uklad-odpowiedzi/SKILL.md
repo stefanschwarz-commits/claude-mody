@@ -120,8 +120,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     `ti-player-play` i zdanie ▶ (18px, pogrubione, `--text-primary`).
     Pod spodem bloki, w tej kolejności, każdy tylko gdy występuje. Każdy blok ma taką samą etykietę: ikona 18px i nazwa 13px
     w kolorze bloku, zawsze tej samej wielkości (Stefan 2026-11-16: „wyjaśnienie ma większą czcionkę niż czeka na ciebie”):
-    - Wyjaśnienie: lekko szare tło `color-mix(in srgb, var(--text-primary) 7%, transparent)` (Stefan 2026-11-16: „ma być na lekko
-      szarym tle”; `--surface-1` w ciemnym motywie zlewało się z tłem okna), etykieta `ti-info-circle`
+    - Wyjaśnienie: lekko szare tło `color-mix(in srgb, var(--text-primary) 11%, transparent)`, o ton jaśniejsze niż inne szare
+      bloki (Stefan 2026-11-16: „ma być na lekko szarym tle”; 2026-11-17: „tło w sekcji wyjaśnienia nieco jaśniejsze”), etykieta `ti-info-circle`
       w `--text-secondary`; wynik jednym zdaniem 15px (ta sama wielkość co punkty; Stefan 2026-11-16: „za dużą czcionkę”) pogrubionym w `--text-primary`; punkty w osobnych akapitach 15px:
       pogrubione pierwsze zdanie w `--text-primary`, reszta w `--text-secondary`;
     - Czeka na Ciebie · decyzja: tło `--bg-warning`, etykieta `ti-help-circle`; „Pytanie 25: …?” 16px pogrubione; „Dlaczego to
@@ -139,8 +139,8 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
       w innych sekcjach”); każdy punkt w osobnym wierszu: ikona w `--text-danger` (`ti-lock` „Brak uprawnień: …”, `ti-x` przy
       innym błędzie), a tekst punktu w `--text-primary`, czyli biały w ciemnym motywie (Stefan 2026-11-17: „chciałbym, aby ten
       tekst był również biały”);
-    - Jeszcze sprawdzam: to samo szare tło co Wyjaśnienie, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
-    - Czeka na innych: to samo szare tło co Wyjaśnienie, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
+    - Jeszcze sprawdzam: szare tło `color-mix(in srgb, var(--text-primary) 7%, transparent)`, etykieta `ti-search`, punkty z `ti-point` w `--text-secondary`;
+    - Czeka na innych: to samo szare tło co Jeszcze sprawdzam, etykieta `ti-hourglass`, punkty z `ti-user` i imieniem: „Dominik: na co”;
     - Zrobione: tło `--bg-success`, etykieta `ti-circle-check`, punkty z `ti-check` w `--text-success`.
     Szkic maila lub wiadomości w obrazie: zawsze w odwróconych kolorach, białe tło przy ciemnym motywie i czarne przy jasnym
     (Stefan 2026-11-17: „treść maila zawsze na białym tle, gdy kontekst jest ciemny, oraz na czarnym tle, gdy kontekst jest

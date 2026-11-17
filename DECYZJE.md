@@ -439,3 +439,4 @@ Stefan (zrzut maila do kancelarii w Wyjaśnieniu): „treść maila zawsze na bi
 
 ## 2026-11-17 skill ładnie, część B: tekst punktów „Nie udało się” biały
 Stefan o przykładzie w Cowork: tekst punktów „Brak uprawnień…”, „Strona…” ma być biały, czerwone zostają tylko ikony i etykieta. Mod w Code rysuje treść ramek zwykłym kolorem tekstu, więc tam bez zmian.
+Tego samego dnia: tło Wyjaśnienia o ton jaśniejsze (11% zamiast 7%) niż Jeszcze sprawdzam i Czeka na innych (Stefan: „tło w sekcji wyjaśnienia nieco jaśniejsze”).
