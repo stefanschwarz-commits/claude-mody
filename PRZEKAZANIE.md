@@ -9,10 +9,13 @@
 - Po wgraniu 28A doszły commity f2d8913 (szare tło widoczne w ciemnym motywie, nic przed obrazem) i b424139 (wynik
   w Wyjaśnieniu 15px). Personal ma je z karty. Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA.
 
-## Skill układu odpowiedzi nazywa się teraz „ładnie”, opis „Ładny Wygląd” (2026-11-17)
-- Skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55CtcqFQMNqt, ATERIMA skill_013qkjfpJJxGcEYHZRG5Bzhk.
-  Kolejne wersje wgrywać przez Replace na te identyfikatory (karta dla Personal z sesji chmurowej też tam).
-  „ladny” i „uklad-odpowiedzi” usunięte na trzech kontach (zgoda Stefana „Tak, usuń”).
+## Skille układu odpowiedzi (2026-11-17, decyzja Stefana „5A” przez Centrum)
+- Osobisty Stefana „ładnie-stefan”: Personal skill_01Dct426YeNYyDeCmzC5aQuc, ELMI skill_01ExSftf4hu3je16QKzcVLB6, ATERIMA skill_01XcmdbQWJDRMZtmWdoCZ661
+  (plik skills/uklad-odpowiedzi/SKILL.md). Dawny „ładnie” na Personal wyłączony; na ELMI i ATERIMA usunięty (inaczej zespół dostałby jego historię wersji).
+- Dla zespołu „ładnie” (plik skills/uklad-odpowiedzi-zespol/SKILL.md), opublikowany „Installed by default”: ELMI skill_011RxUgDK5HUQVLj83yWBZL5,
+  ATERIMA skill_012dy7Q8roNWVt6N6JwJrKoQ. Nowa wersja: Replace + „Publish to org”. Stary „uklad-odpowiedzi-zespol” w obu organizacjach „Not available”.
+- kontekst-ucs (ELMI v3, ATERIMA v3) odsyła do `ładnie-stefan`.
+- Do zrobienia po „tak” Stefana: instrukcje organizacji ELMI i ATERIMA wołają jeszcze „uklad-odpowiedzi-zespol” – zmienić na „ładnie”.
 
 ## Cel sesji
 Mody Claude Code Stefana w repozytorium `C:\Projekty\claude-mody` (GitHub `stefanschwarz-commits/claude-mody`): wyglad, projekt,
