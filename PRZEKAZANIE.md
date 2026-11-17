@@ -7,7 +7,7 @@
 ## Skill układu odpowiedzi nazywa się teraz „ładnie”, opis „Ładny Wygląd” (2026-11-17)
 - Skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55CtcqFQMNqt, ATERIMA skill_013qkjfpJJxGcEYHZRG5Bzhk.
   Kolejne wersje wgrywać przez Replace na te identyfikatory (karta dla Personal z sesji chmurowej też tam).
-  „ladny” i „uklad-odpowiedzi” wyłączone; usunąć tylko po zgodzie Stefana.
+  „ladny” i „uklad-odpowiedzi” usunięte na trzech kontach (zgoda Stefana „Tak, usuń”).
 
 ## Cel sesji
 Mody Claude Code Stefana w repozytorium `C:\Projekty\claude-mody` (GitHub `stefanschwarz-commits/claude-mody`): wyglad, projekt,

@@ -755,7 +755,8 @@ export const register: Register = on => {
             <Text bold>Wyjaśnienie</Text>
           </Box>
           {/* Markdown, not Text: a link in the headline stays clickable. */}
-          <Markdown text={`### ${fileLinksOf(reply.headline)}`} />
+          {/* Bold body text, not a ### heading: headings use another typeface in the app (Stefan 2026-11-17). */}
+          <Markdown text={`**${fileLinksOf(reply.headline).replace(/\*\*/g, '')}**`} />
         {(() => {
           // A long explanation shows its first lines until opened.
           const lines = mailsOf(plain.map(part => part.body).join('\n\n')).rest.split('\n')

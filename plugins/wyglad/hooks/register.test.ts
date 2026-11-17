@@ -63,7 +63,7 @@ test('odpowiedź z ▶: kolorowy wniosek, ramki i przyciski na każdym ekranie',
     const ui = await $.ui.mount({ plugin: 'wyglad', surface, component: 'AssistantMessage', props: message(REPLY) })
     // The bar names the answer and when it was finished, to the second; no ▶ marker any more.
     expect(await ui.find({ type: 'Text', text: /^(Nowa )?[Oo]dpowiedź/ })).toBeDefined()
-    expect(markdowns(await ui.find({ type: 'Box' }))).toContain('### Mod działa i jest gotowy do testu.')
+    expect(markdowns(await ui.find({ type: 'Box' }))).toContain('**Mod działa i jest gotowy do testu.**')
     expect(await ui.find({ type: 'Text', text: 'Nie udało się' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Uruchom ponownie/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: 'Zrobione' })).toBeDefined()

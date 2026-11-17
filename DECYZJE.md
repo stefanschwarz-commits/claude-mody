@@ -428,3 +428,8 @@ a wywołuje ją polecenie „Ładnie”.” W claude.ai nazwa skilla jest jednoc
 nazwa i polecenie „ładnie” (polska litera przeszła), opis zaczyna się od „Ładny Wygląd – układ każdej odpowiedzi…”.
 Nowe skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55CtcqFQMNqt, ATERIMA skill_013qkjfpJJxGcEYHZRG5Bzhk.
 „ladny” i „uklad-odpowiedzi” wyłączone na trzech kontach. W skillu `kontekst-ucs` na ELMI (v2) i ATERIMA (v2) odesłanie zmienione na `ładnie`.
+
+## 2026-11-17 – wyglad 0.46.1: zdanie wyniku w Wyjaśnieniu zwykłą czcionką
+Stefan (zrzut): „Spójrz, to znowu wyjaśnienie. Użyłeś niewłaściwego fontu dla tego słowa.” Pierwsze zdanie bloku było rysowane jako nagłówek `###`, a aplikacja rysuje nagłówki innym krojem. Teraz pogrubione zdanie w zwykłym kroju, jak punkty pod nim.
+
+Stare skille „ladny” i „uklad-odpowiedzi” usunięte na trzech kontach po „Tak, usuń” Stefana; został tylko „ładnie”.

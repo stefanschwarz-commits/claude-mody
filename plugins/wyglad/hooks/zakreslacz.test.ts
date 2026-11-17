@@ -164,7 +164,7 @@ test('nazwa pliku z pełną ścieżką jest odnośnikiem wszędzie: w zdaniu, w 
   // The desktop opens no file link inline, so a file in a sentence is its name plus a row with "Pokaż w folderze".
   expect(links).toEqual([])
   expect(await ui.find({ type: 'Button', text: 'Pokaż w folderze' })).toBeDefined()
-  expect(md).toContain('### Plan jest w [plan.md](file:///C:/Projekty/plan.md).')
+  expect(md).toContain('**Plan jest w [plan.md](file:///C:/Projekty/plan.md).**')
   expect(md).toContain('Bez wyróżnienia, ale z plikiem [stan.md](file:///C:/Projekty/stan.md).')
   expect(md).toContain('**Plan zapisany w [plan.md](file:///C:/Projekty/plan.md).**')
 })
