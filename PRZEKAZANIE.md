@@ -4,9 +4,10 @@
 - Po wgraniu 28A doszły commity f2d8913 (szare tło widoczne w ciemnym motywie, nic przed obrazem) i b424139 (wynik
   w Wyjaśnieniu 15px). Personal ma je z karty. Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA.
 
-## Skill układu odpowiedzi nazywa się teraz „ladny” (2026-11-17)
-- Nowe skille: Personal skill_01VtSMMx7CVAq8Zdwdqbejef, ELMI skill_01RmV6qMAXUeBocyv86uYgBs, ATERIMA skill_011nJpFymhvUjvD2yoHpSiBN.
-  Kolejne wersje wgrywać przez Replace na te identyfikatory. Stare „uklad-odpowiedzi” wyłączone; usunąć tylko po zgodzie Stefana.
+## Skill układu odpowiedzi nazywa się teraz „ładnie”, opis „Ładny Wygląd” (2026-11-17)
+- Skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55CtcqFQMNqt, ATERIMA skill_013qkjfpJJxGcEYHZRG5Bzhk.
+  Kolejne wersje wgrywać przez Replace na te identyfikatory (karta dla Personal z sesji chmurowej też tam).
+  „ladny” i „uklad-odpowiedzi” wyłączone; usunąć tylko po zgodzie Stefana.
 
 ## Cel sesji
 Mody Claude Code Stefana w repozytorium `C:\Projekty\claude-mody` (GitHub `stefanschwarz-commits/claude-mody`): wyglad, projekt,

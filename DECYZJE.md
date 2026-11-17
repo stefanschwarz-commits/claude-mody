@@ -421,3 +421,10 @@ nieczytelny.” Potem: „1A” (nazwa „ladny”; nazwy skilli bez polskich li
 „ladny” (Upload), a stary „uklad-odpowiedzi” wyłączony, nie usunięty: Personal skill_01VtSMMx7CVAq8Zdwdqbejef, ELMI
 skill_01RmV6qMAXUeBocyv86uYgBs, ATERIMA skill_011nJpFymhvUjvD2yoHpSiBN. Usunięcie starych czeka na zgodę Stefana.
 Skill zespołu `uklad-odpowiedzi-zespol` bez zmian (jego nazwę cytują instrukcje organizacji).
+
+## 2026-11-17 – skill nazywa się „ładnie”, opis zaczyna się od „Ładny Wygląd”
+Stefan (przez Centrum): „Nie, chciałbym, aby ten skin nosił nazwę „Ładny styl”.”, potem „2A Nazwa umiejętności to „Ładny Wygląd”,
+a wywołuje ją polecenie „Ładnie”.” W claude.ai nazwa skilla jest jednocześnie poleceniem, więc w tej sesji Stefan wybrał „5A”:
+nazwa i polecenie „ładnie” (polska litera przeszła), opis zaczyna się od „Ładny Wygląd – układ każdej odpowiedzi…”.
+Nowe skille: Personal skill_011zTr6ngxgMLYA1YcpJEB1D, ELMI skill_01AnoXsANvPi55CtcqFQMNqt, ATERIMA skill_013qkjfpJJxGcEYHZRG5Bzhk.
+„ladny” i „uklad-odpowiedzi” wyłączone na trzech kontach. W skillu `kontekst-ucs` na ELMI (v2) i ATERIMA (v2) odesłanie zmienione na `ładnie`.
