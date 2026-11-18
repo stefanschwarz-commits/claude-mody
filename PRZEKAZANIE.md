@@ -1,12 +1,14 @@
 # PRZEKAZANIE — sesja „💻 🏡 ⚙️ Mody” (zapisane 2026-11-11, sesja zużyta: trzy streszczenia, zapis ponad 40 MB)
 
-## DO ZROBIENIA (2026-11-17 14:30): wgrać oba skille bez przycisków
-- `ładnie-stefan` (Personal dostaje kartą; ELMI, ATERIMA przez Replace) i `ładnie` zespołu w ELMI i ATERIMA: usunięte żółte przyciski.
+## CZĘŚCIOWO WYKONANE 2026-11-18 (sesja poboczna Centrum ATERIMA): wgrać oba skille bez przycisków
+- `ładnie-stefan` wgrany przez Replace z commita 5796107: ELMI v3, ATERIMA v3 (sprawdzone odczytem: brak „sendPrompt” i „Przycisk nie
+  działa”, jest `claude://` i 13A). Wyglad 0.46.1 na trzech kontach, zakres user i project (już był).
+- DO ZROBIENIA: `ładnie` zespołu w ELMI i ATERIMA (Replace + „Publish to org”, dotyczy całego zespołu) – nie ruszane, czeka na zgodę Stefana.
 
-## DO ZROBIENIA (2026-11-17 11:30): reguła + wgranie skilla ładnie na ELMI i ATERIMA
-- Część A dostała zdanie o odnośnikach `claude://claude.ai/chat/<id>` (akapit „Linki”): przenieść je do reguły
-  `~/.claude/rules/wyglad-uklad-odpowiedzi.md`. Potem wgrać aktualny SKILL.md na ELMI i ATERIMA (białe punkty Nie udało się,
-  jaśniejsze Wyjaśnienie, fioletowe Czeka na innych, odnośniki claude://).
+## DO ZROBIENIA (2026-11-17 11:30): reguła ~/.claude/rules/wyglad-uklad-odpowiedzi.md jest za skillem
+- Reguła nie ma zdania o `claude://`, decyzji 13A, a w części B ma jeszcze guziki (28A sprzed 5796107). Odświeżenie SKILL.md z reguły
+  cofnęłoby te decyzje: najpierw przenieść część A i B ze SKILL.md do reguły. Wgranie na ELMI i ATERIMA – zrobione wyżej (v3).
+
 
 ## WYKONANE 2026-11-17 08:20 (ELMI v12, ATERIMA v14, sprawdzone odczytem): dograć dwie poprawki skilla na ELMI i ATERIMA
 - Po wgraniu 28A doszły commity f2d8913 (szare tło widoczne w ciemnym motywie, nic przed obrazem) i b424139 (wynik
