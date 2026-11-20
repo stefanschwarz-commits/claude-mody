@@ -452,3 +452,6 @@ Stefan (przez Centrum): „wolałbym, żeby wątek nazywał się dla mnie ładni
 
 ## 2026-11-17 skille ładnie-stefan i ładnie: bez przycisków w obrazkach
 Stefan (14:26): „te bardzo intensywne żółte guziki są zbyt jaskrawe. Chciałem zrezygnować. Ponadto często zgłaszają błąd.” Pytanie zostaje z tabelą opcji, pod nią linia „Odpisz 25A albo 25B.”; żadnych przycisków `sendPrompt`. Punkt 13 części B przepisany; to samo w skillu zespołu.
+
+## 2026-11-20 – ładnie-stefan: blok „Stan rozmowy” i kontrola karty (8A); firmowe „ładnie” wyłączone u Stefana (7A)
+Decyzje Stefana przez GŁÓWNE CENTRUM: „7A 8A”. 8A: w części B punkt 17 dwa zdania (blok „Stan rozmowy”, kontrola kompletności karty), brzmienie pokazane Stefanowi. 7A: na ELMI i ATERIMA Stefan ma wyłączony u siebie firmowy „ładnie”, żeby w wątkach nie działały dwa skille wyglądu naraz.

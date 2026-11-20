@@ -156,6 +156,12 @@ Odpowiedź końcową piszesz w tym samym układzie co w Claude Code, ale sam dop
     musisz robić.”; bez paska, bez `### ▶`, bez `---`; bloków nie powtarzasz tekstem.
     W obrazkach nie rób przycisków „Kopiuj”: okno obrazka nie ma dostępu do schowka i przycisk nie działa. Tekst do skopiowania
     dawaj w zwykłym bloku kodu w odpowiedzi końcowej, bo on ma własny, działający przycisk kopiowania (Stefan 2026-11-17).
+    Stan rozmowy: gdy odpowiedź mówi coś o samej rozmowie (przegląd po 20 wymianach, ostrzeżenie, że wątek robi się za długi,
+    zapowiedź przeniesienia do nowego wątku), karta ma osobny blok „Stan rozmowy” na końcu: zielone tło, gdy wszystko
+    w porządku, żółte przy ostrzeżeniu, czerwone, gdy trzeba przejść do nowego wątku; w środku jedno zdanie, co to znaczy
+    (decyzja Stefana 8A, 2026-11-20).
+    Zanim narysujesz kartę, sprawdź: czy jest w niej wszystko, co jest w odpowiedzi tekstowej, także stan rozmowy? Ta sama
+    kontrola przy przerysowaniu wcześniejszej odpowiedzi na prośbę „/ładnie-stefan”.
     Bez narzędzia do wizualizacji piszesz po staremu, punkty 1–5.
 
 
