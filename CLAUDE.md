@@ -34,12 +34,16 @@ się tylko na jednym koncie, najpierw sprawdź, czy sesja ma instrukcje w kontek
 przez sesję „Instrukcje dla Claude”. Pamięć sesji i reguły w `~/.claude/rules` są wspólne dla komputera.
 
 ## Skill osobisty „ładnie-stefan” (dla zespołu: „ładnie” z folderu skills/uklad-odpowiedzi-zespol; opis „Ładny Wygląd”; jedno źródło układu odpowiedzi, od 2026-11-01; dawniej „uklad-odpowiedzi”, potem „ladny”)
-`skills/uklad-odpowiedzi/SKILL.md` = część A (treść reguły `~/.claude/rules/wyglad-uklad-odpowiedzi.md`) + część B (układ bez
-nakładki dla Cowork i czatu; wzór w OneDrive „Instrukcje Claude” → `do-instrukcji-ogolnych-uklad-odpowiedzi-bez-nakladki.md`).
-Po każdej zmianie reguły: odśwież SKILL.md (skrypt w DECYZJE.md z 2026-11-01 „Skill uklad-odpowiedzi”), commit, i po „tak”
-Stefana wgraj nową wersję w claude.ai (Customize → Skills → ładnie-stefan), na każdym koncie, na którym ma działać.
+**Źródłem jest `skills/uklad-odpowiedzi/SKILL.md`, reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md` jest jego kopią**
+(decyzja Stefana 1B, 2026-11-20; do tej pory było odwrotnie i zmiany zrobione tylko w skillu groziły cofnięciem). SKILL.md = część A
+(układ z nakładką, Claude Code) + część B (układ bez nakładki dla Cowork i czatu).
+Każda zmiana układu odpowiedzi, w tej kolejności: edycja SKILL.md → `python -X utf8 skills/uklad-odpowiedzi/do-reguly.py` (przepisuje
+treść do reguły, nagłówek YAML reguły zostaje, kopia starej w `~/.claude/kopie-regul/`) → commit i push → po „tak” Stefana wgraj
+nową wersję w claude.ai (Customize → Skills → ładnie-stefan) na ELMI i ATERIMA przez Replace (Personal dostaje kartą).
+Reguły nie edytuj bezpośrednio: zmiana wpisana tylko w regule zniknie przy następnym przepisaniu. Przed edycją SKILL.md uruchom
+skrypt z `--sprawdz` – „Reguła już zgodna ze skillem” znaczy, że nikt nie zmienił reguły ręcznie; inaczej najpierw przenieś tę zmianę do SKILL.md.
 Folder w repo zostaje `skills/uklad-odpowiedzi/` (cytują go reguła i część A); nazwę daje tylko linia `name:`, która
-musi zostać `name: ładnie-stefan` (polska litera przechodzi) – przy odświeżaniu SKILL.md z reguły podmieniaj tylko treść pod nagłówkiem YAML, nigdy nagłówek.
+musi zostać `name: ładnie-stefan` (polska litera przechodzi); nagłówka YAML przy edycji nie zmieniaj.
 Replace w claude.ai odrzuca zmianę nazwy („Skill name mismatch”), więc przy kolejnej zmianie nazwy: nowy skill przez Upload,
 stary tylko wyłączony; usunięcie starego wyłącznie po zgodzie Stefana.
 

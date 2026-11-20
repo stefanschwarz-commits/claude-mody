@@ -455,3 +455,6 @@ Stefan (14:26): „te bardzo intensywne żółte guziki są zbyt jaskrawe. Chcia
 
 ## 2026-11-20 – ładnie-stefan: blok „Stan rozmowy” i kontrola karty (8A); firmowe „ładnie” wyłączone u Stefana (7A)
 Decyzje Stefana przez GŁÓWNE CENTRUM: „7A 8A”. 8A: w części B punkt 17 dwa zdania (blok „Stan rozmowy”, kontrola kompletności karty), brzmienie pokazane Stefanowi. 7A: na ELMI i ATERIMA Stefan ma wyłączony u siebie firmowy „ładnie”, żeby w wątkach nie działały dwa skille wyglądu naraz.
+
+## 2026-11-20 – źródłem układu odpowiedzi jest skill, reguła jego kopią (decyzja Stefana 1B)
+Reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md` była za skillem (bez `claude://`, bez 13A, z guzikami), a procedura kazała odświeżać skill z reguły, co cofnęłoby decyzje z 2026-11-17. Stefan wybrał 1B: raz przepisać skill do reguły i odwrócić kierunek na stałe. Wykonane: reguła przepisana skryptem `skills/uklad-odpowiedzi/do-reguly.py` (kopia starej w `~/.claude/kopie-regul/`), procedura w CLAUDE.md zmieniona.

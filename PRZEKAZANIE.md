@@ -5,11 +5,8 @@
   działa”, jest `claude://` i 13A). Wyglad 0.46.1 na trzech kontach, zakres user i project (już był).
 - DO ZROBIENIA: `ładnie` zespołu w ELMI i ATERIMA (Replace + „Publish to org”, dotyczy całego zespołu) – nie ruszane, czeka na zgodę Stefana.
 
-## DO ZROBIENIA (2026-11-17 11:30): reguła ~/.claude/rules/wyglad-uklad-odpowiedzi.md jest za skillem
-- Reguła nie ma zdania o `claude://`, decyzji 13A, a w części B ma jeszcze guziki (28A sprzed 5796107). Odświeżenie SKILL.md z reguły
-  cofnęłoby te decyzje: najpierw przenieść część A i B ze SKILL.md do reguły. Wgranie na ELMI i ATERIMA – zrobione wyżej (v3).
-
-
+## WYKONANE 2026-11-20 (decyzja Stefana 1B): reguła przepisana ze skilla, kierunek odwrócony
+- Źródłem jest SKILL.md, reguła jego kopią (`skills/uklad-odpowiedzi/do-reguly.py`, procedura w CLAUDE.md).
 ## WYKONANE 2026-11-17 08:20 (ELMI v12, ATERIMA v14, sprawdzone odczytem): dograć dwie poprawki skilla na ELMI i ATERIMA
 - Po wgraniu 28A doszły commity f2d8913 (szare tło widoczne w ciemnym motywie, nic przed obrazem) i b424139 (wynik
   w Wyjaśnieniu 15px). Personal ma je z karty. Wgrać aktualny `skills/uklad-odpowiedzi/SKILL.md` przez Replace na ELMI i ATERIMA.
