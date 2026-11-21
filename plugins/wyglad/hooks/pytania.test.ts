@@ -147,3 +147,30 @@ test('„Pytanie 1:” zacytowane w polu kodu w wyjaśnieniu nie robi z odpowied
   const reply = splitReply(['▶ **Wzór pytania jest gotowy.**', '', 'Tak będzie wyglądać:', '', '```', 'Pytanie 1: Czy wysłać?', '**1A)** Tak', '```', '', 'Nic nie musisz robić.'].join('\n'))
   expect(reply?.parts.some(p => p.kind === 'questions')).toBe(false)
 })
+
+test('prawdziwa odpowiedź ze zrzutu: pole ```text w pytaniu, a „Odpisz 1A albo 1B.” nie trafia do ramki', () => {
+  const body = [
+    '**1. Czy wpisać do zasady o pulpicie zgodę na pracę od trzeciej do ósmej rano?**',
+    '',
+    'Dlaczego to ważne: od chwili wpisu sesje będą same korzystać z komputera.',
+    '',
+    '```text',
+    '5. **Stała zgoda od 3:00 do 8:00 rano (czas polski)** (słowa użytkownika).',
+    '   - gdy użytkownik ruszy myszą, natychmiast przerywasz;',
+    '   Poza tymi godzinami obowiązują punkty 1–4.',
+    '```',
+    '',
+    '- **A)** Tak, wpisz w tym brzmieniu – plus: działa od razu; minus: brak.',
+    '- **B)** Popraw tekst – plus: sam ustalisz granice; minus: wpis później.',
+    '',
+    '➜ Polecam 1A, bo tekst powtarza Twoje słowa.',
+    '',
+    'Odpisz 1A albo 1B.',
+  ].join('\n')
+  const qs = splitQuestions(body)
+  expect(qs.length).toBe(1)
+  expect(qs[0].text).toContain('```text\n5. **Stała zgoda')
+  expect(qs[0].text.includes('Odpisz')).toBe(false)
+  expect(qs[0].text.trimEnd().endsWith('```')).toBe(true)
+  expect(splitQuestions('**1. Wysłać?**\n- **A)** Tak\n- **B)** Nie\n➜ Polecam 1A, bo szybciej. Odpisz 1A albo 1B.')[0].tip).toBe('➜ Polecam 1A, bo szybciej.')
+})

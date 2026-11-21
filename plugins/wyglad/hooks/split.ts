@@ -130,6 +130,9 @@ export function splitInlineOptions(line: string): string[] {
   return starts.map((at, i) => line.slice(at, starts[i + 1] ?? line.length).trim()).filter(Boolean)
 }
 
+const ANSWER_HINT = /^\**(?:Odpisz|Odpowiedz|Napisz)\s+\**\d*[A-Z]\**\s+(?:albo|lub)\s+\**\d*[A-Z]\**[.!]?\**$/iu
+const ANSWER_HINT_TAIL = /\s*(?:Odpisz|Odpowiedz|Napisz)\s+\**\d*[A-Z]\**\s+(?:albo|lub)\s+\**\d*[A-Z]\**[.!]?\**$/iu
+
 // "**1. Pytanie?**", "Dlaczego…", "- **A)** …", "➜ Polecam …" per question.
 export function splitQuestions(body: string): Question[] {
   const out: Question[] = []
@@ -166,7 +169,10 @@ export function splitQuestions(body: string): Question[] {
     // "**1A)** text" (no dash) all count.
     if (/^\*\*\d*[A-Z]\)\s*★?/.test(line)) current.options.push(line)
     else if (line.startsWith('|')) current.table.push(line)
-    else if (/^➜/.test(line)) current.tip = line
+    // "Odpisz 1A albo 1B." repeats the buttons with the answer's own numbers, while the frame
+    // numbers questions through the conversation (3A, 7B): shown, it names options that are not there.
+    else if (ANSWER_HINT.test(line)) continue
+    else if (/^➜/.test(line)) current.tip = line.replace(ANSWER_HINT_TAIL, '').trim()
     else current.text += `${current.text ? '\n\n' : ''}${line}`
     }
   }
