@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { Register } from 'claude-code'
+import type { EngineInterface, Register } from 'claude-code'
 
 import type { Last, Sprawa, Stamp } from '../types'
 import { firstLine, isProgress, lettersOf, linkPaths, optionsOf, splitQuestions, splitReply, tipOf } from './split'
@@ -7,6 +7,8 @@ import type { Part, Reply } from './split'
 import { svgOf } from './icons'
 import { blocksOf, fileLinksOf, filesOf, hasMarks, LINK, linkRe } from './zakreslacz'
 import { isPermission, tilesOf } from './skroty'
+import { accountOf, lookOf, unpainted } from './motyw'
+import type { Account } from './motyw'
 
 // Ink colours for the icons, light or dark as the theme is.
 type Ink = { green: string; red: string; orange: string; blue: string; sand: string; grey: string; text: string }
@@ -69,6 +71,8 @@ function marked(els: unknown, text: string, mark: string | undefined, isDim: boo
 }
 
 const OFF = 'off'
+// The app's colours by Claude account (decision "A: według konta", 2026-11-21); /wyglad motyw off|on.
+const THEME_OFF = 'motyw-off'
 
 const last = atom({ plugin: 'wyglad', key: 'last' } as const, null)
 // Summary frames opened with their own "Pokaż szczegóły", by frame id ("<answer key>-<n>").
@@ -410,14 +414,38 @@ function count(n: number, one: string, few: string, many: string): string {
   return `${n} ${word}`
 }
 
+// What the last theme set came to, for "/wyglad stan".
+const motyw: { account: Account | null; note: string } = { account: null, note: 'jeszcze nie ustawiony' }
+// Sets the account's colours. Never throws: a broken theme must not take the frames with it.
+async function setTheme($: EngineInterface): Promise<void> {
+  try {
+    const org = await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)
+    const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
+    const account = accountOf(org, dir)
+    motyw.account = account
+    const { theme, problems } = lookOf(account)
+    const stop = unpainted(problems)
+    if (stop) {
+      motyw.note = `nie ustawiony: ${stop}`
+      return
+    }
+    const set = await $.theme.set({ colors: theme })
+    motyw.note = set.isDrawn ? 'ustawiony' : `ustawiony, ale ten ekran go nie rysuje (${set.reason})`
+  } catch (err) {
+    motyw.note = `nie ustawiony: ${err instanceof Error ? err.message : String(err)}`
+  }
+}
+
 export const register: Register = on => {
   // How often this session asked the mod to draw an answer, and on which screens (for "/wyglad stan").
   const drawn: { count: number; surfaces: string[] } = { count: 0, surfaces: [] }
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'wyglad',
-      description: 'Wygląd odpowiedzi: /wyglad on, /wyglad off albo /wyglad stan (czy mod rysuje w tej sesji)',
+      description: 'Wygląd odpowiedzi: /wyglad on, /wyglad off, /wyglad stan, /wyglad motyw on|off (kolory aplikacji według konta)',
     })
+    // The account's colours; on a reload too, and never a clear here (it would wipe any theme).
+    if ((await $.store.get(THEME_OFF)) !== true) await setTheme($)
     await $.command.register({ name: 'sprawy', description: 'Panel „Moje sprawy”: zadania do odhaczenia i pytania' })
     // A tool Claude calls to tick tasks off in "Moje sprawy" when Stefan says "1 zrobiłem".
     await $.tool.register({
@@ -543,6 +571,19 @@ export const register: Register = on => {
 
   on('command.run', { command: 'wyglad' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
+    // "/wyglad motyw on|off": the app's colours by account, apart from the frames' on/off.
+    if (arg === 'motyw' || arg.startsWith('motyw ')) {
+      const want = arg.slice(5).trim()
+      const isOff = want === 'off' ? true : want === 'on' ? false : (await $.store.get(THEME_OFF)) !== true
+      await $.store.set(THEME_OFF, isOff)
+      if (isOff) {
+        await $.theme.clear().catch(() => undefined)
+        motyw.note = 'wyłączony'
+        return { text: 'Kolory aplikacji: zwykłe. Włączysz: /wyglad motyw on' }
+      }
+      await setTheme($)
+      return { text: `Kolory aplikacji według konta ${motyw.account ?? ''}: ${motyw.note}. Wyłączysz: /wyglad motyw off` }
+    }
     // "/wyglad stan": did the app hand this session's answers to the mod to draw?
     // Some sessions (e.g. ones run in the background) are shown by the app on its own.
     if (arg === 'stan') {
@@ -550,7 +591,9 @@ export const register: Register = on => {
       const seen = drawn.count === 0
         ? 'Aplikacja w tej sesji jeszcze ani razu nie dała modowi odpowiedzi do narysowania. Ramek tu nie będzie: tę sesję aplikacja pokazuje sama, bez modów (tak bywa w sesjach w tle).'
         : `Mod narysował w tej sesji ${count(drawn.count, 'odpowiedź', 'odpowiedzi', 'odpowiedzi')} (ekran: ${drawn.surfaces.join(', ')}).`
-      return { text: `Wygląd odpowiedzi ${off ? 'wyłączony (/wyglad on włącza)' : 'włączony'}. ${seen}` }
+      const themeOff = (await $.store.get(THEME_OFF)) === true
+      const colours = themeOff ? 'Kolory aplikacji wyłączone (/wyglad motyw on).' : `Kolory aplikacji: konto ${motyw.account ?? 'nieznane'}, ${motyw.note}.`
+      return { text: `Wygląd odpowiedzi ${off ? 'wyłączony (/wyglad on włącza)' : 'włączony'}. ${seen} ${colours}` }
     }
     const isOff = arg === 'off' ? true : arg === 'on' ? false : (await $.store.get(OFF)) !== true
     await $.store.set(OFF, isOff)
