@@ -129,8 +129,22 @@ export function splitInlineOptions(line: string): string[] {
 export function splitQuestions(body: string): Question[] {
   const out: Question[] = []
   let current: Question | undefined
-  for (const raw of body.split(/\r?\n/).flatMap(l => splitInlineOptions(l.trim()))) {
-    const line = raw.trim().replace(/^[-*]\s+/, '')
+  let inFence = false
+  for (const raw of body.split(/\r?\n/)) {
+    // A code block (e.g. the wording of a rule to approve) is shown whole, inside the question,
+    // and nothing in it starts a question or an option (Stefan's screenshot, 2026-11-21).
+    const isFence = /^\s*```/.test(raw)
+    if (inFence || isFence) {
+      if (!current) {
+        current = { number: '1', text: '', options: [], table: [], tip: '' }
+        out.push(current)
+      }
+      current.text += `${current.text ? (inFence ? '\n' : '\n\n') : ''}${raw.replace(/\s+$/, '')}`
+      if (isFence) inFence = !inFence
+      continue
+    }
+    for (const piece of splitInlineOptions(raw.trim())) {
+    const line = piece.trim().replace(/^[-*]\s+/, '')
     if (line === '') continue
     // "**1. Pytanie?**" or "**Pytanie 1: Pytanie?**" (the card adds "Pytanie N:" itself).
     const start = /^(?:#+\s*)?(?:[^\p{L}\p{N}*]*)\**\s*(?:Pytanie\s+)?(\d+)[.:]\s*\**\s*(.*?)\**\s*$/iu.exec(line)
@@ -149,6 +163,7 @@ export function splitQuestions(body: string): Question[] {
     else if (line.startsWith('|')) current.table.push(line)
     else if (/^➜/.test(line)) current.tip = line
     else current.text += `${current.text ? '\n\n' : ''}${line}`
+    }
   }
 
   return out

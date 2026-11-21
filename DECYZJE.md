@@ -458,3 +458,6 @@ Decyzje Stefana przez GŁÓWNE CENTRUM: „7A 8A”. 8A: w części B punkt 17 d
 
 ## 2026-11-20 – źródłem układu odpowiedzi jest skill, reguła jego kopią (decyzja Stefana 1B)
 Reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md` była za skillem (bez `claude://`, bez 13A, z guzikami), a procedura kazała odświeżać skill z reguły, co cofnęłoby decyzje z 2026-11-17. Stefan wybrał 1B: raz przepisać skill do reguły i odwrócić kierunek na stałe. Wykonane: reguła przepisana skryptem `skills/uklad-odpowiedzi/do-reguly.py` (kopia starej w `~/.claude/kopie-regul/`), procedura w CLAUDE.md zmieniona.
+
+## 2026-11-21 – wyglad 0.46.2: pole kodu w pytaniu nie rozbija pytania
+Stefan (zrzut pytania o zgodę na pulpit od 3 do 8 rano): „Co o tym myślisz?”, potem „1A”. Treść zasady w polu kodu wewnątrz pytania mod rozbijał: pole rysował puste, a numerowaną, pogrubioną linię z jego środka brał za nowe „Pytanie 7” z opcjami 7A i 7B. Teraz pole kodu zostaje w całości w tekście pytania i nic w nim nie zaczyna pytania ani opcji. Nowy test w pytania.test.ts.

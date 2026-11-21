@@ -78,3 +78,28 @@ test('pytanie wpisane w wyjaśnieniu, z opcjami w jednej linii, dostaje ramkę i
   const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
   expect(await ui.find({ type: 'Button', text: /1C/ })).toBeDefined()
 })
+
+test('pole kodu z treścią zasady zostaje w pytaniu i nie tworzy nowego pytania (zrzut Stefana 2026-11-21)', () => {
+  const body = [
+    '**1. Czy wpisać do zasady o pulpicie Twoją zgodę na pracę od trzeciej do ósmej rano?**',
+    '',
+    'Dlaczego to ważne: od chwili wpisu sesje będą w tych godzinach same korzystać z komputera.',
+    '',
+    '```',
+    '5. **Stała zgoda od 3:00 do 8:00 rano (czas polski)** (Stefan: „masz moją stałą zgodę”).',
+    '   W tych godzinach każda sesja używa sterowania komputerem bez pytania.',
+    '   - gdy Stefan ruszy myszą, natychmiast przerywasz;',
+    '```',
+    '',
+    '- **A)** Tak, wpisz w tym brzmieniu – plus: działa od razu; minus: brak.',
+    '- **B)** Popraw tekst – plus: sam ustalisz granice; minus: wpis później.',
+    '',
+    '➜ Polecam 1A, bo tekst powtarza Twoje słowa.',
+  ].join('\n')
+  const qs = splitQuestions(body)
+  expect(qs.length).toBe(1)
+  expect(qs[0].number).toBe('1')
+  expect(qs[0].text).toContain('```\n5. **Stała zgoda od 3:00 do 8:00 rano')
+  expect(qs[0].text).toContain('   - gdy Stefan ruszy myszą, natychmiast przerywasz;\n```')
+  expect(optionsOf(qs[0]).map(o => o.id)).toEqual(['1A', '1B'])
+})
