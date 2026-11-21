@@ -11,6 +11,14 @@ test('gołe ścieżki obok pełnego adresu w tej samej linii stają się linkami
   expect(linkPaths('[Strona](https://x.pl/a/) i /b/')).toBe('[Strona](https://x.pl/a/) i [/b/](https://x.pl/b/)')
 })
 
+test('link do rozmowy, projektu albo nowego wątku na claude.ai otwiera aplikację, nie przeglądarkę (2026-11-21)', () => {
+  expect(linkPaths('Zobacz [Teams od Martyny](https://claude.ai/chat/abc-123).')).toBe('Zobacz [Teams od Martyny](claude://claude.ai/chat/abc-123).')
+  expect(linkPaths('[Biuro](https://claude.ai/project/p1) i [nowy](https://claude.ai/new?q=x)')).toBe('[Biuro](claude://claude.ai/project/p1) i [nowy](claude://claude.ai/new?q=x)')
+  // artefakt zostaje (reguła pozwala go podać na telefon), w bloku kodu nic się nie zmienia
+  expect(linkPaths('[Strona](https://claude.ai/artifact/xyz)')).toBe('[Strona](https://claude.ai/artifact/xyz)')
+  expect(linkPaths('```\nhttps://claude.ai/chat/abc\n```')).toBe('```\nhttps://claude.ai/chat/abc\n```')
+})
+
 // A link in the head of a task, in the head of a summary point and in a question
 // title is drawn through Markdown, bold, so it stays a clickable link.
 const REPLY = [

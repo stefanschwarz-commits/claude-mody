@@ -34,6 +34,10 @@ export function linkPaths(text: string): string {
     .map(line => {
       if (/^\s*```/.test(line)) inFence = !inFence
       if (inFence) return line
+      // A chat, project or new-chat link on claude.ai opens Edge; claude:// opens the Claude app (Stefan, 2026-11-21:
+      // „raz na zawsze rozwiązać problem wydawania mi linków HTML zamiast odnośników”). Session links stay: the
+      // Stop hook linki-claude-ai.py sends those back to be written as session names.
+      line = line.replace(/https?:\/\/(?:www\.)?claude\.ai\/(chat|project|new)(?=[/?#])/gi, 'claude://claude.ai/$1')
       const origin = /https?:\/\/[^\s/)\]]+/.exec(line)?.[0]
       if (!origin) return line
       return line.replace(/(^|[\s·,;(])(\/[\w\-./]*\/?)(?=$|[\s·,;)])/g, (m, before: string, path: string) => `${before}[${path}](${origin}${path})`)
