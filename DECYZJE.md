@@ -464,3 +464,6 @@ Stefan (zrzut pytania o zgodę na pulpit od 3 do 8 rano): „Co o tym myślisz?�
 
 ## 2026-11-21 – wyglad 0.46.3: ponowna weryfikacja poprawki pola kodu
 Stefan: „Zweryfikuj ponownie, czy to, co zrobiliśmy, jest najlepszym możliwym rozwiązaniem”. Sprawdzone na pełnej odpowiedzi ze zrzutu (test rysuje całą ramkę: jedno pytanie, pole kodu w całości, także z pustą linią i z pozorną opcją w środku, przyciski tylko 1A i 1B). Domknięta druga droga tego samego błędu: „Pytanie 1:” zacytowane w polu kodu w wyjaśnieniu nie zamienia już reszty odpowiedzi w pytanie.
+
+## wyglad 0.47.0: /wyglad stan (2026-11-21)
+Zgłoszenie z 6.11 od sesji „Ścianka JATA 2026 (Illustrator)”: Stefan nie widzi ramek w tej sesji, choć odpowiedzi mają ▶ i sekcje, mod jest włączony, a jego narzędzie odhacz działa. To sesja w tle (Remote Control). Mod jest więc załadowany, ale prawdopodobnie aplikacja pokazuje odpowiedzi takiej sesji sama, bez przekazania ich modowi; kod moda tego nie naprawi. Z sesji w chmurze nie da się tego sprawdzić na komputerze Stefana, więc doszło polecenie `/wyglad stan`: mówi, ile odpowiedzi aplikacja dała modowi do narysowania w tej sesji i na jakim ekranie. „Ani razu” potwierdza ograniczenie aplikacji. Stefan wybrał 1A (przenieść poprawkę z 0.40.0 na aktualną wersję). Test dopisany.
