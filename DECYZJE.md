@@ -461,3 +461,6 @@ Reguła `~/.claude/rules/wyglad-uklad-odpowiedzi.md` była za skillem (bez `clau
 
 ## 2026-11-21 – wyglad 0.46.2: pole kodu w pytaniu nie rozbija pytania
 Stefan (zrzut pytania o zgodę na pulpit od 3 do 8 rano): „Co o tym myślisz?”, potem „1A”. Treść zasady w polu kodu wewnątrz pytania mod rozbijał: pole rysował puste, a numerowaną, pogrubioną linię z jego środka brał za nowe „Pytanie 7” z opcjami 7A i 7B. Teraz pole kodu zostaje w całości w tekście pytania i nic w nim nie zaczyna pytania ani opcji. Nowy test w pytania.test.ts.
+
+## 2026-11-21 – wyglad 0.46.3: ponowna weryfikacja poprawki pola kodu
+Stefan: „Zweryfikuj ponownie, czy to, co zrobiliśmy, jest najlepszym możliwym rozwiązaniem”. Sprawdzone na pełnej odpowiedzi ze zrzutu (test rysuje całą ramkę: jedno pytanie, pole kodu w całości, także z pustą linią i z pozorną opcją w środku, przyciski tylko 1A i 1B). Domknięta druga droga tego samego błędu: „Pytanie 1:” zacytowane w polu kodu w wyjaśnieniu nie zamienia już reszty odpowiedzi w pytanie.

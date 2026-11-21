@@ -96,7 +96,12 @@ export function splitReply(text: string): Reply | undefined {
       // asked one question at a time and dropped the section): from that line on it is the
       // questions part, so it gets its frame, buttons and number like any other question.
       const bodyLines = body.split(/\r?\n/)
-      const q = bodyLines.findIndex(line => INLINE_QUESTION.test(line))
+      // A line inside a code block is quoted text, never the start of a question.
+      let fenced = false
+      const q = bodyLines.findIndex(line => {
+        if (/^\s*```/.test(line)) fenced = !fenced
+        return !fenced && INLINE_QUESTION.test(line)
+      })
       if (q >= 0) {
         const before = bodyLines.slice(0, q).join('\n').trim()
         if (before !== '') parts.push({ kind, title: '', body: before })

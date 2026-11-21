@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { bolds } from './drzewo'
+import { bolds, markdowns } from './drzewo'
 import { lettersOf, optionsOf, recommendedOf, splitQuestions, splitReply, textOf } from './split'
 
 // A question written the way a session without the instructions writes it:
@@ -102,4 +102,48 @@ test('pole kodu z treścią zasady zostaje w pytaniu i nie tworzy nowego pytania
   expect(qs[0].text).toContain('```\n5. **Stała zgoda od 3:00 do 8:00 rano')
   expect(qs[0].text).toContain('   - gdy Stefan ruszy myszą, natychmiast przerywasz;\n```')
   expect(optionsOf(qs[0]).map(o => o.id)).toEqual(['1A', '1B'])
+})
+
+test('cała odpowiedź z polem kodu w pytaniu: jedna ramka, pole w całości, przyciski tego pytania (zrzut Stefana 2026-11-21)', async ($, on) => {
+  setup(on)
+  const reply = [
+    '▶ **Zgoda na pulpit czeka na Twoją decyzję.**',
+    '',
+    '---',
+    '',
+    '**Pytania do Ciebie**',
+    '',
+    '**1. Czy wpisać do zasady o pulpicie Twoją zgodę na pracę od trzeciej do ósmej rano?**',
+    'Dlaczego to ważne: od chwili wpisu sesje będą same korzystać z komputera.',
+    '',
+    '```',
+    '5. **Stała zgoda od 3:00 do 8:00 rano (czas polski)** (Stefan: „masz moją stałą zgodę”).',
+    '',
+    '   - **A)** to nie jest opcja, tylko treść zasady;',
+    '   Poza tymi godzinami obowiązują punkty 1–4.',
+    '```',
+    '',
+    '- **A)** Tak, wpisz w tym brzmieniu – plus: działa od razu; minus: brak.',
+    '- **B)** Popraw tekst – plus: sam ustalisz granice; minus: wpis później.',
+    '',
+    '➜ Polecam 1A, bo tekst powtarza Twoje słowa.',
+  ].join('\n')
+  const ui = await $.ui.mount({ plugin: 'wyglad', surface: 'desktop', component: 'AssistantMessage', props: { text: reply, isFirstOfReply: true } as never })
+  const root = await ui.find({ type: 'Box' })
+  const heads = bolds(root)
+  expect(heads.filter(h => /^Pytanie \d+:/.test(h)).length).toBe(1)
+  const mds = markdowns(root)
+  const box = mds.find(m => m.includes('```'))
+  expect(box).toBeDefined()
+  expect(box).toContain('```\n5. **Stała zgoda od 3:00 do 8:00 rano')
+  expect(box).toContain('Poza tymi godzinami obowiązują punkty 1–4.\n```')
+  expect((box?.match(/```/g) ?? []).length).toBe(2)
+  expect(await ui.find({ type: 'Button', text: 'Wybierz 1A ★' })).toBeDefined()
+  expect(await ui.find({ type: 'Button', text: 'Wybierz 1B' })).toBeDefined()
+  expect(await ui.find({ type: 'Button', text: 'Wybierz 5A' }).catch(() => undefined)).toBeUndefined()
+})
+
+test('„Pytanie 1:” zacytowane w polu kodu w wyjaśnieniu nie robi z odpowiedzi pytania', () => {
+  const reply = splitReply(['▶ **Wzór pytania jest gotowy.**', '', 'Tak będzie wyglądać:', '', '```', 'Pytanie 1: Czy wysłać?', '**1A)** Tak', '```', '', 'Nic nie musisz robić.'].join('\n'))
+  expect(reply?.parts.some(p => p.kind === 'questions')).toBe(false)
 })
