@@ -228,16 +228,21 @@ export const register: Register = on => {
       s.lastAt === null ? '' : `ostatnio: ${when(s.lastAt, now)}`,
       s.urgent ? `${s.urgent.kind === 'doing' ? 'w toku' : 'czeka'}: ${s.urgent.text}` : '',
     ].filter(Boolean)
-    const room = width - s.account.length - head.length - 9
+    // On ATERIMA the brand label of kolory-firmy (GRUPA ATERIMA, ATERIMA MED…) already names the
+    // account, so a second "ATERIMA" badge here would say it twice (Stefan, 2026-11-23, „1A”).
+    const badge = s.account !== 'ATERIMA'
+    const room = width - (badge ? s.account.length + 9 : 4) - head.length
 
     return (
       <Box flexDirection="column">
         {below}
         <Box>
-          <Box backgroundColor={ACCOUNT_COLOR[s.account] ?? '#5F6368'} paddingX={1}>
-            <Text color={ACCOUNT_INK[s.account] ?? '#FFFFFF'} bold>{s.account}</Text>
-          </Box>
-          <Text bold>{`  ·  ${head}`}</Text>
+          {badge ? (
+            <Box backgroundColor={ACCOUNT_COLOR[s.account] ?? '#5F6368'} paddingX={1}>
+              <Text color={ACCOUNT_INK[s.account] ?? '#FFFFFF'} bold>{s.account}</Text>
+            </Box>
+          ) : null}
+          <Text bold>{badge ? `  ·  ${head}` : head}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
         {s.tooLong ? <Text color="warning" bold>{'⚠ Sesja jest za długa – trzeba ją wymienić na nową.'}</Text> : null}

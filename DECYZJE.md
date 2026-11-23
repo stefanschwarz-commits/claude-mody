@@ -500,3 +500,6 @@ Stefan (przez Centrum Dowodzenia ATERIMA): „dlaczego mój mod pokazuje mi Ater
 
 ## 2026-11-23 – kolory-firmy 0.2.1 zainstalowany u Stefana z repozytorium, projekt 0.4.3, wyglad 0.48.5
 Stefan (przez Centrum ATERIMA): „A ja nie wybieram. A ja mam coś, czego nie można wybrać.” Biblioteka organizacji nie zsynchronizowała jeszcze modu na komputer Stefana (folder synced ATERIMA bez kolory-firmy), więc wybór marki się nie pokazywał, a granatowy napis „ATERIMA” to był znaczek konta moda projekt. Zmiany: kolory-firmy zainstalowany u Stefana z claude-mody (kopia z repozytorium ustępuje kopii z biblioteki, gdy ta się pojawi – bez podwójnego napisu); znaczek konta ATERIMA w projekt szary #424242 (kolor należy do wybranej marki); wyglad rozpoznaje kolory-firmy także w installed_plugins.json i wtedy nie ustawia kolorów ATERIMA/ELMI. W bibliotece ATERIMA zostaje 0.2.0 (różnica dotyczy tylko kopii z repozytorium).
+
+## 2026-11-23 – projekt 0.4.4: na koncie ATERIMA bez drugiego znaczka „ATERIMA”
+Stefan po restarcie komputera nadal widział nad polem dwa napisy: „GRUPA ATERIMA” (kolory-firmy) i szary znaczek „ATERIMA” przy tytule sesji (projekt). Na pytanie, czy błąd to podwójny napis, odpowiedział „1A”. Pasek projektu na koncie ATERIMA pokazuje już tylko tytuł sesji i resztę linii, bez znaczka konta; konto wskazuje napis marki z kolory-firmy. Personal i ELMI bez zmian.

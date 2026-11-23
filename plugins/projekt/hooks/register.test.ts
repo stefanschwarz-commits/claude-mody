@@ -67,6 +67,14 @@ test('aplikacja z jednym folderem: konto z organizacji sesji', async ($, on) => 
   expect(await ui.find({ type: 'Text', text: 'ELMI' })).toBeDefined()
 })
 
+test('ATERIMA: bez drugiego znaczka konta, bo markę pokazuje kolory-firmy', async ($, on) => {
+  folder(on, { 'STAN.md': STAN, '101.json': RECORD }, { CLAUDE_CODE_ORGANIZATION_UUID: '1f6c04b3-9eb2-479b-aa75-d2b914e7e274' })
+  await $.command.run({ command: 'stan', args: '' } as never)
+  const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: 'ATERIMA' })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /Mody/ })).toBeDefined()
+})
+
 test('bez zmiennej konta: Personal; sekcja „Czeka” daje sprawę z jej pogrubionego początku', async ($, on) => {
   folder(on, { 'STAN.md': CZEKA, '101.json': RECORD })
   await $.command.run({ command: 'stan', args: '' } as never)
