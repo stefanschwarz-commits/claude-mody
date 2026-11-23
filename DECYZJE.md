@@ -487,3 +487,6 @@ Stefan po obrazie kolorów 0.48.0: „Tak, tylko wolałbym Aterimę granatową; 
 
 ## 2026-11-23 – wyglad 0.48.2: ATERIMA bez granatowej poświaty
 Stefan: „granatowa poświata na tekście ogólnie nie wygląda dobrze”, ikonki i przyciski w granacie mogą zostać. Po obrazie porównania wybrał propozycję (1A, „Propozycja jest w porządku.”): tylko ATERIMA dostaje szare, niezabarwione tła i tekst; granat zostaje w przyciskach, odnośnikach i ikonkach. ELMI i konto prywatne bez zmian (lekko zabarwione).
+
+## 2026-11-23 – nowy mod kolory-firmy 0.1.0 dla pracowników ELMI i ATERIMA
+Stefan: „teraz możesz to wgrać dla wszystkich kont firmowych”, potem „Czy jesteś w stanie podzielić pracowników tak, aby Grupa ATERIMA miała napis »GRUPA«, ATERIMA CARE ma napis »WORK«, a ATERIMA MED ma napis »MED«?” (CARE odczytane jako ATERIMA WORK – do potwierdzenia) i „4A”: pracownik raz sam wybiera markę. Osobny mod zamiast całego `wyglad`, bo `wyglad` to układ Stefana (ramki, zadania, panel). Organizacja ATERIMA → szare tła, granatowe przyciski i pasek z napisem „ATERIMA GRUPA/WORK/MED” (wybór przyciskiem przy pierwszym razie, zmiana `/marka med`); ELMI → ciepłe tła i pomarańcz, bez napisu; inne organizacje → nic. Publikacja w bibliotekach firm dopiero po zgodzie Stefana. Stefan sam tego modu nie instaluje (jego konta mają `wyglad` i `projekt`).
