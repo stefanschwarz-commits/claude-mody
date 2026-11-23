@@ -1,6 +1,6 @@
 // The app's whole look by Claude account (decision "A: według konta", 2026-11-21): Stefan runs three
 // accounts on one computer and often can't tell which one a session is on. Personal is green,
-// ELMI blue, ATERIMA red: the same colours as the account band of the "projekt" mod.
+// ELMI orange, ATERIMA navy (Stefan, 2026-11-23): the same colours as the account band of the "projekt" mod.
 // Surfaces are only lightly tinted, so text reads in the light and the dark style alike
 // (0.44.0 lesson: dark tints in a light app gave black text on dark ground).
 import type { ThemeColors } from 'claude-code'
@@ -24,7 +24,7 @@ export function accountOf(org: string | undefined, configDir: string | undefined
   return /aterima/.test(name) ? 'ATERIMA' : /elmi/.test(name) ? 'ELMI' : 'Personal'
 }
 
-export const ACCOUNT_COLOR: Record<Account, string> = { Personal: '#2E7D32', ELMI: '#1565C0', ATERIMA: '#C62828' }
+export const ACCOUNT_COLOR: Record<Account, string> = { Personal: '#2E7D32', ELMI: '#E65100', ATERIMA: '#1A237E' }
 
 type Anchors = { 'surface-0': string; 'surface-1': string; 'surface-2': string; 'surface-3'?: string; 'text-primary': string; 'text-secondary': string; 'text-muted': string }
 
@@ -34,12 +34,12 @@ const GRAYS: Record<Account, { light: Anchors; dark: Anchors }> = {
     dark: { 'surface-0': '#141a15', 'surface-1': '#1a211b', 'surface-2': '#202821', 'surface-3': '#252e26', 'text-primary': '#e9f0e9', 'text-secondary': '#c4cec4', 'text-muted': '#a0ada0' },
   },
   ELMI: {
-    light: { 'surface-0': '#ecf1f7', 'surface-1': '#f3f6fa', 'surface-2': '#f9fbfd', 'text-primary': '#19202d', 'text-secondary': '#3b4557', 'text-muted': '#535e70' },
-    dark: { 'surface-0': '#13171e', 'surface-1': '#191e27', 'surface-2': '#1f2530', 'surface-3': '#242b37', 'text-primary': '#e7ecf4', 'text-secondary': '#c2cad7', 'text-muted': '#9da8b7' },
+    light: { 'surface-0': '#f7f0ea', 'surface-1': '#faf5f0', 'surface-2': '#fdfaf7', 'text-primary': '#2a1e16', 'text-secondary': '#504136', 'text-muted': '#68584c' },
+    dark: { 'surface-0': '#1c1712', 'surface-1': '#231c16', 'surface-2': '#2a221b', 'surface-3': '#30271f', 'text-primary': '#f4ece4', 'text-secondary': '#d6c9bc', 'text-muted': '#b3a495' },
   },
   ATERIMA: {
-    light: { 'surface-0': '#f6eeed', 'surface-1': '#f9f3f2', 'surface-2': '#fcf9f8', 'text-primary': '#281b1a', 'text-secondary': '#4f3e3c', 'text-muted': '#675553' },
-    dark: { 'surface-0': '#1c1414', 'surface-1': '#231a1a', 'surface-2': '#2a2020', 'surface-3': '#302525', 'text-primary': '#f3e9e8', 'text-secondary': '#d4c5c3', 'text-muted': '#b2a19f' },
+    light: { 'surface-0': '#eceef6', 'surface-1': '#f3f4f9', 'surface-2': '#f9fafd', 'text-primary': '#181b2e', 'text-secondary': '#3a3f58', 'text-muted': '#525871' },
+    dark: { 'surface-0': '#12141f', 'surface-1': '#181a28', 'surface-2': '#1e2131', 'surface-3': '#232739', 'text-primary': '#e8e9f4', 'text-secondary': '#c3c6d9', 'text-muted': '#9ea2ba' },
   },
 }
 
@@ -50,8 +50,9 @@ export function lookOf(account: Account): { theme: ThemeColors; problems: string
     label: `Konto ${account}`,
     id: `wyglad-${account.toLowerCase()}`,
     roles: { accent: ACCOUNT_COLOR[account], danger: '#c0362c', success: '#2e7d32', warning: '#b26a00', pro: '#6d4f94' },
-    light: { gray: { anchors: grays.light } },
-    dark: { gray: { anchors: grays.dark } },
+    // Navy stays navy: the generator would lift it to a bright blue, so ATERIMA fills from a darker stop.
+    light: { gray: { anchors: grays.light }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 700 } } } : {}) },
+    dark: { gray: { anchors: grays.dark }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 600 } } } : {}) },
   })
 }
 

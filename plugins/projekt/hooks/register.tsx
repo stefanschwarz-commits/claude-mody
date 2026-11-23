@@ -29,7 +29,7 @@ const ORGS: Record<string, string> = {
 }
 
 // Each account has its own colour on the band, so Stefan sees at once where he is.
-const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#1565C0', ATERIMA: '#C62828' }
+const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#E65100', ATERIMA: '#1A237E' }
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
