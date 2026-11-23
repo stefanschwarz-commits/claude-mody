@@ -417,12 +417,36 @@ function count(n: number, one: string, few: string, many: string): string {
 // What the last theme set came to, for "/wyglad stan".
 const motyw: { account: Account | null; note: string } = { account: null, note: 'jeszcze nie ustawiony' }
 // Sets the account's colours. Never throws: a broken theme must not take the frames with it.
+// Is the company mod "kolory-firmy" synced from this organization's library? It then owns the company
+// colours (brand chosen once: GRUPA, MED, WORK, CARE), so this mod leaves the theme to it (2026-11-23).
+async function hasTeamMod($: EngineInterface, org: string | undefined): Promise<boolean> {
+  if (!org) return false
+  const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined))
+  const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
+  const synced = `${(dir ?? `${home}/.claude`).replace(/\\/g, '/')}/plugins/synced`
+  const orgs = await $.fs.list(synced).catch(() => [])
+  for (const o of orgs) {
+    if (o.kind !== 'dir' || !o.name.toLowerCase().startsWith(org.toLowerCase())) continue
+    const plugins = await $.fs.list(`${synced}/${o.name}`).catch(() => [])
+    for (const p of plugins) {
+      if (p.kind !== 'dir') continue
+      const text = await $.fs.read(`${synced}/${o.name}/${p.name}/.claude-plugin/plugin.json`).catch(() => undefined)
+      if (typeof text === 'string' && /"name"\s*:\s*"kolory-firmy"/.test(text)) return true
+    }
+  }
+  return false
+}
+
 async function setTheme($: EngineInterface): Promise<void> {
   try {
     const org = await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)
     const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
     const account = accountOf(org, dir)
     motyw.account = account
+    if (account !== 'Personal' && (await hasTeamMod($, org))) {
+      motyw.note = 'kolory daje mod firmy „kolory-firmy” (marka: /marka)'
+      return
+    }
     const { theme, problems } = lookOf(account)
     const stop = unpainted(problems)
     if (stop) {

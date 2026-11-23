@@ -57,3 +57,23 @@ test('/wyglad motyw on ustawia motyw konta ELMI, off go czyści i zapamiętuje',
 test('kolor akcentu to kolor konta z paska moda projekt', () => {
   expect(ACCOUNT_COLOR).toEqual({ Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#1A237E' })
 })
+
+test('ATERIMA z modem kolory-firmy z biblioteki firmy: wyglad nie ustawia własnych kolorów', async ($, on) => {
+  const ATERIMA = '1f6c04b3-9eb2-479b-aa75-d2b914e7e274'
+  const sets: unknown[] = []
+  mock.store(on)
+  on('env.get', ($, e) => ({ value: e.name === 'CLAUDE_CODE_ORGANIZATION_UUID' ? ATERIMA : e.name === 'USERPROFILE' ? 'C:/Users/x' : undefined }) as never)
+  on('fs.list', ($, e) => {
+    const path = String((e as { path?: string }).path ?? '')
+    if (path.split('\\').join('/').endsWith('/plugins/synced')) return { value: [{ name: `${ATERIMA}_abc`, kind: 'dir', size: 0, mtimeMs: 0 }] } as never
+    return { value: [{ name: 'p1', kind: 'dir', size: 0, mtimeMs: 0 }] } as never
+  })
+  on('fs.read', () => ({ value: '{ "name": "kolory-firmy", "version": "0.2.0" }' }) as never)
+  on('theme.set', ($, e) => {
+    sets.push(e)
+    return { value: { isDrawn: true, requestId: 't1' } } as never
+  })
+  const out = await $.command.run({ command: 'wyglad', args: 'motyw on' } as never)
+  expect(JSON.stringify(out)).toContain('kolory-firmy')
+  expect(sets.length).toBe(0)
+})
