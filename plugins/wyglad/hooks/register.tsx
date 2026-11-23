@@ -424,6 +424,8 @@ async function hasTeamMod($: EngineInterface, org: string | undefined): Promise<
   const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined))
   const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
   const synced = `${(dir ?? `${home}/.claude`).replace(/\\/g, '/')}/plugins/synced`
+  const installed = await $.fs.read(`${(dir ?? `${home}/.claude`).replace(/\\/g, '/')}/plugins/installed_plugins.json`).catch(() => undefined)
+  if (typeof installed === 'string' && installed.includes('"kolory-firmy@')) return true
   const orgs = await $.fs.list(synced).catch(() => [])
   for (const o of orgs) {
     if (o.kind !== 'dir' || !o.name.toLowerCase().startsWith(org.toLowerCase())) continue

@@ -29,7 +29,9 @@ const ORGS: Record<string, string> = {
 }
 
 // Each account has its own colour on the band, so Stefan sees at once where he is.
-const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#1A237E' }
+const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#424242' }
+// ATERIMA's colour is the brand the person picks in kolory-firmy (GRUPA, MED, WORK, CARE), so the account
+// badge stays neutral grey (Stefan, 2026-11-23: „A ja mam coś, czego nie można wybrać.”).
 // The text on the account colour: dark on ELMI's light orange, white elsewhere.
 const ACCOUNT_INK: Record<string, string> = { ELMI: '#1C1C1C' }
 

@@ -8,10 +8,31 @@ import type { Firma, Marka } from './firma'
 const MARKA = 'marka'
 const OFF = 'kolory-off'
 
-// The company of this session, from the organization the app names.
+// A copy installed from the claude-mody repository (Stefan's computer) gives way to the copy the
+// organization's library synced, so the label and the colours never come twice.
+async function isSecondCopy($: EngineInterface, org: string): Promise<boolean> {
+  const root = $.plugin.root.split('\\').join('/')
+  if (root.includes('/plugins/synced/')) return false
+  const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined))
+  const dir = (await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)) ?? `${home}/.claude`
+  const synced = `${dir.split('\\').join('/')}/plugins/synced`
+  for (const o of await $.fs.list(synced).catch(() => [])) {
+    if (o.kind !== 'dir' || !o.name.toLowerCase().startsWith(org)) continue
+    for (const p of await $.fs.list(`${synced}/${o.name}`).catch(() => [])) {
+      if (p.kind !== 'dir') continue
+      const text = await $.fs.read(`${synced}/${o.name}/${p.name}/.claude-plugin/plugin.json`).catch(() => undefined)
+      if (typeof text === 'string' && /"name"\s*:\s*"kolory-firmy"/.test(text)) return true
+    }
+  }
+  return false
+}
+
+// The company of this session, from the organization the app names (null: nothing to do here).
 async function firmaNow($: EngineInterface): Promise<Firma | null> {
-  const org = await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)
-  return firmaOf(org)
+  const org = ((await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)) ?? '').trim().toLowerCase()
+  const firma = firmaOf(org)
+  if (!firma || (await isSecondCopy($, org))) return null
+  return firma
 }
 
 async function markaNow($: EngineInterface): Promise<Marka | null> {
