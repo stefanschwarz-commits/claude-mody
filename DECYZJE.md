@@ -503,3 +503,6 @@ Stefan (przez Centrum ATERIMA): „A ja nie wybieram. A ja mam coś, czego nie m
 
 ## 2026-11-23 – projekt 0.4.4: na koncie ATERIMA bez drugiego znaczka „ATERIMA”
 Stefan po restarcie komputera nadal widział nad polem dwa napisy: „GRUPA ATERIMA” (kolory-firmy) i szary znaczek „ATERIMA” przy tytule sesji (projekt). Na pytanie, czy błąd to podwójny napis, odpowiedział „1A”. Pasek projektu na koncie ATERIMA pokazuje już tylko tytuł sesji i resztę linii, bez znaczka konta; konto wskazuje napis marki z kolory-firmy. Personal i ELMI bez zmian.
+
+## 2026-11-23 – projekt 0.4.5, kolory-firmy 0.2.2: marka w tej samej linii co tytuł sesji
+Stefan (zrzut paska po restarcie): „napis chciałem umieścić w tej samej linijce, a nie w innej”. Silnik rysuje wiersz każdego modu osobno (osadzenie `next(e)` w swoim wierszu nie przenosi cudzego wiersza – sprawdzone testem), więc projekt czyta wybraną markę z pliku pamięci moda kolory-firmy (`plugins/store/kolory-firmy_*.json`) i rysuje znaczek marki w kolorze logotypu na początku swojej linii; kolory-firmy nie rysuje własnego wiersza, gdy marka jest wybrana i zainstalowany jest projekt@claude-mody. Przed wyborem marki wiersz z przyciskami zostaje. Pracownicy (bez moda projekt) mają jak dotąd jeden wiersz z napisem.

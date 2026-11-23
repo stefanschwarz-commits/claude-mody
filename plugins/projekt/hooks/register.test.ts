@@ -20,7 +20,7 @@ function folder(on: On, files: Record<string, string>, env: Record<string, strin
     const text = files[base(e.path)] ?? written[base(e.path)]
     return text === undefined ? { deny: 'ENOENT' } : { value: text }
   })
-  on('fs.list', ($, e) => ({ value: /sessions$/.test(e.path) ? [{ name: '101.json', kind: 'file', size: 10, mtimeMs: NOW, isLink: false }] : [] }) as never)
+  on('fs.list', ($, e) => ({ value: /sessions$/.test(e.path) ? [{ name: '101.json', kind: 'file', size: 10, mtimeMs: NOW, isLink: false }] : /store$/.test(e.path) ? Object.keys(files).filter(n => n.startsWith('kolory-firmy_')).map(name => ({ name, kind: 'file', size: 10, mtimeMs: NOW, isLink: false })) : [] }) as never)
   on('fs.exists', ($, e) => ({ value: base(e.path) in files || base(e.path) in written }))
   on('fs.ancestors', () => ({ value: [] }))
   on('fs.stat', ($, e) => (/\.jsonl$/.test(e.path) ? { deny: 'ENOENT' } : { value: { kind: 'file', size: 10, mtimeMs: NOW - 2 * 86_400_000, isLink: false } as never }))
@@ -111,4 +111,13 @@ test('pasek: liczba pytań i zadań z ostatniej odpowiedzi oraz ostrzeżenie o d
   const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
   expect(await ui.find({ type: 'Text', text: /na Ciebie: 1 pyt\., 2 zad\./ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /Sesja jest za długa/ })).toBeDefined()
+})
+
+test('ATERIMA: wybrana marka z kolory-firmy na początku tej samej linii co tytuł sesji', async ($, on) => {
+  folder(on, { 'STAN.md': STAN, '101.json': RECORD, 'kolory-firmy_claude-mody-1.json': '{ "marka": "MED" }' }, { CLAUDE_CODE_ORGANIZATION_UUID: '1f6c04b3-9eb2-479b-aa75-d2b914e7e274' })
+  await $.command.run({ command: 'stan', args: '' } as never)
+  const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
+  const rows = await ui.findAll({ type: 'Box' })
+  const row = rows.find(b => { const t = JSON.stringify(b); return t.includes('ATERIMA MED') && t.includes('Mody') && !t.includes('"column"') })
+  expect(row).toBeDefined()
 })

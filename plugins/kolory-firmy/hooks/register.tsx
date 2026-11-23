@@ -27,6 +27,13 @@ async function isSecondCopy($: EngineInterface, org: string): Promise<boolean> {
   return false
 }
 
+async function hasProjekt($: EngineInterface): Promise<boolean> {
+  const home = (await $.env.get('USERPROFILE').catch(() => undefined)) ?? (await $.env.get('HOME').catch(() => undefined))
+  const dir = (await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)) ?? `${home}/.claude`
+  const text = await $.fs.read(`${dir.split('\\').join('/')}/plugins/installed_plugins.json`).catch(() => undefined)
+  return typeof text === 'string' && text.includes('"projekt@claude-mody"')
+}
+
 // The company of this session, from the organization the app names (null: nothing to do here).
 async function firmaNow($: EngineInterface): Promise<Firma | null> {
   const org = ((await $.env.get('CLAUDE_CODE_ORGANIZATION_UUID').catch(() => undefined)) ?? '').trim().toLowerCase()
@@ -90,6 +97,9 @@ export const register: Register = on => {
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey || (await firmaNow($)) !== 'ATERIMA') return next(e)
     const marka = await markaNow($)
+    // Where the "projekt" mod draws the account band (Stefan's computer), it puts the brand at the
+    // start of its own line, so this row would say it twice (Stefan, 2026-11-23).
+    if (marka && (await hasProjekt($))) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
     if (marka) {
       return (

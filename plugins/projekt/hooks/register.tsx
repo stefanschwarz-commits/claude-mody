@@ -113,6 +113,33 @@ async function tooLongOf($: EngineInterface, sessionId: string): Promise<boolean
 }
 
 // STAN.md in the working folder, else the nearest one above it.
+// The ATERIMA brand the person picked in the kolory-firmy mod (GRUPA, MED, WORK, CARE), read from its store
+// file, so the brand stands at the start of this line instead of a row of its own (Stefan, 2026-11-23:
+// „napis chciałem umieścić w tej samej linijce, a nie w innej”). Colours from the brands' logotypes.
+const BRAND: Record<string, { name: string; color: string; ink: string }> = {
+  GRUPA: { name: 'GRUPA ATERIMA', color: '#1C1C1C', ink: '#FFFFFF' },
+  MED: { name: 'ATERIMA MED', color: '#00508F', ink: '#FFFFFF' },
+  WORK: { name: 'ATERIMA WORK', color: '#BF0F7E', ink: '#FFFFFF' },
+  CARE: { name: 'ATERIMA CARE', color: '#B7074E', ink: '#FFFFFF' },
+}
+
+async function brandOf($: EngineInterface): Promise<{ name: string; color: string; ink: string } | null> {
+  const { dir } = await accountOf($)
+  const store = `${dir}/plugins/store`
+  for (const entry of await $.fs.list(store).catch(() => [])) {
+    if (entry.kind !== 'file' || !entry.name.startsWith('kolory-firmy_')) continue
+    const text = await $.fs.read(`${store}/${entry.name}`).catch(() => undefined)
+    if (typeof text !== 'string') continue
+    try {
+      const marka = String((JSON.parse(text) as { marka?: unknown }).marka ?? '').toUpperCase()
+      if (BRAND[marka]) return BRAND[marka]
+    } catch {
+      continue
+    }
+  }
+  return null
+}
+
 async function locate($: EngineInterface): Promise<{ text: string; path: string } | undefined> {
   const text = await $.fs.read(FILE).catch(() => undefined)
   if (typeof text === 'string') return { text, path: FILE }
@@ -231,7 +258,8 @@ export const register: Register = on => {
     // On ATERIMA the brand label of kolory-firmy (GRUPA ATERIMA, ATERIMA MED…) already names the
     // account, so a second "ATERIMA" badge here would say it twice (Stefan, 2026-11-23, „1A”).
     const badge = s.account !== 'ATERIMA'
-    const room = width - (badge ? s.account.length + 9 : 4) - head.length
+    const brand = badge ? null : await brandOf($)
+    const room = width - (badge ? s.account.length + 9 : brand ? brand.name.length + 9 : 4) - head.length
 
     return (
       <Box flexDirection="column">
@@ -242,7 +270,12 @@ export const register: Register = on => {
               <Text color={ACCOUNT_INK[s.account] ?? '#FFFFFF'} bold>{s.account}</Text>
             </Box>
           ) : null}
-          <Text bold>{badge ? `  ·  ${head}` : head}</Text>
+          {brand ? (
+            <Box backgroundColor={brand.color} paddingX={1}>
+              <Text color={brand.ink} bold>{brand.name}</Text>
+            </Box>
+          ) : null}
+          <Text bold>{badge || brand ? `  ·  ${head}` : head}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
         {s.tooLong ? <Text color="warning" bold>{'⚠ Sesja jest za długa – trzeba ją wymienić na nową.'}</Text> : null}

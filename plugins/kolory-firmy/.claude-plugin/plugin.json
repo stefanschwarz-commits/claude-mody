@@ -1,6 +1,6 @@
 {
   "name": "kolory-firmy",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Kolory aplikacji Claude dla ELMI i ATERIMA; w ATERIMA napis marki nad polem (GRUPA ATERIMA, ATERIMA MED, WORK, CARE) w kolorach logotypów, wybierany raz. /marka.",
   "author": { "name": "Stefan Schwarz" }
 }
