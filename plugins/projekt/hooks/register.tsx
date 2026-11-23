@@ -29,7 +29,9 @@ const ORGS: Record<string, string> = {
 }
 
 // Each account has its own colour on the band, so Stefan sees at once where he is.
-const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#E65100', ATERIMA: '#1A237E' }
+const ACCOUNT_COLOR: Record<string, string> = { Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#1A237E' }
+// The text on the account colour: dark on ELMI's light orange, white elsewhere.
+const ACCOUNT_INK: Record<string, string> = { ELMI: '#1C1C1C' }
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
@@ -231,7 +233,7 @@ export const register: Register = on => {
         {below}
         <Box>
           <Box backgroundColor={ACCOUNT_COLOR[s.account] ?? '#5F6368'} paddingX={1}>
-            <Text color="#FFFFFF" bold>{s.account}</Text>
+            <Text color={ACCOUNT_INK[s.account] ?? '#FFFFFF'} bold>{s.account}</Text>
           </Box>
           <Text bold>{`  ·  ${head}`}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>

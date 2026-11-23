@@ -1,6 +1,6 @@
 // The app's whole look by Claude account (decision "A: według konta", 2026-11-21): Stefan runs three
 // accounts on one computer and often can't tell which one a session is on. Personal is green,
-// ELMI orange, ATERIMA navy (Stefan, 2026-11-23): the same colours as the account band of the "projekt" mod.
+// ELMI its logo's orange #FFB33B, ATERIMA navy (Stefan, 2026-11-23): the same colours as the account band of the "projekt" mod.
 // Surfaces are only lightly tinted, so text reads in the light and the dark style alike
 // (0.44.0 lesson: dark tints in a light app gave black text on dark ground).
 import type { ThemeColors } from 'claude-code'
@@ -24,7 +24,7 @@ export function accountOf(org: string | undefined, configDir: string | undefined
   return /aterima/.test(name) ? 'ATERIMA' : /elmi/.test(name) ? 'ELMI' : 'Personal'
 }
 
-export const ACCOUNT_COLOR: Record<Account, string> = { Personal: '#2E7D32', ELMI: '#E65100', ATERIMA: '#1A237E' }
+export const ACCOUNT_COLOR: Record<Account, string> = { Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#1A237E' }
 
 type Anchors = { 'surface-0': string; 'surface-1': string; 'surface-2': string; 'surface-3'?: string; 'text-primary': string; 'text-secondary': string; 'text-muted': string }
 
@@ -52,8 +52,9 @@ export function lookOf(account: Account): { theme: ThemeColors; problems: string
     id: `wyglad-${account.toLowerCase()}`,
     roles: { accent: ACCOUNT_COLOR[account], danger: '#c0362c', success: '#2e7d32', warning: '#b26a00', pro: '#6d4f94' },
     // Navy stays navy: the generator would lift it to a bright blue, so ATERIMA fills from a darker stop.
-    light: { gray: { anchors: grays.light }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 700 } } } : {}) },
-    dark: { gray: { anchors: grays.dark }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 600 } } } : {}) },
+    // ELMI keeps the light orange of its logo (the generator would darken it to brown).
+    light: { gray: { anchors: grays.light }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 700 } } } : account === 'ELMI' ? { roles: { accent: { seed: ACCOUNT_COLOR.ELMI, fillShade: 250 } } } : {}) },
+    dark: { gray: { anchors: grays.dark }, ...(account === 'ATERIMA' ? { roles: { accent: { seed: ACCOUNT_COLOR.ATERIMA, fillShade: 600 } } } : account === 'ELMI' ? { roles: { accent: { seed: ACCOUNT_COLOR.ELMI, fillShade: 250 } } } : {}) },
   })
 }
 

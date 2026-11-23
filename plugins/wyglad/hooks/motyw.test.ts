@@ -55,5 +55,5 @@ test('/wyglad motyw on ustawia motyw konta ELMI, off go czyści i zapamiętuje',
 })
 
 test('kolor akcentu to kolor konta z paska moda projekt', () => {
-  expect(ACCOUNT_COLOR).toEqual({ Personal: '#2E7D32', ELMI: '#E65100', ATERIMA: '#1A237E' })
+  expect(ACCOUNT_COLOR).toEqual({ Personal: '#2E7D32', ELMI: '#FFB33B', ATERIMA: '#1A237E' })
 })

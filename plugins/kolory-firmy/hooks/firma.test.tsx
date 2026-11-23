@@ -19,12 +19,13 @@ test('firma z organizacji; inna organizacja nic nie dostaje', () => {
   expect(firmaOf('8a5350ca-2541-4066-8c79-d4cc738ae76c')).toBe(null)
   expect(firmaOf(undefined)).toBe(null)
   expect(markaOf(' med ')).toBe('MED')
-  expect(markaOf('care')).toBe(null)
+  expect(markaOf('care')).toBe('CARE')
+  expect(markaOf('hr')).toBe(null)
 })
 
 test('Desktop maluje kolory obu firm, tekst bez problemów kontrastu', () => {
-  for (const firma of ['ATERIMA', 'ELMI'] as const) {
-    const { problems } = lookOf(firma)
+  for (const [firma, marka] of [['ELMI', null], ['ATERIMA', null], ['ATERIMA', 'GRUPA'], ['ATERIMA', 'MED'], ['ATERIMA', 'WORK'], ['ATERIMA', 'CARE']] as const) {
+    const { problems } = lookOf(firma, marka)
     expect(unpainted(problems)).toBe(undefined)
     expect(problems.filter(line => /^text-(primary|secondary|muted) on surface/.test(line))).toEqual([])
   }
@@ -37,7 +38,7 @@ for (const surface of ['terminal', 'desktop'] as const) {
     expect(await ui.find({ type: 'Text', text: /W której marce/ })).toBeDefined()
     await ui.press({ key: 'marka-MED' })
     const after = await $.ui.mount({ plugin: 'kolory-firmy', surface, component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-    expect(await after.find({ type: 'Text', text: /ATERIMA MED/ })).toBeDefined()
+    expect(await after.find({ type: 'Text', text: /^ATERIMA MED$/ })).toBeDefined()
   })
 }
 
@@ -47,10 +48,12 @@ test('ELMI i inne konta: bez napisu marki', async ($, on) => {
   expect(await ui.find({ type: 'Text', text: /W której marce/ })).toBeUndefined()
 })
 
-test('/marka work zmienia napis, /marka care podpowiada marki', async ($, on) => {
+test('/marka work i /marka care zmieniają napis, nieznana marka dostaje podpowiedź', async ($, on) => {
   stand(on, ATERIMA)
   const out = await $.command.run({ command: 'marka', args: 'work' } as never)
   expect(out.text).toContain('ATERIMA WORK')
-  const bad = await $.command.run({ command: 'marka', args: 'care' } as never)
+  const care = await $.command.run({ command: 'marka', args: 'care' } as never)
+  expect(care.text).toContain('ATERIMA CARE')
+  const bad = await $.command.run({ command: 'marka', args: 'hr' } as never)
   expect(bad.text).toContain('/marka med')
 })
