@@ -38,7 +38,14 @@ for (const surface of ['terminal', 'desktop'] as const) {
     expect(await ui.find({ type: 'Text', text: /W której marce/ })).toBeDefined()
     await ui.press({ key: 'marka-MED' })
     const after = await $.ui.mount({ plugin: 'kolory-firmy', surface, component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
-    expect(await after.find({ type: 'Text', text: /^ATERIMA MED$/ })).toBeDefined()
+    expect(await after.find({ type: 'Text', text: /ATERIMA MED/ })).toBeDefined()
+    // A click on the label opens the brands again.
+    await after.press({ key: 'marka' })
+    const again = await $.ui.mount({ plugin: 'kolory-firmy', surface, component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+    expect(await again.find({ type: 'Text', text: /Zmień markę/ })).toBeDefined()
+    await again.press({ key: 'marka-CARE' })
+    const care = await $.ui.mount({ plugin: 'kolory-firmy', surface, component: 'AbovePrompt', props: { hasSurvey: false, isWorking: false } as never })
+    expect(await care.find({ type: 'Text', text: /ATERIMA CARE/ })).toBeDefined()
   })
 }
 

@@ -123,6 +123,9 @@ const BRAND: Record<string, { name: string; color: string; ink: string }> = {
   CARE: { name: 'ATERIMA CARE', color: '#B7074E', ink: '#FFFFFF' },
 }
 
+// Clicking the brand label opens the four brands to pick from (Stefan, 2026-11-23, „1A”).
+let brandOpen = false
+
 async function brandOf($: EngineInterface): Promise<{ name: string; color: string; ink: string } | null> {
   const { dir } = await accountOf($)
   const store = `${dir}/plugins/store`
@@ -246,7 +249,7 @@ export const register: Register = on => {
     const s = await read($, status)
     if (e.props.hasSurvey || s === null) return below
 
-    const { Box, Text } = $.ui.resolve(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
     const width = Math.max(30, e.props.bodyColumns)
     const now = await $.clock.now().catch(() => Date.now())
 
@@ -273,10 +276,23 @@ export const register: Register = on => {
             </Box>
           ) : null}
           {brand ? (
-            <Box backgroundColor={brand.color} paddingX={1}>
-              <Text color={brand.ink} bold>{brand.name}</Text>
-            </Box>
+            <Button key="marka" plain onPress={async () => {
+              brandOpen = !brandOpen
+              await $.ui.invalidate('ui.render')
+            }}>
+              <Text backgroundColor={brand.color} color={brand.ink} bold>{` ${brand.name} `}</Text>
+            </Button>
           ) : null}
+          {brand && brandOpen
+            ? Object.keys(BRAND).map(k => (
+                <Button key={`marka-${k}`} label={k} onPress={async () => {
+                  brandOpen = false
+                  // The brand belongs to the kolory-firmy mod: its own command keeps the label and the colours together.
+                  await $.command.run({ command: 'marka', args: k.toLowerCase() }).catch(() => undefined)
+                  await $.ui.invalidate('ui.render')
+                }} />
+              ))
+            : null}
           <Text bold>{badge || brand ? `  ·  ${head}` : head}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
