@@ -37,9 +37,10 @@ const GRAYS: Record<Account, { light: Anchors; dark: Anchors }> = {
     light: { 'surface-0': '#f7f0ea', 'surface-1': '#faf5f0', 'surface-2': '#fdfaf7', 'text-primary': '#2a1e16', 'text-secondary': '#504136', 'text-muted': '#68584c' },
     dark: { 'surface-0': '#1c1712', 'surface-1': '#231c16', 'surface-2': '#2a221b', 'surface-3': '#30271f', 'text-primary': '#f4ece4', 'text-secondary': '#d6c9bc', 'text-muted': '#b3a495' },
   },
+  // ATERIMA without a navy cast on surfaces and text (Stefan, 2026-11-23): plain greys, navy only in the accent.
   ATERIMA: {
-    light: { 'surface-0': '#eceef6', 'surface-1': '#f3f4f9', 'surface-2': '#f9fafd', 'text-primary': '#181b2e', 'text-secondary': '#3a3f58', 'text-muted': '#525871' },
-    dark: { 'surface-0': '#12141f', 'surface-1': '#181a28', 'surface-2': '#1e2131', 'surface-3': '#232739', 'text-primary': '#e8e9f4', 'text-secondary': '#c3c6d9', 'text-muted': '#9ea2ba' },
+    light: { 'surface-0': '#efefef', 'surface-1': '#f5f5f5', 'surface-2': '#fbfbfb', 'text-primary': '#1c1c1c', 'text-secondary': '#424242', 'text-muted': '#5c5c5c' },
+    dark: { 'surface-0': '#161616', 'surface-1': '#1c1c1c', 'surface-2': '#232323', 'surface-3': '#282828', 'text-primary': '#ececec', 'text-secondary': '#c8c8c8', 'text-muted': '#a3a3a3' },
   },
 }
 

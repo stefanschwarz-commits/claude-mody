@@ -484,3 +484,6 @@ Stefan: „2A” (najpierw zaktualizować Claude w wierszu poleceń, potem doda�
 
 ## 2026-11-23 – wyglad 0.48.1 i projekt 0.4.1: ELMI pomarańczowe, ATERIMA granatowa
 Stefan po obrazie kolorów 0.48.0: „Tak, tylko wolałbym Aterimę granatową; ELMI to bardziej takie pomarańczowe. A konto prywatne może być zielone.” Kolory kont: Personal #2E7D32 (bez zmian), ELMI #E65100, ATERIMA #1A237E – w motywie aplikacji (wyglad) i na pasku konta nad polem (projekt), żeby oba mówiły to samo. Tła ELMI ciepłe, ATERIMA granatowe, nadal tylko lekko zabarwione. Generator rozjaśniał granat do jasnego niebieskiego, więc ATERIMA bierze wypełnienie przycisków z ciemniejszego stopnia (700 w jasnym stylu, 600 w ciemnym).
+
+## 2026-11-23 – wyglad 0.48.2: ATERIMA bez granatowej poświaty
+Stefan: „granatowa poświata na tekście ogólnie nie wygląda dobrze”, ikonki i przyciski w granacie mogą zostać. Po obrazie porównania wybrał propozycję (1A, „Propozycja jest w porządku.”): tylko ATERIMA dostaje szare, niezabarwione tła i tekst; granat zostaje w przyciskach, odnośnikach i ikonkach. ELMI i konto prywatne bez zmian (lekko zabarwione).
