@@ -126,7 +126,9 @@ const BRAND: Record<string, { name: string; color: string; ink: string }> = {
 async function brandOf($: EngineInterface): Promise<{ name: string; color: string; ink: string } | null> {
   const { dir } = await accountOf($)
   const store = `${dir}/plugins/store`
-  for (const entry of await $.fs.list(store).catch(() => [])) {
+  // Newest first: a copy from the organization's library and one from claude-mody may both have kept a brand.
+  const entries = (await $.fs.list(store).catch(() => [])).slice().sort((a, b) => b.mtimeMs - a.mtimeMs)
+  for (const entry of entries) {
     if (entry.kind !== 'file' || !entry.name.startsWith('kolory-firmy_')) continue
     const text = await $.fs.read(`${store}/${entry.name}`).catch(() => undefined)
     if (typeof text !== 'string') continue

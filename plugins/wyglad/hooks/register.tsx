@@ -436,6 +436,23 @@ async function hasTeamMod($: EngineInterface, org: string | undefined): Promise<
       if (typeof text === 'string' && /"name"\s*:\s*"kolory-firmy"/.test(text)) return true
     }
   }
+  // The desktop app loads the organization's library itself, from <LOCALAPPDATA>/Claude-Data/<app>/rpm/<user>/<org>/plugin_*.
+  const local = await $.env.get('LOCALAPPDATA').catch(() => undefined)
+  if (!local) return false
+  const data = `${local.replace(/\\/g, '/')}/Claude-Data`
+  const org8 = org.toLowerCase().slice(0, 8)
+  for (const app of await $.fs.list(data).catch(() => [])) {
+    if (app.kind !== 'dir') continue
+    for (const user of await $.fs.list(`${data}/${app.name}/rpm`).catch(() => [])) {
+      if (user.kind !== 'dir') continue
+      const base = `${data}/${app.name}/rpm/${user.name}/${org8}`
+      for (const p of await $.fs.list(base).catch(() => [])) {
+        if (p.kind !== 'dir' || !p.name.startsWith('plugin_')) continue
+        const text = await $.fs.read(`${base}/${p.name}/.claude-plugin/plugin.json`).catch(() => undefined)
+        if (typeof text === 'string' && /"name"\s*:\s*"kolory-firmy"/.test(text)) return true
+      }
+    }
+  }
   return false
 }
 
