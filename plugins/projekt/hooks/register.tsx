@@ -276,14 +276,16 @@ export const register: Register = on => {
             </Box>
           ) : null}
           {brand ? (
-            // The coloured label stays coloured: the Box paints it, the plain Button inside makes it clickable.
-            <Box backgroundColor={brand.color} paddingX={1}>
-              <Button key="marka" plain onPress={async () => {
+            // The label is plain text, bold and narrow (Stefan, 2026-11-24): the app draws a Button as its own
+            // grey button, not bold. The small arrow next to it opens the brands.
+            <Box>
+              <Box backgroundColor={brand.color}>
+                <Text color={brand.ink} bold weight="bold">{` ${brand.name} `}</Text>
+              </Box>
+              <Button key="marka" plain dimColor label={brandOpen ? '▴' : '▾'} onPress={async () => {
                 brandOpen = !brandOpen
                 await $.ui.invalidate('ui.render')
-              }}>
-                <Text color={brand.ink} bold>{brand.name}</Text>
-              </Button>
+              }} />
             </Box>
           ) : null}
           <Text bold>{badge || brand ? `  ·  ${head}` : head}</Text>

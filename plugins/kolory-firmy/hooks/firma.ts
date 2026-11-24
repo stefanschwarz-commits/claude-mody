@@ -47,12 +47,29 @@ const WARM = {
   dark: { 'surface-0': '#1c1712', 'surface-1': '#231c16', 'surface-2': '#2a221b', 'surface-3': '#30271f', 'text-primary': '#f4ece4', 'text-secondary': '#d6c9bc', 'text-muted': '#b3a495' },
 }
 
+// Each ATERIMA brand paints the whole background in its own colour, the text stays neutral
+// (Stefan, 2026-11-24: "Grupa ATERIMA powinna być na czarnym tle", then "Tak" to the brand backgrounds).
+const BRAND_SURFACES: Record<Marka, { dark: [string, string, string, string]; light: [string, string, string] }> = {
+  GRUPA: { dark: ['#000000', '#0a0a0a', '#121212', '#1a1a1a'], light: ['#ececec', '#f4f4f4', '#fbfbfb'] },
+  MED: { dark: ['#07121d', '#0b1928', '#102133', '#14283d'], light: ['#e9f0f7', '#f1f6fb', '#f9fbfd'] },
+  WORK: { dark: ['#1a0814', '#220c1b', '#2b1123', '#33152a'], light: ['#f7ebf3', '#faf2f7', '#fdf9fb'] },
+  CARE: { dark: ['#1a070e', '#230b14', '#2c101a', '#341520'], light: ['#f7eaef', '#faf2f5', '#fdf8fa'] },
+}
+
+function brandGrays(marka: Marka): typeof GREY {
+  const b = BRAND_SURFACES[marka]
+  return {
+    light: { ...GREY.light, 'surface-0': b.light[0], 'surface-1': b.light[1], 'surface-2': b.light[2] },
+    dark: { ...GREY.dark, 'surface-0': b.dark[0], 'surface-1': b.dark[1], 'surface-2': b.dark[2], 'surface-3': b.dark[3] },
+  }
+}
+
 /** The look: ELMI, or an ATERIMA brand (a person who has not picked yet sees the GRUPA look). */
 export function lookOf(firma: Firma, marka: Marka | null): { theme: ThemeColors; problems: string[] } {
   const key = firma === 'ELMI' ? 'ELMI' : (marka ?? 'GRUPA')
   const logo = LOGO[key]
   const accent = logo.shade ? { seed: logo.color, fillShade: logo.shade } : logo.color
-  const grays = firma === 'ELMI' ? WARM : GREY
+  const grays = firma === 'ELMI' ? WARM : brandGrays(marka ?? 'GRUPA')
   return makeColors({
     label: firma === 'ELMI' ? 'ELMI' : NAZWA[marka ?? 'GRUPA'],
     id: `kolory-firmy-${key.toLowerCase()}`,
