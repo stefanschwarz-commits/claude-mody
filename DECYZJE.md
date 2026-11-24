@@ -524,3 +524,4 @@ Stefan po „/marka grupa”: „Jest OK, tylko ten fivkę i trójkącik do rozw
 
 ## 2026-11-24 – kolory-firmy 0.2.7, projekt 0.4.11: marki Akademia Opiekunów i Home Care Services
 Stefan: „Zapomnieliśmy jeszcze o brandzie Akademii i HCS.” Dopisane marki AKADEMIA („AKADEMIA OPIEKUNÓW”, pomarańcz #F39200 – jedyny pomarańcz Akademii z decyzji o wyglądzie z 2026-10-29, ciemny napis na pomarańczu; tło ciepły grafit) i HCS („HOME CARE SERVICES”, #04508D z logo hcs-logo.svg; tło granatowe, bliskie MED, bo takie są logotypy). Polecenia `/marka akademia`, `/marka hcs`.
+Stefan po restarcie (2026-11-24): „Super, wszystko idealnie.” – wygląd sześciu marek i paska potwierdzony u niego. Publikacja 0.2.7 w bibliotece ATERIMA nadal czeka na jego wyraźne „publikuj”.
