@@ -57,11 +57,7 @@ async function setLook($: EngineInterface, firma: Firma): Promise<void> {
 }
 
 // The brand changes the label and the colours at once.
-// Whether the brand buttons are open again after a click on the label.
-const open = { isOpen: false }
-
 async function pick($: EngineInterface, marka: Marka): Promise<void> {
-  open.isOpen = false
   await $.store.set(MARKA, marka)
   if ((await $.store.get(OFF)) !== true) await setLook($, 'ATERIMA')
   await $.ui.invalidate('ui.render')
@@ -105,23 +101,19 @@ export const register: Register = on => {
     // start of its own line, so this row would say it twice (Stefan, 2026-11-23).
     if (marka && (await hasProjekt($))) return next(e)
     const { Box, Button, Text } = $.ui.resolve(e)
-    if (marka && !open.isOpen) {
-      // Clicking the label opens the brands again (Stefan, 2026-11-23, „1A”).
+    if (marka) {
+      // The label alone; the brand changes with /marka (Stefan, 2026-11-24).
       return (
         <Box flexDirection="row">
           <Box backgroundColor={LOGO[marka].color}>
             <Text color={LOGO[marka].ink} bold weight="bold">{` ${NAZWA[marka]} `}</Text>
           </Box>
-          <Button key="marka" plain dimColor label="▾" onPress={async () => {
-            open.isOpen = true
-            await $.ui.invalidate('ui.render')
-          }} />
         </Box>
       )
     }
     return (
       <Box flexDirection="row" gap={1}>
-        <Text>{marka ? 'Zmień markę:' : 'W której marce pracujesz? Wybierz raz:'}</Text>
+        <Text>W której marce pracujesz? Wybierz raz:</Text>
         {MARKI.map(m => (
           <Button key={`marka-${m}`} label={m} onPress={() => pick($, m)} />
         ))}

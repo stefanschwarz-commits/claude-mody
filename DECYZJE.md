@@ -518,3 +518,6 @@ Zrzut Stefana (przez Centrum ATERIMA): po kliknięciu w napis marki przyciski GR
 
 ## 2026-11-24 – kolory-firmy 0.2.5, projekt 0.4.9: tło w kolorze marki, napis pogrubiony i węższy
 Stefan: „Grupa ATERIMA powinna być na czarnym tle. […] te brandy w ogóle się nie zmieniają.” Po obrazie propozycji: „Tak, tylko że nazwa ma być pogrubiona, a tło nieco węższe.” Każda marka ATERIMA maluje całe tło swoim kolorem (GRUPA czarne, MED granatowe, WORK śliwkowe, CARE bordowe; w jasnym stylu jasne odcienie), tekst zostaje neutralny (biały / czarny). Napis marki to zwykły pogrubiony tekst na kolorowym tle bez dodatkowych odstępów; aplikacja rysuje Button jako własny szary przycisk bez pogrubienia, więc marki otwiera mała strzałka „▾” obok napisu.
+
+## 2026-11-24 – projekt 0.4.10, kolory-firmy 0.2.6: bez trójkącika przy napisie marki
+Stefan po „/marka grupa”: „Jest OK, tylko ten fivkę i trójkącik do rozwijania możesz usunąć. Nie jest potrzebny.” Na pytanie, który znak to „fivka”, przysłał zrzut samego trójkącika w ramce przycisku – „fivka” to ta ramka. Usunięty cały przycisk ▾ (u Stefana i u pracowników); markę zmienia się poleceniem `/marka grupa|med|work|care`. Przyciski wyboru zostają tylko przy pierwszym wyborze marki.

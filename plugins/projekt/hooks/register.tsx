@@ -123,9 +123,6 @@ const BRAND: Record<string, { name: string; color: string; ink: string }> = {
   CARE: { name: 'ATERIMA CARE', color: '#B7074E', ink: '#FFFFFF' },
 }
 
-// Clicking the brand label opens the four brands to pick from (Stefan, 2026-11-23, „1A”).
-let brandOpen = false
-
 async function brandOf($: EngineInterface): Promise<{ name: string; color: string; ink: string } | null> {
   const { dir } = await accountOf($)
   const store = `${dir}/plugins/store`
@@ -249,7 +246,7 @@ export const register: Register = on => {
     const s = await read($, status)
     if (e.props.hasSurvey || s === null) return below
 
-    const { Box, Button, Text } = $.ui.resolve(e)
+    const { Box, Text } = $.ui.resolve(e)
     const width = Math.max(30, e.props.bodyColumns)
     const now = await $.clock.now().catch(() => Date.now())
 
@@ -276,39 +273,17 @@ export const register: Register = on => {
             </Box>
           ) : null}
           {brand ? (
-            // The label is plain text, bold and narrow (Stefan, 2026-11-24): the app draws a Button as its own
-            // grey button, not bold. The small arrow next to it opens the brands.
+            // The label is plain text, bold and narrow (Stefan, 2026-11-24). No arrow next to it: Stefan, the same
+            // day: „ten fivkę i trójkącik do rozwijania możesz usunąć”; the brand changes with /marka.
             <Box>
               <Box backgroundColor={brand.color}>
                 <Text color={brand.ink} bold weight="bold">{` ${brand.name} `}</Text>
               </Box>
-              <Button key="marka" plain dimColor label={brandOpen ? '▴' : '▾'} onPress={async () => {
-                brandOpen = !brandOpen
-                await $.ui.invalidate('ui.render')
-              }} />
             </Box>
           ) : null}
           <Text bold>{badge || brand ? `  ·  ${head}` : head}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
-        {/* The brands open in a line of their own under the title, so the title never wraps (Stefan, 2026-11-24). */}
-        {brand && brandOpen ? (
-          <Box>
-            <Text dimColor>{'Zmień markę:  '}</Text>
-            {Object.keys(BRAND).map(k => (
-              <Button key={`marka-${k}`} label={k} onPress={async () => {
-                brandOpen = false
-                // The brand belongs to the kolory-firmy mod: its own command keeps the label and the colours together.
-                await $.command.run({ command: 'marka', args: k.toLowerCase() }).catch(() => undefined)
-                await $.ui.invalidate('ui.render')
-              }} />
-            ))}
-            <Button key="marka-zamknij" label="Anuluj" dimColor onPress={async () => {
-              brandOpen = false
-              await $.ui.invalidate('ui.render')
-            }} />
-          </Box>
-        ) : null}
         {s.tooLong ? <Text color="warning" bold>{'⚠ Sesja jest za długa – trzeba ją wymienić na nową.'}</Text> : null}
       </Box>
     )

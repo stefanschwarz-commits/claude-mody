@@ -121,20 +121,3 @@ test('ATERIMA: wybrana marka z kolory-firmy na początku tej samej linii co tytu
   const row = rows.find(b => { const t = JSON.stringify(b); return t.includes('ATERIMA MED') && t.includes('Mody') && !t.includes('"column"') })
   expect(row).toBeDefined()
 })
-
-test('ATERIMA: kliknięcie w napis marki pokazuje cztery marki, wybór idzie poleceniem /marka', async ($, on) => {
-  folder(on, { 'STAN.md': STAN, '101.json': RECORD, 'kolory-firmy_claude-mody-1.json': '{ "marka": "GRUPA" }' }, { CLAUDE_CODE_ORGANIZATION_UUID: '1f6c04b3-9eb2-479b-aa75-d2b914e7e274' })
-  const runs: string[] = []
-  on('ui.invalidate', () => ({ value: undefined }) as never)
-  on('command.run', { command: 'marka' }, ($, e) => {
-    runs.push(e.args)
-    return { text: 'ok' } as never
-  })
-  await $.command.run({ command: 'stan', args: '' } as never)
-  const ui = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
-  await ui.press({ key: 'marka' })
-  const open = await $.ui.mount({ plugin: 'projekt', surface: 'desktop', component: 'AbovePrompt', props: BAND })
-  expect(await open.find({ type: 'Button', key: 'marka-MED' } as never)).toBeDefined()
-  await open.press({ key: 'marka-MED' })
-  expect(runs).toEqual(['med'])
-})
