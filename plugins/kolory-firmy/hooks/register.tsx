@@ -67,7 +67,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const firma = await firmaNow($)
     if (firma) {
-      await $.command.register({ name: 'marka', description: 'Napis nad polem: /marka grupa, /marka med, /marka work, /marka care; /marka kolory off|on' })
+      await $.command.register({ name: 'marka', description: 'Napis nad polem: /marka grupa, med, work, care, akademia, hcs; /marka kolory off|on' })
       // Never a clear here: a reload must not wipe a theme.
       if ((await $.store.get(OFF)) !== true) await setLook($, firma)
     }

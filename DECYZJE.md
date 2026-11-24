@@ -521,3 +521,6 @@ Stefan: „Grupa ATERIMA powinna być na czarnym tle. […] te brandy w ogóle s
 
 ## 2026-11-24 – projekt 0.4.10, kolory-firmy 0.2.6: bez trójkącika przy napisie marki
 Stefan po „/marka grupa”: „Jest OK, tylko ten fivkę i trójkącik do rozwijania możesz usunąć. Nie jest potrzebny.” Na pytanie, który znak to „fivka”, przysłał zrzut samego trójkącika w ramce przycisku – „fivka” to ta ramka. Usunięty cały przycisk ▾ (u Stefana i u pracowników); markę zmienia się poleceniem `/marka grupa|med|work|care`. Przyciski wyboru zostają tylko przy pierwszym wyborze marki.
+
+## 2026-11-24 – kolory-firmy 0.2.7, projekt 0.4.11: marki Akademia Opiekunów i Home Care Services
+Stefan: „Zapomnieliśmy jeszcze o brandzie Akademii i HCS.” Dopisane marki AKADEMIA („AKADEMIA OPIEKUNÓW”, pomarańcz #F39200 – jedyny pomarańcz Akademii z decyzji o wyglądzie z 2026-10-29, ciemny napis na pomarańczu; tło ciepły grafit) i HCS („HOME CARE SERVICES”, #04508D z logo hcs-logo.svg; tło granatowe, bliskie MED, bo takie są logotypy). Polecenia `/marka akademia`, `/marka hcs`.

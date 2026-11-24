@@ -121,6 +121,8 @@ const BRAND: Record<string, { name: string; color: string; ink: string }> = {
   MED: { name: 'ATERIMA MED', color: '#00508F', ink: '#FFFFFF' },
   WORK: { name: 'ATERIMA WORK', color: '#BF0F7E', ink: '#FFFFFF' },
   CARE: { name: 'ATERIMA CARE', color: '#B7074E', ink: '#FFFFFF' },
+  AKADEMIA: { name: 'AKADEMIA OPIEKUNÓW', color: '#F39200', ink: '#1C1C1C' },
+  HCS: { name: 'HOME CARE SERVICES', color: '#04508D', ink: '#FFFFFF' },
 }
 
 async function brandOf($: EngineInterface): Promise<{ name: string; color: string; ink: string } | null> {

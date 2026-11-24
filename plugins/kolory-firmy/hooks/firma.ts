@@ -1,6 +1,7 @@
 // Company colours and the ATERIMA brand label for the teams (Stefan, 2026-11-23).
 // Colours come from the official logotypes (Marketing library, LOGOTYPY folder; ELMI from its website logo):
 // GRUPA ATERIMA black, ATERIMA MED #00508F, ATERIMA WORK #BF0F7E, ATERIMA CARE #B7074E (with #00568E),
+// Akademia Opiekunów #F39200, Home Care Services #04508D (added 2026-11-24, Stefan: „Zapomnieliśmy jeszcze o brandzie Akademii i HCS.”),
 // ELMI #FFB33B. Surfaces stay plain grey for ATERIMA (Stefan: "granatowa poświata na tekście ... nie wygląda dobrze").
 import type { ThemeColors } from 'claude-code'
 
@@ -18,7 +19,7 @@ export function firmaOf(org: string | undefined): Firma | null {
 }
 
 // The brands an ATERIMA employee picks from once.
-export const MARKI = ['GRUPA', 'MED', 'WORK', 'CARE'] as const
+export const MARKI = ['GRUPA', 'MED', 'WORK', 'CARE', 'AKADEMIA', 'HCS'] as const
 export type Marka = (typeof MARKI)[number]
 
 export function markaOf(text: string): Marka | null {
@@ -27,7 +28,7 @@ export function markaOf(text: string): Marka | null {
 }
 
 /** The brand's name as its logotype writes it. */
-export const NAZWA: Record<Marka, string> = { GRUPA: 'GRUPA ATERIMA', MED: 'ATERIMA MED', WORK: 'ATERIMA WORK', CARE: 'ATERIMA CARE' }
+export const NAZWA: Record<Marka, string> = { GRUPA: 'GRUPA ATERIMA', MED: 'ATERIMA MED', WORK: 'ATERIMA WORK', CARE: 'ATERIMA CARE', AKADEMIA: 'AKADEMIA OPIEKUNÓW', HCS: 'HOME CARE SERVICES' }
 
 /** The logotype colour: the label's background, and the seed of the buttons and links. */
 export const LOGO: Record<Marka | 'ELMI', { color: string; ink: string; shade?: number }> = {
@@ -35,6 +36,9 @@ export const LOGO: Record<Marka | 'ELMI', { color: string; ink: string; shade?: 
   MED: { color: '#00508F', ink: '#FFFFFF', shade: 600 },
   WORK: { color: '#BF0F7E', ink: '#FFFFFF' },
   CARE: { color: '#B7074E', ink: '#FFFFFF' },
+  // Akademia Opiekunów: its one orange (akademiaopiekunow.pl, decision of 2026-10-29); Home Care Services: its logo (hcs-logo.svg).
+  AKADEMIA: { color: '#F39200', ink: '#1C1C1C', shade: 250 },
+  HCS: { color: '#04508D', ink: '#FFFFFF', shade: 600 },
   ELMI: { color: '#FFB33B', ink: '#1C1C1C', shade: 250 },
 }
 
@@ -54,6 +58,8 @@ const BRAND_SURFACES: Record<Marka, { dark: [string, string, string, string]; li
   MED: { dark: ['#07121d', '#0b1928', '#102133', '#14283d'], light: ['#e9f0f7', '#f1f6fb', '#f9fbfd'] },
   WORK: { dark: ['#1a0814', '#220c1b', '#2b1123', '#33152a'], light: ['#f7ebf3', '#faf2f7', '#fdf9fb'] },
   CARE: { dark: ['#1a070e', '#230b14', '#2c101a', '#341520'], light: ['#f7eaef', '#faf2f5', '#fdf8fa'] },
+  AKADEMIA: { dark: ['#14110d', '#1b1712', '#221d17', '#29231c'], light: ['#f6f2ec', '#faf7f3', '#fdfcfa'] },
+  HCS: { dark: ['#06121e', '#0a1929', '#0f2134', '#13283e'], light: ['#e8f0f7', '#f0f5fa', '#f8fbfd'] },
 }
 
 function brandGrays(marka: Marka): typeof GREY {

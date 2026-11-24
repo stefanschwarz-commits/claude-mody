@@ -1,6 +1,6 @@
 {
   "name": "projekt",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "Pasek nad polem wpisywania: konto Claude, tytuł sesji, ostatnia aktywność i najpilniejsza sprawa z STAN.md; komenda /stan.",
   "author": { "name": "Stefan Schwarz" },
   "types": "./types/index.d.ts"

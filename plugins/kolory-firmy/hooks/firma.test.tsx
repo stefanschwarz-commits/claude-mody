@@ -20,11 +20,13 @@ test('firma z organizacji; inna organizacja nic nie dostaje', () => {
   expect(firmaOf(undefined)).toBe(null)
   expect(markaOf(' med ')).toBe('MED')
   expect(markaOf('care')).toBe('CARE')
+  expect(markaOf('akademia')).toBe('AKADEMIA')
+  expect(markaOf('HCS')).toBe('HCS')
   expect(markaOf('hr')).toBe(null)
 })
 
 test('Desktop maluje kolory obu firm, tekst bez problemów kontrastu', () => {
-  for (const [firma, marka] of [['ELMI', null], ['ATERIMA', null], ['ATERIMA', 'GRUPA'], ['ATERIMA', 'MED'], ['ATERIMA', 'WORK'], ['ATERIMA', 'CARE']] as const) {
+  for (const [firma, marka] of [['ELMI', null], ['ATERIMA', null], ['ATERIMA', 'GRUPA'], ['ATERIMA', 'MED'], ['ATERIMA', 'WORK'], ['ATERIMA', 'CARE'], ['ATERIMA', 'AKADEMIA'], ['ATERIMA', 'HCS']] as const) {
     const { problems } = lookOf(firma, marka)
     expect(unpainted(problems)).toBe(undefined)
     expect(problems.filter(line => /^text-(primary|secondary|muted) on surface/.test(line))).toEqual([])
