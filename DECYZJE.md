@@ -512,3 +512,6 @@ Zrzut Stefana (przez Centrum ATERIMA): „GRUPA ATERIMA” w dwóch liniach. Prz
 
 ## 2026-11-23 – projekt 0.4.7, kolory-firmy 0.2.3: kliknięcie w napis marki pokazuje wybór
 Decyzja Stefana „1A” (przez Centrum ATERIMA): „kliknięcie w napis marki ma znowu pokazywać przyciski GRUPA, MED, WORK i CARE”. U Stefana napis rysuje projekt: kliknięcie otwiera cztery przyciski w tej samej linii, a wybór idzie poleceniem `/marka <marka>` moda kolory-firmy (napis i kolory razem). U pracowników to samo w wierszu kolory-firmy („Zmień markę:”). kolory-firmy 0.2.3 do podmiany w bibliotece ATERIMA po zgodzie Stefana (przez stronę claude.ai).
+
+## 2026-11-24 – projekt 0.4.8, kolory-firmy 0.2.4: przyciski marek w osobnej linii pod tytułem
+Zrzut Stefana (przez Centrum ATERIMA): po kliknięciu w napis marki przyciski GRUPA/MED/WORK/CARE stały w tej samej linii i łamały tytuł sesji, a napis marki stracił kolor (natywny przycisk aplikacji nie rysuje tła tekstu). Teraz: napis zostaje w kolorze logotypu (kolor daje ramka, przycisk jest w środku), przyciski otwierają się dopiero po kliknięciu, w osobnej linii pod tytułem („Zmień markę:” + cztery marki + „Anuluj”), i znikają po wyborze, po „Anuluj” albo po ponownym kliknięciu napisu. Ta sama poprawka koloru w kolory-firmy (dla pracowników) – do podmiany w bibliotece po zgodzie Stefana.

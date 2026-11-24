@@ -109,12 +109,14 @@ export const register: Register = on => {
       // Clicking the label opens the brands again (Stefan, 2026-11-23, „1A”).
       return (
         <Box flexDirection="row">
-          <Button key="marka" plain onPress={async () => {
-            open.isOpen = true
-            await $.ui.invalidate('ui.render')
-          }}>
-            <Text backgroundColor={LOGO[marka].color} color={LOGO[marka].ink} bold>{` ${NAZWA[marka]} `}</Text>
-          </Button>
+          <Box backgroundColor={LOGO[marka].color} paddingX={1}>
+            <Button key="marka" plain onPress={async () => {
+              open.isOpen = true
+              await $.ui.invalidate('ui.render')
+            }}>
+              <Text color={LOGO[marka].ink} bold>{NAZWA[marka]}</Text>
+            </Button>
+          </Box>
         </Box>
       )
     }

@@ -276,26 +276,37 @@ export const register: Register = on => {
             </Box>
           ) : null}
           {brand ? (
-            <Button key="marka" plain onPress={async () => {
-              brandOpen = !brandOpen
-              await $.ui.invalidate('ui.render')
-            }}>
-              <Text backgroundColor={brand.color} color={brand.ink} bold>{` ${brand.name} `}</Text>
-            </Button>
+            // The coloured label stays coloured: the Box paints it, the plain Button inside makes it clickable.
+            <Box backgroundColor={brand.color} paddingX={1}>
+              <Button key="marka" plain onPress={async () => {
+                brandOpen = !brandOpen
+                await $.ui.invalidate('ui.render')
+              }}>
+                <Text color={brand.ink} bold>{brand.name}</Text>
+              </Button>
+            </Box>
           ) : null}
-          {brand && brandOpen
-            ? Object.keys(BRAND).map(k => (
-                <Button key={`marka-${k}`} label={k} onPress={async () => {
-                  brandOpen = false
-                  // The brand belongs to the kolory-firmy mod: its own command keeps the label and the colours together.
-                  await $.command.run({ command: 'marka', args: k.toLowerCase() }).catch(() => undefined)
-                  await $.ui.invalidate('ui.render')
-                }} />
-              ))
-            : null}
           <Text bold>{badge || brand ? `  ·  ${head}` : head}</Text>
           <Text dimColor>{`  ·  ${short(parts.join('  ·  '), room)}`}</Text>
         </Box>
+        {/* The brands open in a line of their own under the title, so the title never wraps (Stefan, 2026-11-24). */}
+        {brand && brandOpen ? (
+          <Box>
+            <Text dimColor>{'Zmień markę:  '}</Text>
+            {Object.keys(BRAND).map(k => (
+              <Button key={`marka-${k}`} label={k} onPress={async () => {
+                brandOpen = false
+                // The brand belongs to the kolory-firmy mod: its own command keeps the label and the colours together.
+                await $.command.run({ command: 'marka', args: k.toLowerCase() }).catch(() => undefined)
+                await $.ui.invalidate('ui.render')
+              }} />
+            ))}
+            <Button key="marka-zamknij" label="Anuluj" dimColor onPress={async () => {
+              brandOpen = false
+              await $.ui.invalidate('ui.render')
+            }} />
+          </Box>
+        ) : null}
         {s.tooLong ? <Text color="warning" bold>{'⚠ Sesja jest za długa – trzeba ją wymienić na nową.'}</Text> : null}
       </Box>
     )
